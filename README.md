@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sargento Casarin — Site de Pré-Campanha
 
-## Getting Started
+Site institucional do Sargento Dickson Casarin, pré-candidato a Deputado Estadual por Mato Grosso (Eleições 2026).
 
-First, run the development server:
+## Stack
+
+- [Next.js 16](https://nextjs.org) (App Router) + React 19 + TypeScript
+- Tailwind CSS 4 + design system tático próprio (`src/app/globals.css`)
+- Prisma 7 + SQLite (driver adapter `better-sqlite3`)
+
+## Como rodar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run db:push   # cria/sincroniza o banco local (dev.db)
+npm run db:seed   # popula as propostas iniciais
+npm run dev       # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O arquivo `.env` precisa conter:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+DATABASE_URL="file:./dev.db"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estrutura
 
-## Learn More
+- `src/app/` — páginas (App Router): home, sobre, propostas, manifesto, notícias, agenda, galeria, tropa, contato, ajudar, mídias, privacidade, termos
+- `src/app/actions.ts` — Server Action que grava os formulários (Tropa/Contato) no modelo `Contact`
+- `src/components/` — Header/Footer, formulário, galeria e efeitos visuais (`tactical-fx.tsx`)
+- `prisma/schema.prisma` — modelos de conteúdo (`Proposal`, `News`, `Event`, `Contact`, `Settings`, `User`)
+- `src/generated/prisma/` — Prisma Client gerado (`npx prisma generate`)
 
-To learn more about Next.js, take a look at the following resources:
+## Conteúdo
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Propostas, notícias e eventos vêm do banco (páginas dinâmicas). Ainda não há painel administrativo — para editar conteúdo use `npx prisma studio` ou ajuste o seed em `prisma/seed.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Itens marcados com `TODO`/`Placeholder` no código (redes sociais, e-mail, domínio) devem ser trocados pelos canais oficiais quando definidos.

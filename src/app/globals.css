@@ -1128,3 +1128,25 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
 .sgt-chevron:first-child {
   margin-top: -0.2em;
 }
+
+/* Textarea segue o estilo dos inputs do formulário */
+.fg textarea {
+  padding:.85rem 1rem; border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04); font-family:var(--f); font-size:.9rem;
+  color:var(--W); outline:none; transition:border-color .25s; resize:vertical;
+}
+.fg textarea::placeholder { color:rgba(255,255,255,.18); }
+.fg textarea:focus { border-color:var(--B); }
+
+/* Honeypot anti-spam — fora da tela, invisível para humanos */
+.hp-field { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+
+/* Erro de formulário */
+.form-error { color:#ff6b6b; font-size:.82rem; margin-bottom:1rem; }
+
+/* Logo tipográfica (navbar / footer) */
+.nav-wordmark {
+  font-family:var(--fc); font-weight:900; font-size:1.6rem; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--W); line-height:1;
+}
+.nav-wordmark em { font-style:normal; color:var(--B); }

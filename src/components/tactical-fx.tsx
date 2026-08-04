@@ -1,0 +1,87 @@
+"use client";
+
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+
+// Reproduz o comportamento do main.js do template estático: revela os
+// elementos .fi/.sl/.sr/.ribbon ao entrarem na viewport, dispara a varredura
+// da seção "por que", anima os contadores e o HUD de digitação do hero.
+export function TacticalFx() {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const revealEls = document.querySelectorAll<HTMLElement>(".fi, .sl, .sr, .ribbon");
+    const reveal = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("on");
+            reveal.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.12 },
+    );
+    revealEls.forEach((el) => reveal.observe(el));
+
+    const whyRight = document.getElementById("whyRight");
+    let scan: IntersectionObserver | undefined;
+    if (whyRight) {
+      scan = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              whyRight.classList.add("scanning");
+              scan?.disconnect();
+            }
+          }
+        },
+        { threshold: 0.3 },
+      );
+      scan.observe(whyRight);
+    }
+
+    const counters = document.querySelectorAll<HTMLElement>(".stat-n[data-target]");
+    const count = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          count.unobserve(el);
+          const target = Number(el.dataset.target ?? 0);
+          const start = performance.now();
+          const duration = 1400;
+          const tick = (now: number) => {
+            const p = Math.min(1, (now - start) / duration);
+            el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.4 },
+    );
+    counters.forEach((el) => count.observe(el));
+
+    const hud = document.getElementById("hudType");
+    let hudTimer: ReturnType<typeof setInterval> | undefined;
+    if (hud) {
+      const text = "IDENT: SGT CASARIN · MT";
+      let i = 0;
+      hudTimer = setInterval(() => {
+        i += 1;
+        hud.textContent = text.slice(0, i) + (i < text.length ? "▌" : "");
+        if (i >= text.length) clearInterval(hudTimer);
+      }, 55);
+    }
+
+    return () => {
+      reveal.disconnect();
+      scan?.disconnect();
+      count.disconnect();
+      if (hudTimer) clearInterval(hudTimer);
+    };
+  }, [pathname]);
+
+  return null;
+}
