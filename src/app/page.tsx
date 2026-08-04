@@ -1,69 +1,99 @@
-import Image from "next/image";
+import { ChevronUp } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <section className="hero" id="hero">
+        {/* Textura de mapa militar */}
+        <div className="topo-bg" style={{ opacity: 0.4, WebkitMaskImage: 'none', maskImage: 'none' }}></div>
+
+        {/* Mapa do Brasil (marca d'água) */}
+        <img className="hero-map" id="heroMap" src="/brazil-map.svg" alt="" aria-hidden="true" />
+
+        {/* Foto do Casarin */}
+        <div className="hero-bg" id="heroBg" style={{ backgroundImage: 'url(/DSCF3339.JPG.jpeg)' }}></div>
+
+        {/* Texturas halftone */}
+        <div className="ht ht-tl"></div>
+        <div className="ht ht-bc"></div>
+
+        {/* Varredura de scanner */}
+        <div className="hero-scan"></div>
+
+        {/* HUD tático */}
+        <div className="hud hud-tl">MT · BRASIL</div>
+        <div className="hud hud-tr" id="hudType"></div>
+        <div className="hud hud-bl">OP. 2026 – ATIVO</div>
+        <span className="hud-cross hc1">+</span>
+        <span className="hud-cross hc2">+</span>
+        <span className="hud-cross hc3">+</span>
+        <span className="corner corner-tl"></span>
+        <span className="corner corner-tr"></span>
+        <span className="corner corner-bl"></span>
+        <span className="corner corner-br"></span>
+
+        {/* Conteúdo */}
+        <div className="hero-content container">
+          <div className="hero-inner">
+            <div className="hero-eyebrow sl">Sargento</div>
+            <h1 className="hero-name" id="heroName">
+              <span>DICKSON</span>
+              <em className="flex items-center">
+                C
+                <span className="sgt-a">
+                  <ChevronUp strokeWidth={4} className="sgt-chevron" />
+                  <ChevronUp strokeWidth={4} className="sgt-chevron" />
+                  <ChevronUp strokeWidth={4} className="sgt-chevron" />
+                </span>
+                SARIN
+              </em>
+            </h1>
+            <div className="hero-sub sl d2">Pré-candidato a Deputado Estadual<br/>por Mato Grosso</div>
+            <p className="hero-lead sl d3">
+              15 anos na linha de frente da segurança pública. Agora, a missão é levar essa experiência para onde as decisões são tomadas.
+            </p>
+            <div className="hero-actions sl d4">
+              <a href="/ajudar" target="_blank" rel="noopener noreferrer" className="btn btn-help">💪 Quero ajudar</a>
+              <a href="/tropa" className="btn btn-gold">Entre para a Tropa ➔</a>
+              <a href="/sobre" className="btn btn-ghost">Quem é Casarin</a>
+            </div>
+            <div className="ribbons">
+              <span className="ribbon ribbon-green">NINGUÉM</span>
+              <span className="ribbon ribbon-beige">AGUENTA MAIS!</span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <div className="tact-divider"></div>
+
+      {/* CREDENCIAIS */}
+      <div className="cred-strip">
+        <div className="ht"></div>
+        <div className="cred-strip-inner">
+          <div className="cred-item fi">
+            <span className="cred-num">15</span>
+            <div className="cred-txt">
+              <strong>Anos na linha de frente</strong>
+              <span>Segurança Pública em MT. Experiência real – não teoria.</span>
+            </div>
+          </div>
+          <div className="cred-item fi d1">
+            <span className="cred-num">ROTAM</span>
+            <div className="cred-txt">
+              <strong>Tropa de Elite</strong>
+              <span>Formação tática e linha de frente em missões complexas.</span>
+            </div>
+          </div>
+          <div className="cred-item fi d2">
+            <span className="cred-num">MT</span>
+            <div className="cred-txt">
+              <strong>Mato Grosso primeiro</strong>
+              <span>Defende quem vive, trabalha e produz neste estado.</span>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

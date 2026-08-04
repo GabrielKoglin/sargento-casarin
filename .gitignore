@@ -36,6 +36,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+# banco local (SQLite)
+*.db
+*.db-journal
+
+# material de referência do template (não versionar)
+/_reference/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
