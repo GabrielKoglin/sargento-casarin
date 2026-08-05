@@ -351,10 +351,10 @@ body::after {
   -webkit-text-stroke:2px #000; paint-order:stroke;
   animation:hnRise .7s var(--ease) .15s both;
 }
-/* CASARIN: o destaque — VERDE sólido com contorno preto */
+/* CASARIN: o destaque — AZUL sólido com contorno preto */
 .hero-name > em {
   font-style:normal; font-weight:700; overflow:visible; position:relative;
-  color:var(--B);
+  color:#2b7fff;
   -webkit-text-stroke:3px #000; paint-order:stroke;
   animation:hnRise .82s var(--ease) .35s both;
 }
@@ -368,8 +368,8 @@ body::after {
 /* surge de baixo para cima */
 @keyframes hnRise { from { opacity:0; transform:translateY(48%); } to { opacity:1; transform:none; } }
 @keyframes hnBadgeGlow {
-  0%,100% { filter:drop-shadow(0 0 0 rgba(43,127,255,0)); }
-  50% { filter:drop-shadow(0 1px 9px rgba(43,127,255,.55)); }
+  0%,100% { filter:drop-shadow(0 0 0 rgba(255,213,0,0)); }
+  50% { filter:drop-shadow(0 1px 9px rgba(255,213,0,.5)); }
 }
 /* wordmark: o "A" (3 chevrons = insÃ­gnia de sargento) alinhado Ã  baseline como as demais letras.
    Especificidade (0,2,1) vence o `.hero-name > em{display:block}` acima, restaurando o
