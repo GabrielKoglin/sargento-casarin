@@ -58,7 +58,22 @@ export default async function Home() {
             <div className="hero-eyebrow sl">Sargento</div>
             <h1 className="hero-name" id="heroName" aria-label="Dickson Casarin">
               <span>DICKSON</span>
-              <em>CASARIN</em>
+              <em>
+                C
+                <i className="sgt-badge" aria-hidden="true">
+                  <svg viewBox="0 0 120 120" focusable="false">
+                    <path
+                      d="M12 106 L60 20 L108 106"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={20}
+                      strokeLinejoin="miter"
+                    />
+                    <rect x="34" y="70" width="52" height="14" rx="1.5" fill="#ffd500" />
+                  </svg>
+                </i>
+                SARIN
+              </em>
             </h1>
             <div className="hero-sub sl d2">Pré-candidato a Deputado Estadual<br/>por Mato Grosso</div>
             <p className="hero-lead sl d3">
@@ -146,20 +161,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      {/* STATS */}
-      <div className="stats-bar">
-        <div className="stats-inner">
-          <div className="stat fi">
-            <span className="stat-n" data-target="15">0</span>
-            <span className="stat-l">Anos de farda</span>
-          </div>
-          <div className="stat fi d1">
-            <span className="stat-n" data-target="141">0</span>
-            <span className="stat-l">Municípios em MT</span>
-          </div>
-        </div>
-      </div>
 
       {/* PROPOSTAS */}
       <section className="propostas section">
