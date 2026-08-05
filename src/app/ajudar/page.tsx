@@ -92,8 +92,12 @@ export default function AjudarPage() {
                 R$ 200 <span>exemplo</span>
               </div>
             </div>
-            {/* TODO: link da plataforma oficial de doações, no período permitido pela legislação eleitoral */}
-            <a href="#" className="btn-donate fi d3">
+            <a
+              href="https://apoiar.me/sargentocasarin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-donate fi d3"
+            >
               Quero apoiar <span aria-hidden="true">➔</span>
             </a>
             <div className="support-trust fi d3">
