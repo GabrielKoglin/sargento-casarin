@@ -4,10 +4,12 @@ import { useEffect } from "react";
 
 // Efeitos exclusivos da HOME (montado só em src/app/page.tsx). Não toca no
 // motor compartilhado (tactical-fx.tsx). Hoje: parallax de profundidade no
-// hero seguindo o cursor — as camadas decorativas (mapa, texturas, halftone)
-// deslocam levemente em ritmos diferentes, dando sensação de "HUD tático vivo".
-// Seguro: só move elementos decorativos; respeita prefers-reduced-motion e só
-// roda em ponteiro fino (desktop) — no touch/reduzido não faz nada.
+// hero seguindo o cursor — várias camadas decorativas (mapa, texturas,
+// halftone, rótulos de HUD e cruzes) deslocam em ritmos diferentes, dando a
+// sensação de uma moldura de HUD tático viva.
+// Seguro: só move elementos decorativos (todos sem transform base); respeita
+// prefers-reduced-motion e só roda em ponteiro fino (desktop) — no touch ou
+// com movimento reduzido não faz nada.
 export function HomeFx() {
   useEffect(() => {
     const hero = document.getElementById("hero");
@@ -17,18 +19,24 @@ export function HomeFx() {
     const finePointer = window.matchMedia("(pointer: fine)").matches;
     if (reduce || !finePointer) return;
 
-    // [elemento, profundidade em px] — quanto maior, mais a camada "flutua".
-    const layers: Array<[HTMLElement | null, number]> = [
-      [document.getElementById("heroMap"), 26],
-      [hero.querySelector<HTMLElement>(".topo-bg"), 16],
-      [hero.querySelector<HTMLElement>(".ht-tl"), 34],
-      [hero.querySelector<HTMLElement>(".ht-bc"), 40],
+    // [seletor (dentro do hero), profundidade em px]. Quanto maior, mais a
+    // camada "flutua". Camadas de fundo (mapa/texturas) fundas; HUD/cruzes rasas.
+    const groups: Array<[string, number]> = [
+      ["#heroMap", 26],
+      [".topo-bg", 16],
+      [".ht-tl", 34],
+      [".ht-bc", 40],
+      [".hud", 10],
+      [".hud-cross", 18],
     ];
 
-    const active = layers.filter((l): l is [HTMLElement, number] => l[0] !== null);
-    if (active.length === 0) return;
+    const els: Array<[HTMLElement, number]> = [];
+    for (const [sel, depth] of groups) {
+      hero.querySelectorAll<HTMLElement>(sel).forEach((el) => els.push([el, depth]));
+    }
+    if (els.length === 0) return;
 
-    for (const [el] of active) {
+    for (const [el] of els) {
       el.style.willChange = "transform";
       // Trailing suave: a transição faz a camada "perseguir" o cursor.
       el.style.transition = "transform .4s cubic-bezier(.22,1,.36,1)";
@@ -40,7 +48,7 @@ export function HomeFx() {
 
     const applyFrame = () => {
       raf = 0;
-      for (const [el, depth] of active) {
+      for (const [el, depth] of els) {
         el.style.transform = `translate3d(${(-nx * depth).toFixed(1)}px, ${(-ny * depth).toFixed(1)}px, 0)`;
       }
     };
@@ -56,7 +64,7 @@ export function HomeFx() {
     const onLeave = () => {
       nx = 0;
       ny = 0;
-      for (const [el] of active) el.style.transform = "translate3d(0,0,0)";
+      for (const [el] of els) el.style.transform = "translate3d(0,0,0)";
     };
 
     hero.addEventListener("mousemove", onMove);
@@ -66,7 +74,7 @@ export function HomeFx() {
       hero.removeEventListener("mousemove", onMove);
       hero.removeEventListener("mouseleave", onLeave);
       if (raf) cancelAnimationFrame(raf);
-      for (const [el] of active) {
+      for (const [el] of els) {
         el.style.transform = "";
         el.style.willChange = "";
         el.style.transition = "";

@@ -617,6 +617,8 @@ body::after {
   border-bottom:2px solid rgba(196,168,130,.06); padding:.9rem 0; overflow:hidden;
 }
 .marquee-track { display:flex; width:max-content; animation:marquee 22s linear infinite; }
+/* pausa a esteira quando o usuário passa o mouse (deixa ler os itens) */
+.marquee-strip:hover .marquee-track { animation-play-state:paused; }
 .marquee-item {
   display:flex; align-items:center; gap:1.5rem; padding:0 1.5rem;
   font-family:var(--fc); font-size:1.05rem; font-weight:900;
