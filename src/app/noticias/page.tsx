@@ -12,8 +12,12 @@ export const metadata: Metadata = {
 const dateFormat = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
 
 export default async function NoticiasPage() {
+  // Só notícias APROVADAS vão ao público — as ingeridas dos feeds ficam
+  // "pending" até o admin aprovar (moderação). `take` evita renderizar milhares.
   const noticias = await prisma.news.findMany({
+    where: { status: "approved" },
     orderBy: { publishedAt: "desc" },
+    take: 30,
   });
 
   return (

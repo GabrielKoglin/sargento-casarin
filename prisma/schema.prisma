@@ -44,9 +44,15 @@ model News {
   source      String
   url         String?
   summary     String
+  // Moderação: "approved" (visível no site) | "pending" (aguardando revisão) |
+  // "rejected". Notícias criadas manualmente no admin nascem "approved"; as
+  // ingeridas dos feeds nascem "pending" e só vão ao ar após aprovação.
+  status      String   @default("approved")
   publishedAt DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([status, publishedAt])
 }
 
 model Event {
