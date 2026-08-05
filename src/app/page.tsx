@@ -69,7 +69,7 @@ export default async function Home() {
             </p>
             <div className="hero-actions sl d4">
               <Link href="/ajudar" className="btn btn-help"><span aria-hidden="true">💪</span> Quero ajudar</Link>
-              <Link href="/tropa" className="btn btn-gold">Entre para a Tropa <span aria-hidden="true">➔</span></Link>
+              <Link href="/tropa" className="btn btn-gold">Nossos Grupos <span aria-hidden="true">➔</span></Link>
               <Link href="/sobre" className="btn btn-ghost">Quem é o Casarin</Link>
             </div>
             <div className="ribbons">

@@ -97,7 +97,7 @@ export function Header() {
           ))}
           <li>
             <Link href="/tropa" className="btn-tropa-nav" onClick={closeMenu}>
-              Entre para a Tropa
+              Nossos Grupos
             </Link>
           </li>
         </ul>
