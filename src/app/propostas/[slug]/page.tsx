@@ -11,7 +11,21 @@ export async function generateMetadata(
   const { slug } = await props.params;
   const proposta = await prisma.proposal.findUnique({ where: { slug } });
   if (!proposta) return { title: "Proposta" };
-  return { title: proposta.title, description: proposta.description };
+
+  const url = `/propostas/${proposta.slug}`;
+  return {
+    title: proposta.title,
+    description: proposta.description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: proposta.title,
+      description: proposta.description,
+      url,
+      type: "article",
+      // Se a proposta tiver imagem propria, usa; senao herda o opengraph-image.tsx padrao do site.
+      ...(proposta.image ? { images: [{ url: proposta.image }] } : {}),
+    },
+  };
 }
 
 export default async function PropostaPage(props: PageProps<"/propostas/[slug]">) {
