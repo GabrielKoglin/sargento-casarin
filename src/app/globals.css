@@ -331,7 +331,7 @@ body::after {
 .hero-eyebrow {
   display:inline-flex; align-items:center; gap:.7rem;
   font-size:.72rem; font-weight:700; letter-spacing:.55em; text-transform:uppercase;
-  color:var(--BL); margin-bottom:1.2rem;
+  color:#3d78e6; margin-bottom:1.2rem;
 }
 .hero-eyebrow::before, .hero-eyebrow::after { content:''; width:1.6rem; height:1px; background:rgba(196,168,130,.5); }
 
