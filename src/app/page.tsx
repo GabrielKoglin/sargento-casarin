@@ -28,8 +28,8 @@ export default async function Home() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="hero-map" id="heroMap" src="/brazil-mt.svg" alt="" aria-hidden="true" />
 
-        {/* Foto do Casarin */}
-        <div className="hero-bg" id="heroBg" style={{ backgroundImage: 'url(/DSCF3339.JPG.jpeg)' }}></div>
+        {/* Foto do Casarin (recorte, fundo transparente) */}
+        <div className="hero-bg" id="heroBg"></div>
 
         {/* Texturas halftone */}
         <div className="ht ht-tl"></div>
