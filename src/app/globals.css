@@ -1242,3 +1242,6 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   text-transform:uppercase; color:var(--W); line-height:1;
 }
 .nav-wordmark em { font-style:normal; color:var(--B); }
+/* divisa dourada no lugar do "A" de CASARIN no logo */
+.nav-badge { display:inline-block; width:.66em; height:.66em; vertical-align:-.04em; margin:0 .01em; }
+.nav-badge svg { display:block; width:100%; height:100%; overflow:visible; }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from "react-icons/si";
+import { SgtBadge } from "@/components/sgt-badge";
 
 const navFooter = [
   { name: "Início", href: "/" },
@@ -38,7 +39,7 @@ export function Footer() {
           <div className="foot-logo">
             <Link href="/" aria-label="Página inicial">
               <span className="nav-wordmark">
-                Sgt <em>Casarin</em>
+                Sgt <em>C<SgtBadge className="nav-badge" />SARIN</em>
               </span>
             </Link>
             <p style={{ marginTop: "1.25rem" }}>

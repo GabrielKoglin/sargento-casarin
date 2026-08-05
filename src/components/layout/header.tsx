@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SgtBadge } from "@/components/sgt-badge";
 
 const navLinks = [
   { name: "Início", href: "/" },
@@ -66,7 +67,7 @@ export function Header() {
       <div className="container">
         <Link href="/" className="nav-logo" aria-label="Página inicial" onClick={closeMenu}>
           <span className="nav-wordmark">
-            Sgt <em>Casarin</em>
+            Sgt <em>C<SgtBadge className="nav-badge" />SARIN</em>
           </span>
         </Link>
         <button
