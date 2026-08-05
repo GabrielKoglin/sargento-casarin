@@ -2,7 +2,11 @@
 // admin/(app)/agenda/page.tsx — lista de eventos (/admin/agenda)
 // ============================================================================
 // Server Component. Herda o shell + guarda de sessão de (app)/layout.tsx.
+//
+// PAGINAÇÃO: só os PAGE_SIZE eventos da página atual são carregados.
+//   ?page = 1..N  (default: 1; sempre "clampado" ao intervalo válido)
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
 import { deleteEvent } from "./actions";
 import { formatEventDate } from "./date-utils";
@@ -10,8 +14,34 @@ import { formatEventDate } from "./date-utils";
 // Lista sempre "ao vivo" — nunca pré-renderizar em build.
 export const dynamic = "force-dynamic";
 
-export default async function AdminAgendaPage() {
-  const eventos = await prisma.event.findMany({ orderBy: { date: "asc" } });
+const PAGE_SIZE = 40;
+
+function parsePage(raw: string | undefined): number {
+  const n = Number.parseInt(raw ?? "1", 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+export default async function AdminAgendaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const sp = await searchParams;
+
+  // Contamos primeiro para "clampar" a página ao intervalo válido — assim um
+  // ?page absurdo nunca vira um skip gigante contra o banco.
+  const total = await prisma.event.count();
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const page = Math.min(Math.max(1, parsePage(sp.page)), totalPages);
+
+  const eventos = await prisma.event.findMany({
+    orderBy: { date: "asc" },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
+  });
+
+  const prevPage = page > 1 ? page - 1 : null;
+  const nextPage = page < totalPages ? page + 1 : null;
 
   return (
     <>
@@ -28,7 +58,7 @@ export default async function AdminAgendaPage() {
         </Link>
       </header>
 
-      {eventos.length === 0 ? (
+      {total === 0 ? (
         <p className="admin-note">
           <strong>Nenhum evento cadastrado.</strong> Clique em{" "}
           <strong>“Novo evento”</strong> para criar o primeiro item da agenda.
@@ -93,6 +123,63 @@ export default async function AdminAgendaPage() {
           </table>
         </div>
       )}
+
+      {/* ------------------------------------------------------ paginação */}
+      {total > 0 && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "1rem",
+            marginTop: "1.25rem",
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontSize: "0.8rem", color: "var(--a-muted)" }}>
+            Página {page} de {totalPages} · {total}{" "}
+            {total === 1 ? "evento" : "eventos"}
+          </span>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <PagerLink
+              href={prevPage ? `/admin/agenda?page=${prevPage}` : null}
+              label="← Anterior"
+            />
+            <PagerLink
+              href={nextPage ? `/admin/agenda?page=${nextPage}` : null}
+              label="Próxima →"
+            />
+          </div>
+        </div>
+      )}
     </>
+  );
+}
+
+// Link de paginação; quando `href` é null vira um botão "apagado" (sem navegar).
+function PagerLink({ href, label }: { href: string | null; label: string }) {
+  const base: CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "0.4rem 0.85rem",
+    borderRadius: "3px",
+    border: "1px solid var(--a-line)",
+    fontSize: "0.8rem",
+    fontWeight: 600,
+  };
+  if (!href) {
+    return (
+      <span
+        aria-disabled="true"
+        style={{ ...base, color: "var(--a-muted)", opacity: 0.4 }}
+      >
+        {label}
+      </span>
+    );
+  }
+  return (
+    <Link href={href} style={{ ...base, color: "var(--a-text)" }}>
+      {label}
+    </Link>
   );
 }

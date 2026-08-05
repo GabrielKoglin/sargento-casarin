@@ -16,7 +16,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
+import { clearSessionCookie, getSession } from "@/lib/session";
 import { logout } from "../actions";
 import "../admin.css";
 
@@ -36,6 +37,44 @@ export default async function AdminAppLayout({
 }) {
   const session = await getSession();
   if (!session) {
+    redirect("/admin/login");
+  }
+
+  // Sessão órfã: o JWT vale 7 dias, mas o usuário pode ter sido DELETADO ou
+  // recriado nesse intervalo. getSession() só valida a ASSINATURA do token —
+  // não consulta o banco — então um cookie de um usuário que não existe mais
+  // continuaria dando acesso admin. Aqui (Server Component = runtime NODE)
+  // confirmamos que o `sub` do token ainda corresponde a um usuário existente.
+  //
+  // Por que a checagem vive AQUI e não em @/lib/session: session.ts é EDGE-SAFE
+  // (só jose + next/headers) porque o Proxy o importa; prisma não pode entrar
+  // lá. O layout é o único ponto Node que guarda TODAS as páginas do painel.
+  //
+  // Trade-off: as Server Actions do CRUD seguem usando só getSession() (+ Proxy)
+  // — não repetem esta consulta ao banco. Mas nenhuma PÁGINA protegida renderiza
+  // sem passar por este shell, então a checagem forte de existência já fecha o
+  // acesso via UI. Em erro de I/O do banco tratamos como não autenticado
+  // (fail-closed): numa área sensível, preferimos negar a exibir o painel.
+  let user: { id: string } | null = null;
+  try {
+    user = await prisma.user.findUnique({
+      where: { id: session.sub },
+      select: { id: true },
+    });
+  } catch {
+    user = null;
+  }
+
+  if (!user) {
+    // Cookie órfão: tenta limpá-lo. Em Server Component (fase de render) os
+    // cookies são READ-ONLY e `delete` lança (E1180) — por isso o try/catch.
+    // Quem efetivamente barra o acesso é o redirect abaixo; a remoção definitiva
+    // do cookie ocorre no próximo logout/login (contexto de Server Action).
+    try {
+      await clearSessionCookie();
+    } catch {
+      // cookies imutáveis nesta fase — ignore; o redirect protege a rota.
+    }
     redirect("/admin/login");
   }
 

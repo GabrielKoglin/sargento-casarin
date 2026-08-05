@@ -10,7 +10,22 @@ import { upsertSetting, deleteSetting } from "./actions";
 // Lista sempre "ao vivo" — nunca pré-renderizar em build.
 export const dynamic = "force-dynamic";
 
-export default async function AdminConfigPage() {
+// Mensagens de erro exibidas quando uma action redireciona com ?error=…
+// (o banco falhou ou a chave veio vazia). Sem isso, uma falha "fingia sucesso".
+const ERROR_MESSAGES: Record<string, string> = {
+  salvar: "Não foi possível salvar o parâmetro. Tente novamente.",
+  excluir: "Não foi possível excluir o parâmetro. Tente novamente.",
+  chave: "Informe uma chave para salvar o parâmetro.",
+};
+
+export default async function AdminConfigPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const sp = await searchParams;
+  const errorMessage = sp.error ? ERROR_MESSAGES[sp.error] : undefined;
+
   const settings = await prisma.settings.findMany({ orderBy: { key: "asc" } });
 
   return (
@@ -23,6 +38,12 @@ export default async function AdminConfigPage() {
           o valor (upsert).
         </p>
       </header>
+
+      {errorMessage ? (
+        <p role="alert" className="admin-login__error" style={{ marginBottom: "1.5rem" }}>
+          {errorMessage}
+        </p>
+      ) : null}
 
       {/* Adicionar / atualizar por chave */}
       <form

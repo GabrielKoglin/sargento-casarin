@@ -3,17 +3,45 @@
 // ============================================================================
 // Herda o shell + guarda de sessão de (app)/layout.tsx. force-dynamic porque a
 // lista precisa refletir o banco ao vivo (nunca pré-renderizar em build).
+//
+// PAGINAÇÃO: só as PAGE_SIZE propostas da página atual são carregadas.
+//   ?page = 1..N  (default: 1; sempre "clampado" ao intervalo válido)
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
 import { deleteProposal } from "./actions";
 import { DeleteButton } from "./delete-button";
 
 export const dynamic = "force-dynamic";
 
-export default async function PropostasAdminPage() {
+const PAGE_SIZE = 40;
+
+function parsePage(raw: string | undefined): number {
+  const n = Number.parseInt(raw ?? "1", 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+export default async function PropostasAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const sp = await searchParams;
+
+  // Contamos primeiro para "clampar" a página ao intervalo válido — assim um
+  // ?page absurdo nunca vira um skip gigante contra o banco.
+  const total = await prisma.proposal.count();
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const page = Math.min(Math.max(1, parsePage(sp.page)), totalPages);
+
   const propostas = await prisma.proposal.findMany({
     orderBy: { createdAt: "desc" },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
   });
+
+  const prevPage = page > 1 ? page - 1 : null;
+  const nextPage = page < totalPages ? page + 1 : null;
 
   return (
     <>
@@ -31,7 +59,7 @@ export default async function PropostasAdminPage() {
         </Link>
       </div>
 
-      {propostas.length === 0 ? (
+      {total === 0 ? (
         <div className="admin-note">
           Nenhuma proposta cadastrada ainda.{" "}
           <Link
@@ -96,6 +124,63 @@ export default async function PropostasAdminPage() {
           </table>
         </div>
       )}
+
+      {/* ------------------------------------------------------ paginação */}
+      {total > 0 && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "1rem",
+            marginTop: "1.25rem",
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontSize: "0.8rem", color: "var(--a-muted)" }}>
+            Página {page} de {totalPages} · {total}{" "}
+            {total === 1 ? "proposta" : "propostas"}
+          </span>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <PagerLink
+              href={prevPage ? `/admin/propostas?page=${prevPage}` : null}
+              label="← Anterior"
+            />
+            <PagerLink
+              href={nextPage ? `/admin/propostas?page=${nextPage}` : null}
+              label="Próxima →"
+            />
+          </div>
+        </div>
+      )}
     </>
+  );
+}
+
+// Link de paginação; quando `href` é null vira um botão "apagado" (sem navegar).
+function PagerLink({ href, label }: { href: string | null; label: string }) {
+  const base: CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "0.4rem 0.85rem",
+    borderRadius: "3px",
+    border: "1px solid var(--a-line)",
+    fontSize: "0.8rem",
+    fontWeight: 600,
+  };
+  if (!href) {
+    return (
+      <span
+        aria-disabled="true"
+        style={{ ...base, color: "var(--a-muted)", opacity: 0.4 }}
+      >
+        {label}
+      </span>
+    );
+  }
+  return (
+    <Link href={href} style={{ ...base, color: "var(--a-text)" }}>
+      {label}
+    </Link>
   );
 }

@@ -98,9 +98,19 @@ export async function login(
     return { error: GENERIC_ERROR };
   }
 
-  const token = await signSession({ sub: userId, email });
-  await setSessionCookie(token);
+  // signSession() chama getEncodedKey(), que LANÇA se AUTH_SECRET sumir; sem
+  // este try, uma configuração quebrada viraria um 500 "credenciais válidas mas
+  // o login falha". Capturamos e devolvemos o erro genérico (o motivo real fica
+  // só no log, para não vazar estado de configuração no formulário).
+  try {
+    const token = await signSession({ sub: userId, email });
+    await setSessionCookie(token);
+  } catch {
+    console.error("Falha ao assinar/gravar a sessão (AUTH_SECRET ausente?).");
+    return { error: GENERIC_ERROR };
+  }
 
-  // redirect() lança NEXT_REDIRECT — precisa ficar FORA de try/catch.
+  // redirect() lança NEXT_REDIRECT — precisa ficar FORA do try/catch acima,
+  // senão o catch engoliria o sinal de redirecionamento.
   redirect("/admin");
 }

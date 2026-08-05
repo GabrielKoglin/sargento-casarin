@@ -53,6 +53,10 @@ model News {
   updatedAt   DateTime @updatedAt
 
   @@index([status, publishedAt])
+  // Dedupe da ingestão consulta por url (findFirst) — índice evita full scan
+  // com milhares de notícias. Não é @unique de propósito (url é opcional e a
+  // corrida é mitigada no código); vira índice simples.
+  @@index([url])
 }
 
 model Event {

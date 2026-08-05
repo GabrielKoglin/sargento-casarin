@@ -29,6 +29,16 @@ const FETCH_TIMEOUT_MS = 15_000;
 const SUMMARY_MAX = 300;
 const SLUG_MAX = 80;
 
+// Teto do corpo do feed: acima disso pulamos a fonte (com erro), para um portal
+// que devolva um corpo gigante não estourar a memória. ~5 MB cobre com folga
+// qualquer feed RSS/Atom real.
+const MAX_BODY_BYTES = 5 * 1024 * 1024;
+
+// Fontes buscadas em PARALELO, em um pool com limite. O gargalo é a rede (cada
+// fetch tem timeout de 15s); um pool pequeno corta o tempo total de ~minutos
+// (25 × 15s em série) para ~o lote mais lento, sem martelar os portais.
+const FETCH_POOL_SIZE = 5;
+
 // Marcas diacríticas combinantes (acentos após NFD) — removidas no slug.
 const COMBINING_MARKS = /[\u0300-\u036f]/g;
 
@@ -215,7 +225,13 @@ async function uniqueSlug(
   return candidate;
 }
 
-/** Busca o XML do feed com User-Agent de navegador e timeout (AbortController). */
+/**
+ * Busca o XML do feed com User-Agent de navegador, timeout (AbortController) e
+ * TETO de corpo: rejeita/pula corpos acima de MAX_BODY_BYTES. Primeiro confere
+ * o Content-Length declarado; como ele pode faltar ou mentir, também lê o corpo
+ * em stream acumulando até o teto e aborta se estourar (nunca materializa um
+ * corpo gigante inteiro na memória).
+ */
 async function fetchFeedXml(url: string): Promise<string> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -233,10 +249,64 @@ async function fetchFeedXml(url: string): Promise<string> {
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} ${res.statusText}`.trim());
     }
-    return await res.text();
+
+    // 1) Teto barato pelo Content-Length, quando o servidor o informa.
+    const declared = Number(res.headers.get("content-length"));
+    if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) {
+      throw new Error(
+        `corpo grande demais: ${declared} bytes (teto ${MAX_BODY_BYTES}).`,
+      );
+    }
+
+    // 2) Teto real lendo em stream (Content-Length pode faltar/mentir).
+    const body = res.body;
+    if (!body) return await res.text(); // fallback defensivo (sem stream)
+
+    const reader = body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let text = "";
+    let total = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      total += value.byteLength;
+      if (total > MAX_BODY_BYTES) {
+        await reader.cancel(); // descarta o resto e libera a conexão
+        throw new Error(`corpo excedeu o teto de ${MAX_BODY_BYTES} bytes.`);
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    text += decoder.decode(); // flush de bytes multibyte pendentes
+    return text;
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Roda `worker` sobre `items` com no máximo `poolSize` execuções simultâneas
+ * (pool de trabalho rolante: cada runner puxa o próximo índice quando termina).
+ * `worker` nunca deve lançar — os erros são absorvidos no chamador — então
+ * Promise.all aqui não rejeita.
+ */
+async function runPool<T>(
+  items: readonly T[],
+  poolSize: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  let cursor = 0;
+  async function drain(): Promise<void> {
+    while (cursor < items.length) {
+      const index = cursor;
+      cursor += 1;
+      await worker(items[index]);
+    }
+  }
+  const runners = Array.from({ length: Math.min(poolSize, items.length) }, () =>
+    drain(),
+  );
+  await Promise.all(runners);
 }
 
 // ---------------------------------------------------------------------------
@@ -244,9 +314,12 @@ async function fetchFeedXml(url: string): Promise<string> {
 // ---------------------------------------------------------------------------
 
 /**
- * Percorre todas as fontes, normaliza os itens e insere as manchetes NOVAS com
- * status "pending". Robusto: uma fonte que falhar (rede/403/parse) não derruba
- * as outras — o erro é acumulado em `errors`. Dedupe por URL do artigo.
+ * Busca todas as fontes EM PARALELO (pool de FETCH_POOL_SIZE), normaliza os
+ * itens e insere as manchetes NOVAS com status "pending". Robusto: uma fonte
+ * que falhar (rede/403/parse/corpo grande) não derruba as outras — o erro é
+ * acumulado em `errors`. Dedupe por URL do artigo. As escritas no SQLite são
+ * serializadas pelo Prisma/adapter, então a concorrência é segura; qualquer
+ * corrida de slug entre fontes cai no catch do insert (contada como skip).
  */
 export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
   const summary: IngestSummary = {
@@ -258,7 +331,11 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
     inserted_news: [],
   };
 
-  for (const source of NEWS_SOURCES) {
+  // Processa UMA fonte de ponta a ponta (fetch → parse → dedupe → insert).
+  // Totalmente guardada: nunca lança (some tudo em `summary`).
+  async function processSource(
+    source: (typeof NEWS_SOURCES)[number],
+  ): Promise<void> {
     try {
       const feedUrl = sourceFeedUrl(source);
       const xml = await fetchFeedXml(feedUrl);
@@ -320,6 +397,8 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
       summary.errors.push({ source: source.name, message: errMsg(err) });
     }
   }
+
+  await runPool(NEWS_SOURCES, FETCH_POOL_SIZE, processSource);
 
   return summary;
 }

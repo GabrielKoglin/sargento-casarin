@@ -36,6 +36,34 @@ function normalizePage(raw: string | undefined): number {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 
+// Aviso do disparo manual de ingestão (ingestNow redireciona com
+// ?ingest=ok&n=<inseridas> | ?ingest=fail). null = sem aviso.
+type IngestNotice = { tone: "ok" | "fail"; message: string };
+
+function ingestNotice(
+  ingest: string | undefined,
+  n: string | undefined,
+): IngestNotice | null {
+  if (ingest === "fail") {
+    return {
+      tone: "fail",
+      message:
+        "Falha ao buscar notícias — nada foi ingerido. Verifique os logs do servidor.",
+    };
+  }
+  if (ingest === "ok") {
+    const inserted = Math.max(0, Number.parseInt(n ?? "0", 10) || 0);
+    return {
+      tone: "ok",
+      message:
+        inserted === 0
+          ? "Busca concluída: nenhuma manchete nova (tudo já estava na fila)."
+          : `Busca concluída: ${inserted} ${inserted === 1 ? "notícia nova" : "notícias novas"} na fila.`,
+    };
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------- badges -----
 type StatusStyle = { label: string; color: string; bg: string; border: string };
 
@@ -115,27 +143,29 @@ const emptyMessages: Record<StatusFilter, string> = {
 export default async function AdminNoticiasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; page?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    page?: string;
+    ingest?: string;
+    n?: string;
+  }>;
 }) {
   const sp = await searchParams;
   const status = normalizeStatus(sp.status);
-  const page = normalizePage(sp.page);
+  let page = normalizePage(sp.page);
+  const notice = ingestNotice(sp.ingest, sp.n);
 
   const where = status === "all" ? {} : { status };
 
-  // Contadores por status (para as abas) + a página atual, em paralelo.
-  const [pendingCount, approvedCount, rejectedCount, noticias] =
-    await Promise.all([
-      prisma.news.count({ where: { status: "pending" } }),
-      prisma.news.count({ where: { status: "approved" } }),
-      prisma.news.count({ where: { status: "rejected" } }),
-      prisma.news.findMany({
-        where,
-        orderBy: { publishedAt: "desc" },
-        take: PAGE_SIZE,
-        skip: (page - 1) * PAGE_SIZE,
-      }),
-    ]);
+  // Contadores por status (para as abas) em paralelo. A página em si só é
+  // buscada DEPOIS de conhecer o total — para poder CLAMPAR `page` ao intervalo
+  // válido antes de calcular `skip`. Sem isso, ?page=<número gigante> gera um
+  // `skip` que estoura o int64 do SQLite e derruba a rota com 500.
+  const [pendingCount, approvedCount, rejectedCount] = await Promise.all([
+    prisma.news.count({ where: { status: "pending" } }),
+    prisma.news.count({ where: { status: "approved" } }),
+    prisma.news.count({ where: { status: "rejected" } }),
+  ]);
 
   const totalAll = pendingCount + approvedCount + rejectedCount;
   const total =
@@ -148,6 +178,18 @@ export default async function AdminNoticiasPage({
           : rejectedCount;
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  // CLAMP: prende `page` em [1, totalPages]. page=0/-1/abc já viraram 1 no
+  // normalizePage; aqui fechamos o buraco do page ACIMA do máximo (ou gigante),
+  // garantindo que `skip` nunca fique absurdamente grande.
+  page = Math.min(Math.max(1, page), Math.max(1, totalPages));
+
+  const noticias = await prisma.news.findMany({
+    where,
+    orderBy: { publishedAt: "desc" },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
+  });
+
   const prevPage = page > 1 ? page - 1 : null;
   const nextPage = page < totalPages ? page + 1 : null;
 
@@ -204,6 +246,29 @@ export default async function AdminNoticiasPage({
           </Link>
         </div>
       </header>
+
+      {notice && (
+        <div
+          role="status"
+          style={{
+            margin: "0 0 1.25rem",
+            padding: "0.7rem 1rem",
+            borderRadius: "6px",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            border: `1px solid ${
+              notice.tone === "ok" ? "rgba(0,184,75,0.4)" : "rgba(255,90,90,0.4)"
+            }`,
+            background:
+              notice.tone === "ok"
+                ? "rgba(0,184,75,0.12)"
+                : "rgba(255,90,90,0.1)",
+            color: notice.tone === "ok" ? "var(--a-green-bright)" : "#ff9a9a",
+          }}
+        >
+          {notice.message}
+        </div>
+      )}
 
       <p
         style={{

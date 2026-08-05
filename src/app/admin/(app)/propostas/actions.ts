@@ -148,18 +148,23 @@ export async function createProposal(
   if (!parsed.ok) return parsed.state;
   const { data } = parsed;
 
-  // Pré-checagem amigável de unicidade antes de tentar gravar.
-  const existing = await prisma.proposal.findUnique({
-    where: { slug: data.slug },
-  });
-  if (existing) return slugTakenState("esta");
-
   try {
+    // Pré-checagem amigável de unicidade antes de tentar gravar.
+    // Dentro do try: se a leitura ao banco falhar, devolvemos mensagem
+    // amigável em vez de estourar 500.
+    const existing = await prisma.proposal.findUnique({
+      where: { slug: data.slug },
+    });
+    if (existing) return slugTakenState("esta");
+
     await prisma.proposal.create({ data });
   } catch (error) {
     // Defesa contra corrida: dois creates com o mesmo slug quase juntos.
     if (isUniqueConstraintError(error)) return slugTakenState("esta");
-    throw error;
+    // Qualquer outro erro (banco fora, timeout, etc.): nunca re-lançar numa
+    // action de formulário admin — vira 500. Loga e devolve mensagem amigável.
+    console.error("createProposal falhou:", error);
+    return { error: "Não foi possível salvar. Tente novamente." };
   }
 
   revalidateProposals(data.slug);
@@ -180,24 +185,29 @@ export async function updateProposal(
   if (!parsed.ok) return parsed.state;
   const { data } = parsed;
 
-  // O slug pode colidir com OUTRA proposta (não com ela mesma).
-  const clash = await prisma.proposal.findFirst({
-    where: { slug: data.slug, NOT: { id } },
-  });
-  if (clash) return slugTakenState("outra");
-
   try {
+    // O slug pode colidir com OUTRA proposta (não com ela mesma).
+    // Dentro do try: se a leitura ao banco falhar, devolvemos mensagem
+    // amigável em vez de estourar 500.
+    const clash = await prisma.proposal.findFirst({
+      where: { slug: data.slug, NOT: { id } },
+    });
+    if (clash) return slugTakenState("outra");
+
     await prisma.proposal.update({ where: { id }, data });
   } catch (error) {
     if (isUniqueConstraintError(error)) return slugTakenState("outra");
-    // Registro inexistente (P2025) ou outro erro real: volta para a lista.
+    // Registro inexistente (P2025): a proposta sumiu no meio do caminho.
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2025"
     ) {
       return { error: "Esta proposta não existe mais." };
     }
-    throw error;
+    // Qualquer outro erro (banco fora, timeout, etc.): nunca re-lançar numa
+    // action de formulário admin — vira 500. Loga e devolve mensagem amigável.
+    console.error("updateProposal falhou:", error);
+    return { error: "Não foi possível salvar. Tente novamente." };
   }
 
   revalidateProposals(data.slug);
@@ -215,14 +225,15 @@ export async function deleteProposal(formData: FormData): Promise<void> {
   try {
     await prisma.proposal.delete({ where: { id } });
   } catch (error) {
-    // Já não existe (P2025): idempotente, ignora. Outro erro: propaga.
+    // Já não existe (P2025): idempotente, ignora. Outro erro (banco fora,
+    // timeout, etc.): nunca re-lançar (vira 500) — apenas loga e segue.
     if (
       !(
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       )
     ) {
-      throw error;
+      console.error("deleteProposal falhou:", error);
     }
   }
 

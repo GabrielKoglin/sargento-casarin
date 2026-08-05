@@ -35,9 +35,32 @@ function slugify(value: string): string {
 
 // input type="date" ("YYYY-MM-DD" ou "") -> DateTime. Vazio = agora; valor
 // inválido também cai em "agora" (nunca deixamos um parse ruim virar 500).
+//
+// FUSO: `new Date("YYYY-MM-DD")` seria meia-noite UTC e, no fuso de MT (GMT-4),
+// a lista exibiria o DIA ANTERIOR. Interpretamos como data civil LOCAL ao
+// MEIO-DIA: o meio-dia dá ±12h de folga, mantendo tanto a exibição (Intl no
+// fuso local) quanto o round-trip do form de edição (toISOString().slice(0,10))
+// no MESMO dia em MT (GMT-4) e em UTC.
 function parsePublishedAt(raw: string): Date {
   const trimmed = raw.trim();
   if (!trimmed) return new Date();
+
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (match) {
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const date = new Date(year, month - 1, day, 12, 0, 0, 0);
+    // `new Date` normaliza datas impossíveis ("2026-13-40") em silêncio;
+    // conferimos os componentes e, se não baterem, caímos em "agora".
+    const valid =
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day;
+    return valid ? date : new Date();
+  }
+
+  // Formato inesperado: parser nativo como último recurso, senão "agora".
   const parsed = new Date(trimmed);
   return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 }
@@ -117,14 +140,16 @@ export async function createNews(
   const parsed = parseNewsForm(formData);
   if ("error" in parsed) return { error: parsed.error };
 
-  // Checagem prévia de unicidade (mensagem amigável no caminho comum); o catch
-  // de P2002 abaixo é o backstop contra corrida entre a checagem e o insert.
-  const existing = await prisma.news.findUnique({
-    where: { slug: parsed.data.slug },
-  });
-  if (existing) return { error: slugTakenMessage(parsed.data.slug) };
-
   try {
+    // Checagem prévia de unicidade (mensagem amigável no caminho comum) e o
+    // insert no MESMO try: uma falha de I/O na LEITURA vira `{ error }` amigável
+    // em vez de estourar 500. O catch de P2002 é o backstop contra corrida
+    // entre a checagem e o insert.
+    const existing = await prisma.news.findUnique({
+      where: { slug: parsed.data.slug },
+    });
+    if (existing) return { error: slugTakenMessage(parsed.data.slug) };
+
     await prisma.news.create({ data: parsed.data });
   } catch (error) {
     if (isUniqueSlugError(error)) {
@@ -152,15 +177,17 @@ export async function updateNews(
   const parsed = parseNewsForm(formData);
   if ("error" in parsed) return { error: parsed.error };
 
-  // Unicidade do slug, excluindo o próprio registro em edição.
-  const existing = await prisma.news.findUnique({
-    where: { slug: parsed.data.slug },
-  });
-  if (existing && existing.id !== id) {
-    return { error: slugTakenMessage(parsed.data.slug) };
-  }
-
   try {
+    // Unicidade do slug (excluindo o próprio registro) e o update no MESMO try:
+    // uma falha de I/O na LEITURA vira `{ error }` amigável em vez de 500. O
+    // catch trata P2002 (colisão em corrida) e P2025 (registro sumiu) sem 500.
+    const existing = await prisma.news.findUnique({
+      where: { slug: parsed.data.slug },
+    });
+    if (existing && existing.id !== id) {
+      return { error: slugTakenMessage(parsed.data.slug) };
+    }
+
     await prisma.news.update({ where: { id }, data: parsed.data });
   } catch (error) {
     if (isUniqueSlugError(error)) {
@@ -228,8 +255,14 @@ export async function ingestNow(): Promise<void> {
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
+  // Resultado propagado ao usuário via querystring — a page.tsx lê `ingest`/`n`
+  // e mostra um aviso curto no topo. Sem isso, uma falha TOTAL da ingestão
+  // redirecionaria como se tivesse dado certo (só ficava no console.error).
+  let outcome: "ok" | "fail" = "ok";
+  let inserted = 0;
   try {
     const summary = await ingestNews(prisma);
+    inserted = summary.inserted;
     console.log(
       `Ingestão manual concluída: ${summary.inserted} nova(s) de ${summary.fetched}/${summary.sources} fontes ` +
         `(${summary.skipped} ignoradas, ${summary.errors.length} erro(s)).`,
@@ -237,12 +270,13 @@ export async function ingestNow(): Promise<void> {
     revalidatePath("/admin/noticias");
     revalidatePath("/noticias");
   } catch (error) {
-    // Nunca deixamos a ingestão derrubar o painel: loga e segue para a fila.
+    // Nunca deixamos a ingestão derrubar o painel: loga, sinaliza falha e segue.
     console.error("Falha na ingestão manual.", error);
+    outcome = "fail";
   }
 
   // redirect() lança NEXT_REDIRECT — precisa ficar FORA de try/catch.
-  redirect("/admin/noticias?status=pending");
+  redirect(`/admin/noticias?status=pending&ingest=${outcome}&n=${inserted}`);
 }
 
 // Invocada por um <form action={deleteNews.bind(null, id)}> na lista. A
