@@ -364,18 +364,18 @@ body::after {
 }
 /* Divisa de sargento no lugar do 1º "A" — lê como A e evoca a insígnia */
 .sgt-badge {
-  display:inline-block; width:.74em; height:.82em;
-  vertical-align:-.08em; margin:0 .008em; color:var(--BL);
-  opacity:0; transform:scale(1.55) rotate(-7deg);
+  display:inline-block; width:.7em; height:.94em;
+  vertical-align:-.16em; margin:0 .02em; color:var(--AU);
+  opacity:0; transform:scale(1.5) rotate(-6deg);
   animation:hnStamp .5s var(--ease) .95s forwards,
-            hnBadgeGlow 3.4s ease-in-out 1.7s infinite;
+            hnBadgeGlow 3.6s ease-in-out 1.7s infinite;
 }
 .sgt-badge svg { display:block; width:100%; height:100%; overflow:visible; }
 @keyframes hnWipe { to { clip-path:inset(0 -6% 0 -6%); } }
 @keyframes hnStamp { to { opacity:1; transform:scale(1) rotate(0); } }
 @keyframes hnBadgeGlow {
-  0%,100% { filter:drop-shadow(0 0 0 rgba(0,214,88,0)); }
-  50% { filter:drop-shadow(0 1px 9px rgba(0,214,88,.5)); }
+  0%,100% { filter:drop-shadow(0 0 0 rgba(255,213,0,0)); }
+  50% { filter:drop-shadow(0 1px 9px rgba(255,213,0,.5)); }
 }
 /* wordmark: o "A" (3 chevrons = insÃ­gnia de sargento) alinhado Ã  baseline como as demais letras.
    Especificidade (0,2,1) vence o `.hero-name > em{display:block}` acima, restaurando o

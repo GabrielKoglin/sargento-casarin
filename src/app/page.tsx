@@ -61,15 +61,16 @@ export default async function Home() {
               <em>
                 C
                 <i className="sgt-badge" aria-hidden="true">
-                  <svg viewBox="0 0 120 120" focusable="false">
-                    <path
-                      d="M12 106 L60 20 L108 106"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={20}
-                      strokeLinejoin="miter"
-                    />
-                    <rect x="34" y="70" width="52" height="14" rx="1.5" fill="#ffd500" />
+                  <svg viewBox="0 0 100 134" focusable="false">
+                    {/* 3 divisas (chevrons) de sargento */}
+                    <path d="M14 47 L50 15 L86 47" fill="none" stroke="#ffd500" strokeWidth={12.5} strokeLinejoin="miter" />
+                    <path d="M14 68 L50 36 L86 68" fill="none" stroke="#ffd500" strokeWidth={12.5} strokeLinejoin="miter" />
+                    <path d="M14 89 L50 57 L86 89" fill="none" stroke="#ffd500" strokeWidth={12.5} strokeLinejoin="miter" />
+                    {/* pistolas cruzadas */}
+                    <g stroke="#ffd500" strokeWidth={6.5} strokeLinecap="round" fill="none">
+                      <path d="M30 131 L39 121 L67 104" />
+                      <path d="M70 131 L61 121 L33 104" />
+                    </g>
                   </svg>
                 </i>
                 SARIN
