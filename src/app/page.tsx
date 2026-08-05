@@ -169,21 +169,28 @@ export default async function Home() {
               O QUE CASARIN<br /><em style={{ fontStyle: 'normal', color: 'var(--B)' }}>VAI DEFENDER</em>
             </h2>
           </div>
-          <div className="propostas-grid">
-            {propostas.map((p, i) => (
-              <div className={`prop-card fi ${i > 0 ? `d${i}` : ''}`} key={p.id}>
-                <div className="prop-icon">
-                  {p.slug === 'seguranca-publica' && '🛡️'}
-                  {p.slug === 'valorizacao-dos-profissionais' && '🎖️'}
-                  {p.slug === 'educacao-e-valores' && '📚'}
-                  {p.slug === 'mato-grosso-forte' && '🌾'}
+          {propostas.length === 0 ? (
+            <p className="fi" style={{ color: 'rgba(255,255,255,.62)' }}>
+              As propostas detalhadas serão publicadas em breve.
+            </p>
+          ) : (
+            <div className="propostas-grid">
+              {propostas.map((p, i) => (
+                <div className={`prop-card fi ${i > 0 ? `d${i}` : ''}`} key={p.id}>
+                  <div className="prop-icon">
+                    {p.slug === 'seguranca-publica' ? '🛡️'
+                      : p.slug === 'valorizacao-dos-profissionais' ? '🎖️'
+                      : p.slug === 'educacao-e-valores' ? '📚'
+                      : p.slug === 'mato-grosso-forte' ? '🌾'
+                      : '📌'}
+                  </div>
+                  <h3>{p.title}</h3>
+                  <p>{p.description}</p>
+                  <Link href={`/propostas/${p.slug}`} className="prop-link">Ver proposta ➔</Link>
                 </div>
-                <h3>{p.title}</h3>
-                <p>{p.description}</p>
-                <Link href={`/propostas/${p.slug}`} className="prop-link">Ver proposta ➔</Link>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

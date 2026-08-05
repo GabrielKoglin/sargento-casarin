@@ -154,7 +154,9 @@ body::after {
 .btn-tropa-nav::after { display:none !important; }
 .btn-tropa-nav:hover { background:var(--AU) !important; }
 
-.nav-toggle { display:none; flex-direction:column; gap:5px; padding:4px; }
+/* hit-area >=44x44px (padding assimétrico p/ compensar barras baixas); margem negativa
+   cancela o padding p/ não mudar o visual/posição das barras */
+.nav-toggle { display:none; flex-direction:column; gap:5px; padding:14px 10px; margin:-14px -10px; }
 .nav-toggle span { display:block; width:24px; height:2px; background:var(--W); transition:transform .3s var(--ease), opacity .3s; }
 /* estado aberto: 3 barras viram "X" (o header alterna a classe .open) */
 .nav-toggle.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
@@ -756,7 +758,7 @@ body::after {
 /* ============================================
    NOTÃCIAS
 ============================================ */
-.news-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1px; background:rgba(255,255,255,.04); margin-top:2.5rem; }
+.news-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr)); gap:1px; background:rgba(255,255,255,.04); margin-top:2.5rem; }
 .news-card { background:var(--GXX); transition:background .25s; }
 .news-card:hover { background:rgba(58,82,64,.22); }
 .news-card-img { height:195px; overflow:hidden; }
@@ -775,7 +777,7 @@ body::after {
 /* ============================================
    GALERIA
 ============================================ */
-.gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:4px; margin-top:2rem; }
+.gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr)); gap:4px; margin-top:2rem; }
 .gallery-item { position:relative; overflow:hidden; aspect-ratio:4/3; cursor:pointer; }
 .gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease); filter:saturate(.8); }
 .gallery-item:hover img { transform:scale(1.07); filter:saturate(1); }
@@ -884,7 +886,7 @@ body::after {
 .wpp-section { padding-top:4rem; }
 .wpp-section h2 { font-family:var(--fc); text-transform:uppercase; color:var(--B); margin-bottom:.5rem; }
 .wpp-section > p { color:rgba(255,255,255,.38); font-size:.88rem; margin-bottom:2rem; }
-.wpp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:4px; }
+.wpp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr)); gap:4px; }
 .wpp-card { background:rgba(255,255,255,.03); border:1px solid rgba(196,168,130,.07); border-left:3px solid var(--G); padding:1.1rem 1.25rem; display:flex; align-items:center; gap:.75rem; transition:all .25s; }
 .wpp-card:hover { background:rgba(58,82,64,.22); border-left-color:var(--B); }
 .wpp-icon { font-size:1.1rem; }
@@ -896,7 +898,7 @@ body::after {
 .legal-alert { background:rgba(196,168,130,.05); border:1px solid rgba(196,168,130,.18); padding:1.25rem 1.5rem; display:flex; gap:.75rem; align-items:flex-start; margin-bottom:3rem; }
 .legal-alert-icon { font-size:1.2rem; flex-shrink:0; }
 .legal-alert p { font-size:.86rem; color:rgba(255,255,255,.55); line-height:1.65; }
-.contact-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:4px; margin-top:2.5rem; }
+.contact-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); gap:4px; margin-top:2.5rem; }
 .contact-card { background:rgba(255,255,255,.03); border:1px solid rgba(196,168,130,.07); padding:2.5rem 2rem; text-align:center; transition:all .25s; }
 .contact-card:hover { background:rgba(58,82,64,.22); }
 .contact-icon { font-size:2.3rem; margin-bottom:1rem; }
@@ -1072,7 +1074,8 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   .propostas-grid { grid-template-columns:repeat(2,1fr); }
   .video-grid { grid-template-columns:repeat(2,1fr); }
   .cred-strip-inner { grid-template-columns:1fr; }
-  .hud-tr, .hc3 { display:none; }
+  /* HUD tático some já em <=1024px: entre 769-1024 renderizava sobre o texto do hero */
+  .hud, .corner, .hud-cross { display:none; }
 }
 @media(max-width:768px) {
   .nav-links { position:fixed; top:0; right:-100%; height:100vh; width:min(290px,82vw); background:var(--GXX); flex-direction:column; align-items:flex-start; padding:5rem 2rem 2rem; transition:right .3s; border-left:1px solid rgba(196,168,130,.07); }
@@ -1089,11 +1092,12 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   .foot-bottom { flex-direction:column; text-align:center; }
   .eixo-card { grid-template-columns:1fr; }
   .form-grid { grid-template-columns:1fr; }
-  .hud, .corner, .hud-cross { display:none; }
 
   .wa-float { width:52px; height:52px; right:1rem; bottom:1rem; }
   .wa-float svg { width:28px; height:28px; }
   .wa-tip { display:none; }
+  /* reserva espaço sob o FAB do WhatsApp p/ não cobrir links legais do rodapé */
+  footer { padding-bottom:5rem; }
 
   /* ALVOS no mobile: vira lista de "scan readout" abaixo do retrato */
   .why-right { height:auto; min-height:0; display:flex; flex-direction:column; }
@@ -1121,6 +1125,12 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   .proposito-title { font-size:clamp(3.5rem,18vw,6rem); }
   .form-box { padding:2rem 1.25rem; }
   .ribbon { font-size:clamp(1.1rem,6vw,1.5rem); }
+  /* reduz o padding lateral (causa raiz de vários cortes em telas estreitas) */
+  .container { padding:0 1.25rem; }
+  /* bloco "mais propostas": padding menor p/ os botões nowrap não transbordarem */
+  .mt-bloco { padding:2rem 1.25rem; }
+  /* título de sub-página: escala abaixo de 480 e quebra palavra única longa do banco */
+  .page-hero h1 { font-size:clamp(2rem,8vw,3rem); overflow-wrap:break-word; }
 }
 @media(max-width:360px) {
   /* telas muito estreitas: reduz o mÃ­nimo do clamp p/ o nome nÃ£o aparar

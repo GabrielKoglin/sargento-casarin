@@ -5,11 +5,34 @@ import { prisma } from "@/lib/prisma";
 
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_SUBMISSIONS = 5;
+// Acima deste tamanho, varremos o Map removendo janelas já vencidas. Sem isso,
+// uma entrada só some quando o MESMO IP reenvia — tráfego de IPs distintos
+// vazaria memória num servidor de vida longa.
+const RATE_LIMIT_PRUNE_THRESHOLD = 1000;
 const contactSubmissionAttempts = new Map<string, number[]>();
+
+// Limpeza leve e síncrona: descarta tentativas fora da janela e remove IPs sem
+// nenhuma tentativa recente. Chamada só quando o Map cresce, para não pagar a
+// varredura em toda requisição.
+function pruneExpiredAttempts(windowStart: number) {
+  for (const [key, attempts] of contactSubmissionAttempts) {
+    const recent = attempts.filter((attempt) => attempt > windowStart);
+    if (recent.length === 0) {
+      contactSubmissionAttempts.delete(key);
+    } else if (recent.length !== attempts.length) {
+      contactSubmissionAttempts.set(key, recent);
+    }
+  }
+}
 
 function isRateLimited(ip: string) {
   const now = Date.now();
   const windowStart = now - RATE_LIMIT_WINDOW_MS;
+
+  if (contactSubmissionAttempts.size > RATE_LIMIT_PRUNE_THRESHOLD) {
+    pruneExpiredAttempts(windowStart);
+  }
+
   const attempts = (contactSubmissionAttempts.get(ip) ?? []).filter(
     (attempt) => attempt > windowStart,
   );
@@ -60,11 +83,22 @@ export async function saveContact(
     };
   }
 
-  const forwardedFor = (await headers()).get("x-forwarded-for");
-  const ip = forwardedFor?.split(",")[0]?.trim() || "unknown";
+  // Resolve o IP em cadeia: primeiro salto de x-forwarded-for, senão x-real-ip.
+  // NUNCA use uma string literal ("unknown") como chave: ela viraria um balde
+  // único compartilhado por TODOS os visitantes (dev local, exposição direta do
+  // Node ou proxy que só seta x-real-ip), bloqueando cadastros legítimos após 5
+  // envios no site inteiro.
+  const headerList = await headers();
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headerList.get("x-real-ip")?.trim() ||
+    null;
 
-  // Best effort only: production must use a durable shared store such as Redis.
-  if (isRateLimited(ip)) {
+  // Best effort only: sem um IP confiável não aplicamos o rate-limit — preferimos
+  // permitir o envio a bloquear todo mundo num único balde. Em produção atrás de
+  // um proxy confiável, o ideal é um store compartilhado (ex.: Redis) chaveado
+  // pelo IP real do proxy.
+  if (ip && isRateLimited(ip)) {
     return {
       status: "error",
       message: "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
