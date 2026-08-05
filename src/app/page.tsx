@@ -63,7 +63,7 @@ export default async function Home() {
                 SARIN
               </em>
             </h1>
-            <div className="hero-sub sl d2">Pré-candidato a Deputado Estadual<br/>por Mato Grosso</div>
+            <div className="hero-sub sl d2">Candidato a Deputado Estadual<br/>por Mato Grosso</div>
             <p className="hero-lead sl d3">
               15 anos na linha de frente da segurança pública. Agora, a missão é levar essa experiência para onde as decisões são tomadas.
             </p>
