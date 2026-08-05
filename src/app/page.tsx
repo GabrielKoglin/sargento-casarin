@@ -68,7 +68,7 @@ export default async function Home() {
               15 anos na linha de frente da segurança pública. Agora, a missão é levar essa experiência para onde as decisões são tomadas.
             </p>
             <div className="hero-actions sl d4">
-              <Link href="/ajudar" className="btn btn-help"><span aria-hidden="true">💪</span> Quero ajudar</Link>
+              <a href="https://apoiar.me/sargentocasarin" target="_blank" rel="noopener noreferrer" className="btn btn-help"><span aria-hidden="true">💪</span> Quero ajudar</a>
               <Link href="/tropa" className="btn btn-gold">Nossos Grupos <span aria-hidden="true">➔</span></Link>
               <Link href="/sobre" className="btn btn-ghost">Quem é o Casarin</Link>
             </div>

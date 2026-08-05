@@ -14,7 +14,7 @@ const navFooter = [
 
 const participeFooter = [
   { name: "Entre para a Tropa", href: "/tropa" },
-  { name: "Quero Ajudar", href: "/ajudar" },
+  { name: "Quero Ajudar", href: "https://apoiar.me/sargentocasarin" },
   { name: "Nossas Mídias", href: "/midias" },
   { name: "Contato", href: "/contato" },
   { name: "Política de Privacidade", href: "/privacidade" },
@@ -76,7 +76,11 @@ export function Footer() {
             <ul>
               {participeFooter.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href}>{link.name}</Link>
+                  {link.href.startsWith("http") ? (
+                    <a href={link.href} target="_blank" rel="noopener noreferrer">{link.name}</a>
+                  ) : (
+                    <Link href={link.href}>{link.name}</Link>
+                  )}
                 </li>
               ))}
             </ul>
