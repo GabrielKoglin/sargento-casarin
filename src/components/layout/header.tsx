@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,6 +10,7 @@ const navLinks = [
   { name: "Propostas", href: "/propostas" },
   { name: "Manifesto", href: "/manifesto" },
   { name: "Notícias", href: "/noticias" },
+  { name: "Agenda", href: "/agenda" },
   { name: "Galeria", href: "/galeria" },
   { name: "Contato", href: "/contato" },
 ];
@@ -18,6 +19,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -26,21 +28,39 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Fecha o menu mobile com Escape ou clique fora — listeners ativos só quando aberto.
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [open]);
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+
+  const closeMenu = () => setOpen(false);
 
   return (
-    <nav className={`navbar ${scrolled || open ? "scrolled" : ""}`} id="navbar">
+    <nav className={`navbar ${scrolled || open ? "scrolled" : ""}`} id="navbar" ref={navRef}>
       <div className="container">
-        <Link href="/" className="nav-logo" aria-label="Página inicial">
+        <Link href="/" className="nav-logo" aria-label="Página inicial" onClick={closeMenu}>
           <span className="nav-wordmark">
             Sgt <em>Casarin</em>
           </span>
         </Link>
         <button
           type="button"
-          className="nav-toggle"
+          className={`nav-toggle ${open ? "open" : ""}`}
           aria-label={open ? "Fechar menu" : "Abrir menu"}
           aria-expanded={open}
           onClick={() => setOpen(!open)}
@@ -52,13 +72,17 @@ export function Header() {
         <ul className={`nav-links ${open ? "open" : ""}`} id="navLinks">
           {navLinks.map((link) => (
             <li key={link.href}>
-              <Link href={link.href} className={pathname === link.href ? "active" : ""}>
+              <Link
+                href={link.href}
+                className={isActive(link.href) ? "active" : ""}
+                onClick={closeMenu}
+              >
                 {link.name}
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/tropa" className="btn-tropa-nav">
+            <Link href="/tropa" className="btn-tropa-nav" onClick={closeMenu}>
               Entre para a Tropa
             </Link>
           </li>

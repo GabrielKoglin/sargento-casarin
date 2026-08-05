@@ -46,15 +46,15 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
 
             <h2>Metas</h2>
             <ul>
-              {goals.map((goal) => (
-                <li key={goal}>{goal}</li>
+              {goals.map((goal, index) => (
+                <li key={`${proposta.id}-goal-${index}`}>{goal}</li>
               ))}
             </ul>
 
             <h2>Benefícios para você</h2>
             <ul>
-              {benefits.map((benefit) => (
-                <li key={benefit}>{benefit}</li>
+              {benefits.map((benefit, index) => (
+                <li key={`${proposta.id}-benefit-${index}`}>{benefit}</li>
               ))}
             </ul>
 

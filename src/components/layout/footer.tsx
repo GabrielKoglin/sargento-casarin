@@ -61,7 +61,7 @@ export function Footer() {
             </div>
           </div>
           <div className="foot-col">
-            <h4>Navegação</h4>
+            <h2>Navegação</h2>
             <ul>
               {navFooter.map((link) => (
                 <li key={link.href}>
@@ -71,7 +71,7 @@ export function Footer() {
             </ul>
           </div>
           <div className="foot-col">
-            <h4>Participe</h4>
+            <h2>Participe</h2>
             <ul>
               {participeFooter.map((link) => (
                 <li key={link.href}>

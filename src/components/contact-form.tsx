@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { saveContact, type ContactFormState } from "@/app/actions";
 
@@ -22,11 +22,20 @@ export function ContactForm({
   successText,
 }: ContactFormProps) {
   const [state, formAction, pending] = useActionState(saveContact, initialState);
+  const successTitleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (state.status === "success") {
+      successTitleRef.current?.focus();
+    }
+  }, [state.status]);
 
   if (state.status === "success") {
     return (
       <div className="tropa-res-ok">
-        <div className="res-title">{successTitle}</div>
+        <div className="res-title" ref={successTitleRef} tabIndex={-1}>
+          {successTitle}
+        </div>
         <p className="res-sub">{successText}</p>
       </div>
     );
@@ -74,7 +83,11 @@ export function ContactForm({
         </label>
       </div>
 
-      {state.status === "error" && <p className="form-error">{state.message}</p>}
+      {state.status === "error" && (
+        <p className="form-error" role="alert">
+          {state.message}
+        </p>
+      )}
 
       <button type="submit" className="btn btn-gold" disabled={pending}>
         {pending ? "Enviando..." : submitLabel}

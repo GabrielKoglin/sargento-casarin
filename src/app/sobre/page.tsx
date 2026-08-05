@@ -81,7 +81,7 @@ export default function SobrePage() {
                   <div className="tl-item fi" key={item.label}>
                     <div className="tl-dot">{item.label}</div>
                     <div className="tl-body">
-                      <h4>{item.title}</h4>
+                      <h3>{item.title}</h3>
                       <p>{item.text}</p>
                     </div>
                   </div>

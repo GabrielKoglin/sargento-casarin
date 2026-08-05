@@ -43,6 +43,9 @@ yarn-error.log*
 # material de referência do template (não versionar)
 /_reference/
 
+# relatórios internos de auditoria (artefatos de processo)
+/.reports/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

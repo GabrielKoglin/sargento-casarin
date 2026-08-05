@@ -37,7 +37,7 @@ export default function AjudarPage() {
           <div className="contact-grid">
             <div className="contact-card fi">
               <div className="contact-icon">📣</div>
-              <h3>Divulgue</h3>
+              <h2>Divulgue</h2>
               <p>
                 Compartilhe as propostas com amigos e familiares. Boca a boca é a arma mais
                 poderosa de uma campanha independente.
@@ -45,14 +45,14 @@ export default function AjudarPage() {
             </div>
             <div className="contact-card fi d1">
               <div className="contact-icon">🤝</div>
-              <h3>Seja voluntário</h3>
+              <h2>Seja voluntário</h2>
               <p>
                 Entre para a Tropa e participe das mobilizações na sua cidade ou região.
               </p>
             </div>
             <div className="contact-card fi d2">
               <div className="contact-icon">💡</div>
-              <h3>Envie ideias</h3>
+              <h2>Envie ideias</h2>
               <p>
                 Conte os problemas da sua região e ajude a construir propostas que funcionam
                 na vida real.

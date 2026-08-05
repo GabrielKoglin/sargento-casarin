@@ -1,11 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type GalleryPhoto = { src: string; alt: string };
 
 export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
   const [active, setActive] = useState<GalleryPhoto | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  // Ao abrir: move o foco para o dialog e permite fechar com Escape.
+  // Ao fechar: restaura o foco para o botão que abriu o lightbox.
+  useEffect(() => {
+    if (!active) return;
+    const trigger = triggerRef.current;
+    dialogRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActive(null);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      trigger?.focus();
+    };
+  }, [active]);
 
   return (
     <>
@@ -15,7 +33,10 @@ export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
             type="button"
             className="gallery-item"
             key={photo.src}
-            onClick={() => setActive(photo)}
+            onClick={(e) => {
+              triggerRef.current = e.currentTarget;
+              setActive(photo);
+            }}
             aria-label={`Ampliar foto: ${photo.alt}`}
           >
             <img src={photo.src} alt={photo.alt} />
@@ -24,17 +45,22 @@ export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
         ))}
       </div>
 
-      <div
-        className={`lightbox ${active ? "active" : ""}`}
-        onClick={() => setActive(null)}
-        role="dialog"
-        aria-modal="true"
-      >
-        {active && <img src={active.src} alt={active.alt} />}
-        <button type="button" className="lb-close" aria-label="Fechar" onClick={() => setActive(null)}>
-          ×
-        </button>
-      </div>
+      {active && (
+        <div
+          ref={dialogRef}
+          className="lightbox active"
+          onClick={() => setActive(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={active.alt}
+          tabIndex={-1}
+        >
+          <img src={active.src} alt={active.alt} />
+          <button type="button" className="lb-close" aria-label="Fechar" onClick={() => setActive(null)}>
+            ×
+          </button>
+        </div>
+      )}
     </>
   );
 }

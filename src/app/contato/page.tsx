@@ -27,18 +27,18 @@ export default function ContatoPage() {
           <div className="contact-grid">
             <div className="contact-card fi">
               <div className="contact-icon">📍</div>
-              <h3>Base</h3>
+              <h2>Base</h2>
               <p>Cuiabá, Mato Grosso — Brasil</p>
             </div>
             <div className="contact-card fi d1">
               <div className="contact-icon">✉️</div>
-              <h3>E-mail</h3>
+              <h2>E-mail</h2>
               {/* Placeholder — trocar pelo e-mail oficial */}
               <a href="mailto:contato@sargentocasarin.com.br">contato@sargentocasarin.com.br</a>
             </div>
             <div className="contact-card fi d2">
               <div className="contact-icon">💬</div>
-              <h3>WhatsApp</h3>
+              <h2>WhatsApp</h2>
               <p>Em breve — os canais oficiais serão divulgados aqui</p>
             </div>
           </div>

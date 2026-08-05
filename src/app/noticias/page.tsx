@@ -33,14 +33,24 @@ export default async function NoticiasPage() {
       <section className="section">
         <div className="container">
           {noticias.length === 0 ? (
-            <div className="priv-body">
-              <p>
-                Nenhuma notícia publicada por enquanto. Entre para a{" "}
-                <Link href="/tropa" style={{ color: "var(--B)" }}>
-                  Tropa
-                </Link>{" "}
-                para receber as novidades em primeira mão.
+            <div style={{ textAlign: "center", maxWidth: "560px", margin: "0 auto", padding: "3.5rem 0" }}>
+              <div aria-hidden="true" style={{ fontSize: "2.75rem", marginBottom: "1rem", opacity: 0.75 }}>
+                📡
+              </div>
+              <h2
+                className="d-md"
+                style={{ color: "var(--W)", fontSize: "clamp(1.75rem,4.5vw,2.75rem)", marginBottom: "1rem" }}
+              >
+                SEM TRANSMISSÕES{" "}
+                <em style={{ fontStyle: "normal", color: "var(--B)" }}>NO MOMENTO</em>
+              </h2>
+              <p style={{ color: "rgba(255,255,255,.55)", lineHeight: 1.75, marginBottom: "2rem" }}>
+                Ainda não há notícias publicadas. Entre para a Tropa e receba as novidades em
+                primeira mão.
               </p>
+              <Link href="/tropa" className="btn btn-gold">
+                Entre para a Tropa ➔
+              </Link>
             </div>
           ) : (
             <div className="news-grid">

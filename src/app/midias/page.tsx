@@ -62,7 +62,7 @@ export default function MidiasPage() {
                 className="contact-card fi"
               >
                 <div className="contact-icon">{canal.icon}</div>
-                <h3>{canal.name}</h3>
+                <h2>{canal.name}</h2>
                 <p>{canal.handle}</p>
               </a>
             ))}

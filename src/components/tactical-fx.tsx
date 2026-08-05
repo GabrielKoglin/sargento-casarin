@@ -24,6 +24,21 @@ export function TacticalFx() {
     );
     revealEls.forEach((el) => reveal.observe(el));
 
+    // Revela imediatamente o que já está acima da dobra (caso o IO demore a disparar).
+    const viewportH = window.innerHeight;
+    revealEls.forEach((el) => {
+      if (el.getBoundingClientRect().top < viewportH) {
+        el.classList.add("on");
+        reveal.unobserve(el);
+      }
+    });
+
+    // Rede de segurança: garante a exibição de todo o conteúdo mesmo se o
+    // IntersectionObserver não disparar (aba em segundo plano, bfcache, etc.).
+    const revealFallback = setTimeout(() => {
+      revealEls.forEach((el) => el.classList.add("on"));
+    }, 2500);
+
     const whyRight = document.getElementById("whyRight");
     let scan: IntersectionObserver | undefined;
     if (whyRight) {
@@ -79,6 +94,7 @@ export function TacticalFx() {
       reveal.disconnect();
       scan?.disconnect();
       count.disconnect();
+      clearTimeout(revealFallback);
       if (hudTimer) clearInterval(hudTimer);
     };
   }, [pathname]);

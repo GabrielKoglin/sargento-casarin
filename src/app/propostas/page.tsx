@@ -54,7 +54,7 @@ export default async function PropostasPage() {
               <Link href={`/propostas/${p.slug}`} className="eixo-card fi" key={p.id}>
                 <div className="eixo-icon">{iconFor(p.slug, p.category)}</div>
                 <div>
-                  <h3>{p.title}</h3>
+                  <h2>{p.title}</h2>
                   <p>{p.description}</p>
                 </div>
               </Link>

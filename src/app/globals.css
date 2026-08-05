@@ -155,7 +155,11 @@ body::after {
 .btn-tropa-nav:hover { background:var(--AU) !important; }
 
 .nav-toggle { display:none; flex-direction:column; gap:5px; padding:4px; }
-.nav-toggle span { display:block; width:24px; height:2px; background:var(--W); transition:transform .3s, opacity .3s; }
+.nav-toggle span { display:block; width:24px; height:2px; background:var(--W); transition:transform .3s var(--ease), opacity .3s; }
+/* estado aberto: 3 barras viram "X" (o header alterna a classe .open) */
+.nav-toggle.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity:0; }
+.nav-toggle.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
 
 /* ============================================
    BOTÃES
@@ -177,19 +181,21 @@ body::after {
 .btn-gold { background:var(--B); color:var(--GXX); }
 .btn-gold:hover { background:var(--AU); box-shadow:0 12px 36px rgba(201,168,76,.3); }
 .btn-help {
-  background:#1976d2; color:#fff;
-  box-shadow:0 8px 24px rgba(25,118,210,.45);
+  background:var(--G); color:var(--W);
+  border:1px solid rgba(0,184,75,.35);
+  box-shadow:0 8px 24px rgba(0,184,75,.45);
   animation:btnHelpPulse 2s ease-in-out infinite;
   font-weight:800;
 }
 .btn-help:hover {
-  background:#0d47a1;
-  box-shadow:0 14px 38px rgba(25,118,210,.6);
+  background:var(--GD);
+  border-color:var(--B);
+  box-shadow:0 14px 38px rgba(0,184,75,.6);
   transform:translateY(-2px);
 }
 @keyframes btnHelpPulse {
-  0%,100% { box-shadow:0 8px 24px rgba(25,118,210,.45); }
-  50%     { box-shadow:0 8px 32px rgba(25,118,210,.85); }
+  0%,100% { box-shadow:0 8px 24px rgba(0,184,75,.45); }
+  50%     { box-shadow:0 8px 32px rgba(0,184,75,.85); }
 }
 .btn-ghost { color:var(--W); border:1px solid rgba(255,255,255,.3); }
 .btn-ghost:hover { border-color:var(--W); }
@@ -312,6 +318,10 @@ body::after {
 .hero-name > span, .hero-name > em { display:block; overflow:hidden; }
 .hero-name > span { color:var(--W); }
 .hero-name > em { font-style:normal; color:var(--B); }
+/* wordmark: o "A" (3 chevrons = insÃ­gnia de sargento) alinhado Ã  baseline como as demais letras.
+   Especificidade (0,2,1) vence o `.hero-name > em{display:block}` acima, restaurando o
+   `flex items-center` pretendido no JSX; overflow visÃ­vel para o "A" nÃ£o ser cortado. */
+.hero-name em.flex { display:flex; align-items:baseline; overflow:visible; }
 /* gradiente aplicado por letra â em camada prÃ³pria o clip nÃ£o quebra */
 .hero-name > em .ltr {
   background:linear-gradient(180deg, var(--BL) 10%, var(--BD) 90%);
@@ -367,7 +377,7 @@ body::after {
 .cred-item:hover { background:rgba(58,82,64,.2); }
 .cred-num { font-family:var(--fc); font-size:3rem; font-weight:900; color:var(--B); line-height:1; flex-shrink:0; opacity:.6; }
 .cred-txt strong { display:block; color:var(--W); font-size:.88rem; margin-bottom:.3rem; }
-.cred-txt span { font-size:.78rem; color:rgba(255,255,255,.4); line-height:1.6; }
+.cred-txt span { font-size:.78rem; color:rgba(255,255,255,.62); line-height:1.6; }
 
 /* ============================================
    SEÃÃO "POR QUE" â editorial claro
@@ -509,7 +519,7 @@ body::after {
 .stat { padding:2.5rem 1.5rem; text-align:center; border-right:1px solid rgba(255,255,255,.05); }
 .stat:last-child { border-right:none; }
 .stat-n { font-family:var(--fc); font-size:clamp(2.5rem,5vw,4rem); font-weight:900; color:var(--B); line-height:1; display:block; }
-.stat-l { font-size:.63rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-top:.5rem; display:block; }
+.stat-l { font-size:.63rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-top:.5rem; display:block; }
 
 /* ============================================
    PROPOSTAS
@@ -538,7 +548,7 @@ body::after {
 .prop-card:hover::after { opacity:.7; }
 .prop-icon { font-size:1.6rem; margin-bottom:1.25rem; }
 .prop-card h3 { color:var(--W); font-size:.92rem; margin-bottom:.7rem; line-height:1.3; }
-.prop-card p { font-size:.82rem; color:rgba(255,255,255,.4); line-height:1.75; }
+.prop-card p { font-size:.82rem; color:rgba(255,255,255,.62); line-height:1.75; }
 .prop-link { display:inline-flex; align-items:center; gap:.4rem; margin-top:1.5rem; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--B); transition:gap .25s; }
 .prop-card:hover .prop-link { gap:.7rem; }
 
@@ -713,7 +723,7 @@ body::after {
 .tl-item::before { content:''; position:absolute; left:1.35rem; top:3rem; bottom:-2.5rem; width:1px; background:rgba(58,82,64,.2); }
 .tl-item:last-child::before { display:none; }
 .tl-dot { width:2.75rem; height:2.75rem; border-radius:50%; background:var(--G); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--W); font-size:.85rem; font-weight:700; z-index:1; }
-.tl-body h4 { color:var(--G); font-size:.88rem; margin-bottom:.35rem; }
+.tl-body h3 { color:var(--G); font-size:.88rem; margin-bottom:.35rem; }
 .tl-body p { font-size:.88rem; color:rgba(28,40,24,.6); line-height:1.65; }
 
 /* ============================================
@@ -722,7 +732,7 @@ body::after {
 .eixo-card { background:var(--W); border:1px solid rgba(58,82,64,.1); border-left:4px solid var(--G); padding:2.5rem; display:grid; grid-template-columns:auto 1fr; gap:1.5rem; align-items:start; margin-bottom:1rem; transition:transform .25s, box-shadow .25s; }
 .eixo-card:hover { transform:translateX(5px); box-shadow:0 8px 40px rgba(0,0,0,.1); }
 .eixo-icon { width:3.5rem; height:3.5rem; border-radius:var(--r); background:var(--G); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
-.eixo-card h3 { color:var(--G); margin-bottom:.5rem; }
+.eixo-card h2 { color:var(--G); font-size:1.15rem; margin-bottom:.5rem; }
 .eixo-card p { font-size:.93rem; color:rgba(28,40,24,.65); }
 .mt-bloco { background:var(--GX); padding:3rem; margin-top:2rem; }
 .mt-bloco h2 { font-family:var(--fc); text-transform:uppercase; color:var(--B); font-size:clamp(1.5rem,3vw,2rem); margin-bottom:.75rem; }
@@ -862,14 +872,14 @@ body::after {
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
 .fg { display:flex; flex-direction:column; gap:.4rem; }
 .fg.full { grid-column:1/-1; }
-.fg label { font-size:.62rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.3); }
-.fg input, .fg select { padding:.85rem 1rem; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); font-family:var(--f); font-size:.9rem; color:var(--W); outline:none; transition:border-color .25s; }
-.fg input::placeholder { color:rgba(255,255,255,.18); }
+.fg label { font-size:.7rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.62); }
+.fg input, .fg select { padding:.85rem 1rem; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.04); font-family:var(--f); font-size:.9rem; color:var(--W); outline:none; transition:border-color .25s; }
+.fg input::placeholder { color:rgba(255,255,255,.35); }
 .fg select option { background:var(--GX); }
 .fg input:focus, .fg select:focus { border-color:var(--B); }
 .form-consent { display:flex; gap:.75rem; align-items:flex-start; margin:1.5rem 0; padding:1rem; background:rgba(196,168,130,.04); border:1px solid rgba(196,168,130,.08); }
 .form-consent input[type=checkbox] { margin-top:.2rem; accent-color:var(--B); flex-shrink:0; }
-.form-consent label { font-size:.78rem; color:rgba(255,255,255,.38); line-height:1.6; }
+.form-consent label { font-size:.78rem; color:rgba(255,255,255,.62); line-height:1.6; }
 .form-consent a { color:var(--B); }
 .wpp-section { padding-top:4rem; }
 .wpp-section h2 { font-family:var(--fc); text-transform:uppercase; color:var(--B); margin-bottom:.5rem; }
@@ -890,7 +900,7 @@ body::after {
 .contact-card { background:rgba(255,255,255,.03); border:1px solid rgba(196,168,130,.07); padding:2.5rem 2rem; text-align:center; transition:all .25s; }
 .contact-card:hover { background:rgba(58,82,64,.22); }
 .contact-icon { font-size:2.3rem; margin-bottom:1rem; }
-.contact-card h3 { color:var(--B); font-size:.82rem; letter-spacing:.15em; text-transform:uppercase; margin-bottom:.5rem; }
+.contact-card h2 { color:var(--B); font-size:.82rem; letter-spacing:.15em; text-transform:uppercase; margin-bottom:.5rem; }
 .contact-card p, .contact-card a { font-size:.88rem; color:rgba(255,255,255,.4); }
 .contact-card a:hover { color:var(--B); }
 
@@ -911,16 +921,16 @@ body::after {
 footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem; border-top:1px solid rgba(196,168,130,.06); }
 .foot-grid { display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:3rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,.04); margin-bottom:2rem; }
 .foot-logo img { height:46px; margin-bottom:1.25rem; opacity:.8; }
-.foot-logo p { font-size:.82rem; line-height:1.7; max-width:240px; }
-.foot-col h4 { color:var(--B); font-size:.62rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1rem; }
+.foot-logo p { font-size:.82rem; line-height:1.7; max-width:240px; color:rgba(255,255,255,.6); }
+.foot-col h2 { color:var(--B); font-size:.62rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1rem; }
 .foot-col li { margin-bottom:.5rem; }
-.foot-col a { font-size:.83rem; transition:color .2s; }
+.foot-col a { font-size:.83rem; color:rgba(255,255,255,.6); transition:color .2s; }
 .foot-col a:hover { color:var(--W); }
 .foot-social { display:flex; gap:.5rem; margin-top:1.5rem; }
 .soc-btn { width:2.2rem; height:2.2rem; border:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:all .2s; color:rgba(255,255,255,.4); }
 .soc-btn:hover { border-color:var(--B); color:var(--B); }
 .foot-bottom { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
-.foot-bottom p, .foot-bottom a { font-size:.73rem; }
+.foot-bottom p, .foot-bottom a { font-size:.73rem; color:rgba(255,255,255,.55); }
 .foot-bottom a:hover { color:var(--B); }
 .foot-legal { display:flex; gap:2rem; }
 
@@ -1035,6 +1045,12 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
 }
 
+/* Fallback sem JS: se o JS/IntersectionObserver nÃ£o rodar, o conteÃºdo continua visÃ­vel
+   (progressive enhancement). O timeout de seguranÃ§a no JS Ã© tratado pelo worker do tactical-fx. */
+@media (scripting: none) {
+  .fi, .sl, .sr, .ribbon { opacity:1 !important; transform:none !important; }
+}
+
 /* ============================================
    RESPONSIVO
 ============================================ */
@@ -1106,6 +1122,12 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   .form-box { padding:2rem 1.25rem; }
   .ribbon { font-size:clamp(1.1rem,6vw,1.5rem); }
 }
+@media(max-width:360px) {
+  /* telas muito estreitas: reduz o mÃ­nimo do clamp p/ o nome nÃ£o aparar
+     (mantÃ©m nowrap; overflow-x:hidden do body evita scroll horizontal) */
+  .hero-name { font-size:clamp(2.5rem,14vw,4rem); }
+  .proposito-title { font-size:clamp(2.5rem,14vw,4rem); }
+}
 
 /* ============================================
    SARGENTO CASARIN - CUSTOM
@@ -1114,28 +1136,28 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  width: 0.75em;
-  height: 0.85em;
+  justify-content: center;
+  width: 0.6em;
+  height: 0.74em;   /* â‰ˆ cap-height: mantÃ©m a linha do "A" na mesma altura das letras */
   margin: 0 0.05em;
 }
 .sgt-chevron {
-  width: 1.6em;
-  height: 1.6em;
+  width: 1.12em;
+  height: 1.12em;
   flex-shrink: 0;
-  margin-top: -1.1em;
+  margin-top: -0.9em;   /* sobreposiÃ§Ã£o das 3 barras (insÃ­gnia) sem estourar a linha */
 }
 .sgt-chevron:first-child {
-  margin-top: -0.2em;
+  margin-top: 0;
 }
 
 /* Textarea segue o estilo dos inputs do formulário */
 .fg textarea {
-  padding:.85rem 1rem; border:1px solid rgba(255,255,255,.08);
+  padding:.85rem 1rem; border:1px solid rgba(255,255,255,.22);
   background:rgba(255,255,255,.04); font-family:var(--f); font-size:.9rem;
   color:var(--W); outline:none; transition:border-color .25s; resize:vertical;
 }
-.fg textarea::placeholder { color:rgba(255,255,255,.18); }
+.fg textarea::placeholder { color:rgba(255,255,255,.35); }
 .fg textarea:focus { border-color:var(--B); }
 
 /* Honeypot anti-spam — fora da tela, invisível para humanos */

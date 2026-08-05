@@ -37,27 +37,27 @@ export default async function Home() {
         {/* Varredura de scanner */}
         <div className="hero-scan"></div>
 
-        {/* HUD tático */}
-        <div className="hud hud-tl">MT · BRASIL</div>
-        <div className="hud hud-tr" id="hudType"></div>
-        <div className="hud hud-bl">OP. 2026 – ATIVO</div>
-        <span className="hud-cross hc1">+</span>
-        <span className="hud-cross hc2">+</span>
-        <span className="hud-cross hc3">+</span>
-        <span className="corner corner-tl"></span>
-        <span className="corner corner-tr"></span>
-        <span className="corner corner-bl"></span>
-        <span className="corner corner-br"></span>
+        {/* HUD tático (decorativo — oculto para leitores de tela) */}
+        <div className="hud hud-tl" aria-hidden="true">MT · BRASIL</div>
+        <div className="hud hud-tr" id="hudType" aria-hidden="true"></div>
+        <div className="hud hud-bl" aria-hidden="true">OP. 2026 – ATIVO</div>
+        <span className="hud-cross hc1" aria-hidden="true">+</span>
+        <span className="hud-cross hc2" aria-hidden="true">+</span>
+        <span className="hud-cross hc3" aria-hidden="true">+</span>
+        <span className="corner corner-tl" aria-hidden="true"></span>
+        <span className="corner corner-tr" aria-hidden="true"></span>
+        <span className="corner corner-bl" aria-hidden="true"></span>
+        <span className="corner corner-br" aria-hidden="true"></span>
 
         {/* Conteúdo */}
         <div className="hero-content container">
           <div className="hero-inner">
             <div className="hero-eyebrow sl">Sargento</div>
-            <h1 className="hero-name" id="heroName">
+            <h1 className="hero-name" id="heroName" aria-label="Dickson Casarin">
               <span>DICKSON</span>
               <em className="flex items-center">
                 C
-                <span className="sgt-a">
+                <span className="sgt-a" aria-hidden="true">
                   <ChevronUp strokeWidth={4} className="sgt-chevron" />
                   <ChevronUp strokeWidth={4} className="sgt-chevron" />
                   <ChevronUp strokeWidth={4} className="sgt-chevron" />

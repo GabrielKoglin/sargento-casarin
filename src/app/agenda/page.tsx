@@ -16,8 +16,11 @@ const dateFormat = new Intl.DateTimeFormat("pt-BR", {
 });
 
 export default async function AgendaPage() {
+  // This force-dynamic route must filter events using the request-time clock.
+  // eslint-disable-next-line react-hooks/purity
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const eventos = await prisma.event.findMany({
-    where: { date: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+    where: { date: { gte: cutoff } },
     orderBy: { date: "asc" },
   });
 
@@ -38,14 +41,15 @@ export default async function AgendaPage() {
       <section className="section">
         <div className="container">
           {eventos.length === 0 ? (
-            <div className="priv-body">
-              <p>
-                Nenhum evento agendado no momento. Entre para a{" "}
-                <Link href="/tropa" style={{ color: "var(--B)" }}>
-                  Tropa
-                </Link>{" "}
-                e seja avisado das próximas mobilizações.
+            <div className="priv-body" style={{ margin: "0 auto", maxWidth: "620px", textAlign: "center" }}>
+              <div className="eyebrow" style={{ justifyContent: "center" }}>Situação atual</div>
+              <h2 style={{ marginTop: "1rem" }}>NENHUMA OPERAÇÃO AGENDADA</h2>
+              <p style={{ margin: "1rem auto 1.5rem" }}>
+                Entre para a Tropa e seja avisado das próximas mobilizações.
               </p>
+              <Link href="/tropa" className="btn btn-gold">
+                Entrar para a Tropa ➔
+              </Link>
             </div>
           ) : (
             <div className="grupos-list" style={{ maxWidth: "720px" }}>
