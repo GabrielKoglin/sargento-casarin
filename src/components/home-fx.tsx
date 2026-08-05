@@ -21,9 +21,8 @@ export function HomeFx() {
 
     // [seletor (dentro do hero), profundidade em px]. Quanto maior, mais a
     // camada "flutua". Camadas de fundo (mapa/texturas) fundas; HUD/cruzes rasas.
+    // Nota: o mapa (#heroMap) NÃO entra no parallax — o usuário quer ele estático.
     const groups: Array<[string, number]> = [
-      ["#heroMap", 26],
-      [".topo-bg", 16],
       [".ht-tl", 34],
       [".ht-bc", 40],
       [".hud", 10],
