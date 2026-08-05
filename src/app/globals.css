@@ -269,12 +269,12 @@ body::after {
 
 /* Mapa do Brasil â marca d'Ã¡gua atrÃ¡s do nome */
 .hero-map {
-  position:absolute; left:2.5%; top:50%;
-  width:min(540px, 44vw); height:auto;
+  position:absolute; left:1%; top:58%;
+  width:min(480px, 40vw); height:auto;
   transform:translateY(-50%);
-  opacity:.5; z-index:1;
+  opacity:.42; z-index:1;
   /* mapa colorido (MT em verde) — glow verde suave no território destacado */
-  filter:drop-shadow(0 0 26px rgba(0,184,75,.35));
+  filter:drop-shadow(0 0 24px rgba(0,184,75,.32));
   will-change:transform;
   pointer-events:none;
 }
@@ -1101,6 +1101,21 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
 .d2 { transition-delay:.2s; }
 .d3 { transition-delay:.32s; }
 .d4 { transition-delay:.46s; }
+
+/* O HERO é above-the-fold: revela por CSS já na carga, sem esperar o JS/
+   hidratação (que em dev pode demorar segundos e deixar o texto/botões
+   invisíveis). O scroll-reveal do JS (tactical-fx) segue valendo abaixo da dobra. */
+.hero .fi { animation:heroFi .8s var(--ease) both; }
+.hero .sl { animation:heroSl .8s var(--ease) both; }
+.hero .sr { animation:heroSr .8s var(--ease) both; }
+.hero .ribbon { animation:ribIn .6s var(--ease) both; }
+.hero .d1 { animation-delay:.1s; }
+.hero .d2 { animation-delay:.2s; }
+.hero .d3 { animation-delay:.32s; }
+.hero .d4 { animation-delay:.46s; }
+@keyframes heroFi { from { opacity:0; transform:translateY(26px); } to { opacity:1; transform:none; } }
+@keyframes heroSl { from { opacity:0; transform:translateX(-32px); } to { opacity:1; transform:none; } }
+@keyframes heroSr { from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:none; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }

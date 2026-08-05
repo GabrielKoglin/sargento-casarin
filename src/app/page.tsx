@@ -9,7 +9,7 @@ const marqueeItems = [
   "SEGURANÇA PÚBLICA",
   "DEPUTADO ESTADUAL",
   "MATO GROSSO 2026",
-  "NINGUÉM AGUENTA MAIS",
+  "VAMOS VENCER",
 ];
 
 export default async function Home() {
@@ -79,8 +79,8 @@ export default async function Home() {
               <Link href="/sobre" className="btn btn-ghost">Quem é o Casarin</Link>
             </div>
             <div className="ribbons">
-              <span className="ribbon ribbon-green">NINGUÉM</span>
-              <span className="ribbon ribbon-beige">AGUENTA MAIS!</span>
+              <span className="ribbon ribbon-green">VAMOS</span>
+              <span className="ribbon ribbon-beige">VENCER!</span>
             </div>
           </div>
         </div>
