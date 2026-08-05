@@ -254,9 +254,9 @@ body::after {
 
 /* Foto do Fred â lado direito, fundida no fundo */
 .hero-bg {
-  position:absolute; top:0; right:2%; bottom:0; width:52%;
-  /* recorte (fundo transparente) — pessoa à direita, "de pé" na base */
-  background:url('/casarin-cutout.png') right bottom / contain no-repeat;
+  position:absolute; top:0; right:0; bottom:0; width:62%;
+  /* recorte (fundo transparente) — pessoa à direita, altura cheia, "de pé" na base */
+  background:url('/casarin-cutout.png') right bottom / auto 100% no-repeat;
   will-change:transform;
   transition:transform .2s ease-out;
 }
