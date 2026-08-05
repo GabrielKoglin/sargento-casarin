@@ -16,6 +16,15 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
+// Lê um campo do FormData SÓ como string (espelha propostas/actions.ts). Um
+// <input type=file> forjado chega como File — `String(file)` viraria a string
+// "[object File]" e persistiria lixo (inclusive uma `key` corrompida). Qualquer
+// coisa que não seja string vira "".
+function field(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value !== "string" ? "" : value.trim();
+}
+
 /**
  * Cria ou atualiza um parâmetro pela chave (upsert). Usado tanto pelo
  * formulário "adicionar" quanto pela edição inline de cada linha da lista.
@@ -24,10 +33,16 @@ export async function upsertSetting(formData: FormData): Promise<void> {
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const key = String(formData.get("key") ?? "").trim();
-  // O valor pode ser propositalmente vazio; só a chave é obrigatória.
-  const value = String(formData.get("value") ?? "");
+  // `key` é obrigatória: se não vier como string (File forjado) ou vier vazia,
+  // devolvemos erro visível em vez de gravar uma chave lixo ("[object File]").
+  const key = field(formData, "key");
   if (!key) redirect("/admin/config?error=chave");
+
+  // O valor pode ser propositalmente vazio; só a chave é obrigatória. Ainda
+  // assim aplicamos a guarda de tipo (nunca persistir "[object File]"); NÃO
+  // fazemos trim para preservar exatamente o que o admin digitou.
+  const rawValue = formData.get("value");
+  const value = typeof rawValue === "string" ? rawValue : "";
 
   let ok = true;
   try {
@@ -51,7 +66,7 @@ export async function deleteSetting(formData: FormData): Promise<void> {
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const id = String(formData.get("id") ?? "").trim();
+  const id = field(formData, "id");
   if (!id) redirect("/admin/config?error=excluir");
 
   let ok = true;

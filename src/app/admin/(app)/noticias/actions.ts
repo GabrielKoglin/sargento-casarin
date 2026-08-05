@@ -16,6 +16,15 @@ import { ingestNews } from "@/lib/news-ingest";
 /** Estado do formulário — erros de validação consumidos por useActionState. */
 export type NewsFormState = { error: string | null };
 
+// Lê um campo do FormData SÓ como string (espelha propostas/actions.ts). Um
+// <input type=file> forjado chega como File — `String(file)` viraria a string
+// "[object File]" e persistiria lixo. Qualquer coisa que não seja string vira ""
+// (tratada como campo vazio pela validação de obrigatórios).
+function field(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value !== "string" ? "" : value.trim();
+}
+
 // Slug: minúsculas, sem acentos, só [a-z0-9-]. A MESMA função existe no client
 // (news-form.tsx) para o preview ao vivo; não dá para compartilhar de um módulo
 // "use server" (cujos exports precisam ser async). O slug gravado é sempre o
@@ -91,13 +100,13 @@ type ParsedNews = {
 function parseNewsForm(
   formData: FormData,
 ): { error: string } | { data: ParsedNews } {
-  const title = String(formData.get("title") ?? "").trim();
-  const rawSlug = String(formData.get("slug") ?? "").trim();
-  const source = String(formData.get("source") ?? "").trim();
-  const summary = String(formData.get("summary") ?? "").trim();
-  const image = String(formData.get("image") ?? "").trim();
-  const url = String(formData.get("url") ?? "").trim();
-  const publishedAtRaw = String(formData.get("publishedAt") ?? "");
+  const title = field(formData, "title");
+  const rawSlug = field(formData, "slug");
+  const source = field(formData, "source");
+  const summary = field(formData, "summary");
+  const image = field(formData, "image");
+  const url = field(formData, "url");
+  const publishedAtRaw = field(formData, "publishedAt");
 
   if (!title) return { error: "Informe o título da notícia." };
   if (!source) return { error: "Informe a fonte da notícia." };
@@ -216,7 +225,7 @@ async function setNewsStatus(
   formData: FormData,
   status: "approved" | "rejected",
 ): Promise<void> {
-  const id = String(formData.get("id") ?? "").trim();
+  const id = field(formData, "id");
   if (!id) return;
 
   try {

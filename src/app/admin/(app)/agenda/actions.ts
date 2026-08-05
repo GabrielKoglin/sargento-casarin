@@ -10,9 +10,19 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { parseDatetimeLocal } from "./date-utils";
 
 /** Estado do formulário (consumido por useActionState no client). */
 export type EventFormState = { error: string | null };
+
+// Lê um campo do FormData SÓ como string (espelha propostas/actions.ts). Um
+// <input type=file> forjado chega como File — `String(file)` viraria a string
+// "[object File]" e persistiria lixo. Aqui, qualquer coisa que não seja string
+// vira "" (tratada como campo vazio pela validação de obrigatórios).
+function field(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value !== "string" ? "" : value.trim();
+}
 
 // Campos crus vindos do FormData, já normalizados e validados.
 type ParsedEvent = {
@@ -29,18 +39,20 @@ type ParsedEvent = {
 function parseEventForm(
   formData: FormData,
 ): [ParsedEvent, null] | [null, string] {
-  const title = String(formData.get("title") ?? "").trim();
-  const rawDate = String(formData.get("date") ?? "").trim();
-  const location = String(formData.get("location") ?? "").trim();
-  const description = String(formData.get("description") ?? "").trim();
+  const title = field(formData, "title");
+  const rawDate = field(formData, "date");
+  const location = field(formData, "location");
+  const description = field(formData, "description");
 
   if (!title || !rawDate || !location || !description) {
     return [null, "Preencha todos os campos."];
   }
 
-  // O input datetime-local envia "YYYY-MM-DDTHH:mm" (horário de parede local).
-  const date = new Date(rawDate);
-  if (Number.isNaN(date.getTime())) {
+  // datetime-local envia "YYYY-MM-DDTHH:mm" (horário local). parseDatetimeLocal
+  // rejeita datas impossíveis (ex.: 30/02) em vez de deixá-las ROLAR para outro
+  // dia — ver o porquê em date-utils.ts. Vale tanto no create quanto no edit.
+  const date = parseDatetimeLocal(rawDate);
+  if (!date) {
     return [null, "Data inválida."];
   }
 
@@ -84,7 +96,7 @@ export async function updateEvent(
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const id = String(formData.get("id") ?? "").trim();
+  const id = field(formData, "id");
   if (!id) return { error: "Evento não identificado." };
 
   const [data, error] = parseEventForm(formData);
@@ -106,7 +118,7 @@ export async function deleteEvent(formData: FormData): Promise<void> {
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const id = String(formData.get("id") ?? "").trim();
+  const id = field(formData, "id");
   if (!id) return;
 
   try {
