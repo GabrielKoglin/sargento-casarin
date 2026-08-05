@@ -11,6 +11,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import { ingestNews } from "@/lib/news-ingest";
 
 /** Estado do formulário — erros de validação consumidos por useActionState. */
 export type NewsFormState = { error: string | null };
@@ -172,6 +173,76 @@ export async function updateNews(
   revalidatePath("/admin/noticias");
   revalidatePath("/noticias");
   redirect("/admin/noticias");
+}
+
+// ============================================================================
+// MODERAÇÃO DA FILA DE INGESTÃO
+// ============================================================================
+// As notícias ingeridas dos feeds nascem com status "pending". Estas ações
+// movem cada item entre "pending" → "approved" (vai ao ar em /noticias) ou
+// "rejected" (fica fora). O motor de ingestão (src/lib/news-ingest.ts) é
+// reusado por `ingestNow` para o disparo manual pelo painel.
+
+// Muda o status de UMA notícia (id via campo oculto do form). P2025 (registro
+// inexistente/já alterado) é tratado sem 500. Fatora approve/reject.
+async function setNewsStatus(
+  formData: FormData,
+  status: "approved" | "rejected",
+): Promise<void> {
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+
+  try {
+    await prisma.news.update({ where: { id }, data: { status } });
+  } catch (error) {
+    // P2025 = "Record to update not found" (já removido/alterado): não é fatal.
+    console.error(`Falha ao definir status "${status}" da notícia.`, error);
+  }
+
+  // Aprovar/rejeitar altera o que aparece em /noticias (só "approved").
+  revalidatePath("/admin/noticias");
+  revalidatePath("/noticias");
+}
+
+/** Aprova uma notícia pendente/rejeitada → visível na página pública. */
+export async function approveNews(formData: FormData): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+  await setNewsStatus(formData, "approved");
+}
+
+/** Rejeita uma notícia → fica fora do site (não é excluída). */
+export async function rejectNews(formData: FormData): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+  await setNewsStatus(formData, "rejected");
+}
+
+/**
+ * Dispara a ingestão dos feeds AGORA (botão do painel). Reusa ingestNews(); as
+ * manchetes novas entram como "pending" para moderação. Pode demorar alguns
+ * segundos (busca ~25 feeds). O resumo é registrado no log do servidor; a fila
+ * é revalidada e o usuário volta para a aba de pendentes.
+ */
+export async function ingestNow(): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+
+  try {
+    const summary = await ingestNews(prisma);
+    console.log(
+      `Ingestão manual concluída: ${summary.inserted} nova(s) de ${summary.fetched}/${summary.sources} fontes ` +
+        `(${summary.skipped} ignoradas, ${summary.errors.length} erro(s)).`,
+    );
+    revalidatePath("/admin/noticias");
+    revalidatePath("/noticias");
+  } catch (error) {
+    // Nunca deixamos a ingestão derrubar o painel: loga e segue para a fila.
+    console.error("Falha na ingestão manual.", error);
+  }
+
+  // redirect() lança NEXT_REDIRECT — precisa ficar FORA de try/catch.
+  redirect("/admin/noticias?status=pending");
 }
 
 // Invocada por um <form action={deleteNews.bind(null, id)}> na lista. A
