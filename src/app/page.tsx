@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { HomeFx } from "@/components/home-fx";
+import { SgtBadge } from "@/components/sgt-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -58,14 +59,7 @@ export default async function Home() {
               <span>DICKSON</span>
               <em>
                 C
-                <i className="sgt-badge" aria-hidden="true">
-                  <svg viewBox="0 0 100 100" focusable="false">
-                    {/* 3 divisas (chevrons) de sargento */}
-                    <path d="M14 50 L50 16 L86 50" fill="none" stroke="#ffd500" strokeWidth={13} strokeLinejoin="miter" />
-                    <path d="M14 71 L50 37 L86 71" fill="none" stroke="#ffd500" strokeWidth={13} strokeLinejoin="miter" />
-                    <path d="M14 92 L50 58 L86 92" fill="none" stroke="#ffd500" strokeWidth={13} strokeLinejoin="miter" />
-                  </svg>
-                </i>
+                <SgtBadge className="sgt-badge" />
                 SARIN
               </em>
             </h1>

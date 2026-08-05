@@ -344,36 +344,32 @@ body::after {
   white-space:nowrap;
 }
 .hero-name > span, .hero-name > em { display:block; }
-/* DICKSON: menor, mais leve e espaçado — um "callsign" acima do nome */
+/* DICKSON: menor, mais leve e espaçado — um "callsign" acima do nome; contorno preto */
 .hero-name > span {
   color:var(--W); font-size:.4em; font-weight:600;
-  letter-spacing:.24em; opacity:.9; margin-left:.16em; margin-bottom:.06em;
-  clip-path:inset(0 106% 0 -6%);
-  animation:hnWipe .7s var(--ease) .15s forwards;
+  letter-spacing:.24em; opacity:.92; margin-left:.16em; margin-bottom:.06em;
+  -webkit-text-stroke:2px #000; paint-order:stroke;
+  animation:hnRise .7s var(--ease) .15s both;
 }
-/* CASARIN: o destaque — gradiente verde, peso cheio */
+/* CASARIN: o destaque — VERDE sólido com contorno preto */
 .hero-name > em {
   font-style:normal; font-weight:700; overflow:visible; position:relative;
-  background:linear-gradient(178deg, var(--BL) 6%, var(--BD) 94%);
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent; color:var(--B);
-  clip-path:inset(0 106% 0 -6%);
-  animation:hnWipe .85s var(--ease) .42s forwards;
+  color:var(--B);
+  -webkit-text-stroke:3px #000; paint-order:stroke;
+  animation:hnRise .82s var(--ease) .35s both;
 }
-/* Divisa de sargento no lugar do 1º "A" — lê como A e evoca a insígnia */
+/* Divisa de sargento no lugar do 1º "A" — dourada; sobe junto com o nome (dentro do <em>) */
 .sgt-badge {
   display:inline-block; width:.8em; height:.8em;
   vertical-align:-.04em; margin:0 .02em; color:var(--AU);
-  opacity:0; transform:scale(1.5) rotate(-6deg);
-  animation:hnStamp .5s var(--ease) .95s forwards,
-            hnBadgeGlow 3.6s ease-in-out 1.7s infinite;
+  animation:hnBadgeGlow 3.6s ease-in-out 1.7s infinite;
 }
 .sgt-badge svg { display:block; width:100%; height:100%; overflow:visible; }
-@keyframes hnWipe { to { clip-path:inset(0 -6% 0 -6%); } }
-@keyframes hnStamp { to { opacity:1; transform:scale(1) rotate(0); } }
+/* surge de baixo para cima */
+@keyframes hnRise { from { opacity:0; transform:translateY(48%); } to { opacity:1; transform:none; } }
 @keyframes hnBadgeGlow {
-  0%,100% { filter:drop-shadow(0 0 0 rgba(255,213,0,0)); }
-  50% { filter:drop-shadow(0 1px 9px rgba(255,213,0,.5)); }
+  0%,100% { filter:drop-shadow(0 0 0 rgba(43,127,255,0)); }
+  50% { filter:drop-shadow(0 1px 9px rgba(43,127,255,.55)); }
 }
 /* wordmark: o "A" (3 chevrons = insÃ­gnia de sargento) alinhado Ã  baseline como as demais letras.
    Especificidade (0,2,1) vence o `.hero-name > em{display:block}` acima, restaurando o
