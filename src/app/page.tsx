@@ -22,10 +22,11 @@ export default async function Home() {
     <>
       <HomeFx />
       <section className="hero" id="hero">
-        {/* Mapa do Brasil (marca d'água) — SVG decorativo posicionado via CSS;
+        {/* Mapa do Brasil com Mato Grosso destacado (marca d'água) — SVG decorativo
+            posicionado via CSS. Base do mapa: @svg-maps/brazil (VictorCazanave), CC BY 4.0.
             next/image não otimiza SVG e o dimensionamento vem do CSS .hero-map */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="hero-map" id="heroMap" src="/brazil-map.svg" alt="" aria-hidden="true" />
+        <img className="hero-map" id="heroMap" src="/brazil-mt.svg" alt="" aria-hidden="true" />
 
         {/* Foto do Casarin */}
         <div className="hero-bg" id="heroBg" style={{ backgroundImage: 'url(/DSCF3339.JPG.jpeg)' }}></div>

@@ -269,12 +269,12 @@ body::after {
 
 /* Mapa do Brasil â marca d'Ã¡gua atrÃ¡s do nome */
 .hero-map {
-  position:absolute; left:2%; top:50%;
-  width:min(440px, 40vw); height:auto;
-  transform:translateY(-52%);
-  opacity:.18; z-index:1;
-  /* contorno preto do PNG -> branco claro */
-  filter:brightness(0) invert(1);
+  position:absolute; left:2.5%; top:50%;
+  width:min(540px, 44vw); height:auto;
+  transform:translateY(-50%);
+  opacity:.5; z-index:1;
+  /* mapa colorido (MT em verde) — glow verde suave no território destacado */
+  filter:drop-shadow(0 0 26px rgba(0,184,75,.35));
   will-change:transform;
   pointer-events:none;
 }
@@ -1120,7 +1120,7 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
 ============================================ */
 @media(max-width:1024px) {
   .hero-bg { width:100%; opacity:.45; }
-  .hero-map { width:52vw; opacity:.11; }
+  .hero-map { width:66vw; opacity:.32; }
   .why-wrap { grid-template-columns:1fr; }
   .why-right { height:480px; min-height:480px; }
   .why-left { padding:5rem 0; }
