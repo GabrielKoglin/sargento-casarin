@@ -364,8 +364,8 @@ body::after {
 }
 /* Divisa de sargento no lugar do 1º "A" — lê como A e evoca a insígnia */
 .sgt-badge {
-  display:inline-block; width:.7em; height:.94em;
-  vertical-align:-.16em; margin:0 .02em; color:var(--AU);
+  display:inline-block; width:.8em; height:.8em;
+  vertical-align:-.04em; margin:0 .02em; color:var(--AU);
   opacity:0; transform:scale(1.5) rotate(-6deg);
   animation:hnStamp .5s var(--ease) .95s forwards,
             hnBadgeGlow 3.6s ease-in-out 1.7s infinite;
