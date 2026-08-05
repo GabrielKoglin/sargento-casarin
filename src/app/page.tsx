@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ChevronUp } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -55,15 +54,7 @@ export default async function Home() {
             <div className="hero-eyebrow sl">Sargento</div>
             <h1 className="hero-name" id="heroName" aria-label="Dickson Casarin">
               <span>DICKSON</span>
-              <em className="flex items-center">
-                C
-                <span className="sgt-a" aria-hidden="true">
-                  <ChevronUp strokeWidth={4} className="sgt-chevron" />
-                  <ChevronUp strokeWidth={4} className="sgt-chevron" />
-                  <ChevronUp strokeWidth={4} className="sgt-chevron" />
-                </span>
-                SARIN
-              </em>
+              <em>CASARIN</em>
             </h1>
             <div className="hero-sub sl d2">Pré-candidato a Deputado Estadual<br/>por Mato Grosso</div>
             <p className="hero-lead sl d3">

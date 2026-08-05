@@ -1132,24 +1132,6 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
 /* ============================================
    SARGENTO CASARIN - CUSTOM
 ============================================ */
-.sgt-a {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 0.6em;
-  height: 0.74em;   /* â‰ˆ cap-height: mantÃ©m a linha do "A" na mesma altura das letras */
-  margin: 0 0.05em;
-}
-.sgt-chevron {
-  width: 1.12em;
-  height: 1.12em;
-  flex-shrink: 0;
-  margin-top: -0.9em;   /* sobreposiÃ§Ã£o das 3 barras (insÃ­gnia) sem estourar a linha */
-}
-.sgt-chevron:first-child {
-  margin-top: 0;
-}
 
 /* Textarea segue o estilo dos inputs do formulário */
 .fg textarea {
