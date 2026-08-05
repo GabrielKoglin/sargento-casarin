@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { HomeFx } from "@/components/home-fx";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export default async function Home() {
 
   return (
     <>
+      <HomeFx />
       <section className="hero" id="hero">
         {/* Textura de mapa militar */}
         <div className="topo-bg" style={{ opacity: 0.4, WebkitMaskImage: 'none', maskImage: 'none' }}></div>
