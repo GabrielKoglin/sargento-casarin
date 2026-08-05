@@ -6,14 +6,14 @@ export function SgtBadge({ className }: { className?: string }) {
   return (
     <i className={className} aria-hidden="true">
       <svg viewBox="0 0 100 100" focusable="false">
-        {/* contorno verde */}
-        <g fill="none" stroke="#00b84b" strokeWidth={20} strokeLinejoin="miter">
+        {/* contorno verde (do logo) */}
+        <g fill="none" stroke="#2f9e42" strokeWidth={20} strokeLinejoin="miter">
           {d.map((p) => (
             <path key={`o-${p}`} d={p} />
           ))}
         </g>
-        {/* chevrons amarelos (apagado) */}
-        <g fill="none" stroke="#cba94a" strokeWidth={13} strokeLinejoin="miter">
+        {/* chevrons amarelos (do logo) */}
+        <g fill="none" stroke="#f5df00" strokeWidth={13} strokeLinejoin="miter">
           {d.map((p) => (
             <path key={`b-${p}`} d={p} />
           ))}
