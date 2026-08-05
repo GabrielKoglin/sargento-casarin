@@ -12,8 +12,8 @@ export function SgtBadge({ className }: { className?: string }) {
             <path key={`o-${p}`} d={p} />
           ))}
         </g>
-        {/* chevrons amarelos */}
-        <g fill="none" stroke="#ffd500" strokeWidth={13} strokeLinejoin="miter">
+        {/* chevrons amarelos (apagado) */}
+        <g fill="none" stroke="#cba94a" strokeWidth={13} strokeLinejoin="miter">
           {d.map((p) => (
             <path key={`b-${p}`} d={p} />
           ))}
