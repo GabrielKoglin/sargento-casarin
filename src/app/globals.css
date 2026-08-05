@@ -269,10 +269,10 @@ body::after {
 
 /* Mapa do Brasil â marca d'Ã¡gua atrÃ¡s do nome */
 .hero-map {
-  position:absolute; left:1%; top:58%;
-  width:min(480px, 40vw); height:auto;
+  position:absolute; left:1%; top:44%;
+  width:min(500px, 41vw); height:auto;
   transform:translateY(-50%);
-  opacity:.42; z-index:1;
+  opacity:.45; z-index:1;
   /* mapa colorido (MT em verde) — glow verde suave no território destacado */
   filter:drop-shadow(0 0 24px rgba(0,184,75,.32));
   will-change:transform;
