@@ -59,6 +59,9 @@ export default async function NoticiasPage() {
                   <article className="news-card" key={noticia.id}>
                     <div className="news-card-img">
                       {noticia.image ? (
+                        /* Imagem remota de host arbitrário (vem do banco/CMS); next/image
+                           exige hostname fixo em images.remotePatterns, então mantemos <img>. */
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={noticia.image} alt={noticia.title} />
                       ) : (
                         <div className="news-ph">📰</div>

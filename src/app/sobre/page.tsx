@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -51,7 +52,14 @@ export default function SobrePage() {
           <div className="bio-grid">
             <div className="bio-sticky">
               <div className="bio-photo fi">
-                <img src="/DSCF3339.JPG.jpeg" alt="Sargento Dickson Casarin" />
+                <Image
+                  src="/DSCF3339.JPG.jpeg"
+                  alt="Sargento Dickson Casarin"
+                  width={6240}
+                  height={4160}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  preload
+                />
               </div>
             </div>
             <div className="bio-text">

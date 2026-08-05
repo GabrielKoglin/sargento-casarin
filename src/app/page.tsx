@@ -112,6 +112,46 @@ export default async function Home() {
         </div>
       </div>
 
+      {/* POR QUE ENTRAR PARA A POLÍTICA */}
+      <section className="why section">
+        <div className="ht ht-dark"></div>
+        <div className="container">
+          <p className="why-caption">
+            Casarin não quer ser mais um político — ele representa quem enfrenta a realidade das ruas todos os dias
+          </p>
+          <div className="why-wrap">
+            <div className="why-left">
+              <div className="eyebrow eyebrow-dark sl" style={{ marginBottom: '1.25rem' }}>Por que entrar para a política?</div>
+              <h2 className="why-title sl d1">
+                POR<br />QUE<br />
+                <em>ENTRAR</em><br />
+                PARA A<br />POLÍTICA?
+              </h2>
+              <p className="why-lead fi d2">
+                São <strong>15 anos na linha de frente da segurança pública de Mato Grosso</strong>, incluindo a ROTAM, tropa de elite da Polícia Militar. Nesse tempo, o Sargento Casarin aprendeu uma lição dura: a coragem prende o criminoso, mas <strong>é a lei que decide se ele fica preso.</strong>
+              </p>
+              <p className="why-lead fi d3">
+                As decisões que definem a segurança das famílias mato-grossenses são tomadas longe das ruas — na Assembleia Legislativa, nas leis e no orçamento. E, na maioria das vezes, por quem nunca vestiu uma farda.
+              </p>
+              <p className="why-lead fi d4">
+                Por isso o sargento decidiu avançar: levar a experiência de quem conhece o problema de perto para onde as decisões são tomadas.
+              </p>
+              <Link href="/sobre" className="btn btn-outline fi d4" style={{ marginTop: '1.75rem' }}>Conheça a trajetória ➔</Link>
+            </div>
+
+            <div className="why-right" id="whyRight">
+              <div className="why-photo" style={{ backgroundImage: 'url(/DSCF3339.JPG.jpeg)' }}></div>
+              <div className="why-scan"></div>
+              <div className="tgt t1"><span className="lead"></span><span className="rec"></span><span className="lbl">Quem conhece a rua, não só o gabinete</span></div>
+              <div className="tgt t2"><span className="lead"></span><span className="rec"></span><span className="lbl">15 anos de farda na linha de frente</span></div>
+              <div className="tgt t3"><span className="lead"></span><span className="rec"></span><span className="lbl">Defesa das famílias mato-grossenses</span></div>
+              <div className="tgt t4"><span className="lead"></span><span className="rec"></span><span className="lbl">Respeito a quem veste a farda</span></div>
+              <div className="tgt t5"><span className="lead"></span><span className="rec"></span><span className="lbl">Disciplina de tropa de elite na Assembleia</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* STATS */}
       <div className="stats-bar">
         <div className="stats-inner">

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 export type GalleryPhoto = { src: string; alt: string };
@@ -39,7 +40,12 @@ export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
             }}
             aria-label={`Ampliar foto: ${photo.alt}`}
           >
-            <img src={photo.src} alt={photo.alt} />
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
             <span className="gallery-overlay"></span>
           </button>
         ))}
@@ -55,7 +61,7 @@ export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
           aria-label={active.alt}
           tabIndex={-1}
         >
-          <img src={active.src} alt={active.alt} />
+          <Image src={active.src} alt={active.alt} width={1920} height={1280} />
           <button type="button" className="lb-close" aria-label="Fechar" onClick={() => setActive(null)}>
             ×
           </button>

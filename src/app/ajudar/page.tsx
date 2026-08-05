@@ -59,8 +59,55 @@ export default function AjudarPage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-bloco" style={{ marginTop: "3rem" }}>
+      <section className="support">
+        <div className="topo-bg"></div>
+        <div className="container">
+          <div className="support-inner">
+            <div className="eyebrow fi">Apoio à pré-campanha</div>
+            <h2 className="support-title fi d1">
+              FORTALEÇA
+              <br />
+              ESSA <em>MISSÃO</em>
+            </h2>
+            <p className="support-lead fi d2">
+              Esta é uma caminhada <strong>independente</strong>, sem máquina política,
+              construída por gente comum que acredita que Mato Grosso pode ser mais seguro.
+              Quando a legislação eleitoral permitir, cada reforço vai ajudar a manter essa
+              missão de pé.
+            </p>
+            <div className="support-amounts fi d2">
+              <div className="amount-chip">
+                R$ 30 <span>exemplo</span>
+              </div>
+              <div className="amount-chip">
+                R$ 50 <span>exemplo</span>
+              </div>
+              <div className="amount-chip">
+                R$ 100 <span>exemplo</span>
+              </div>
+              <div className="amount-chip">
+                R$ 200 <span>exemplo</span>
+              </div>
+            </div>
+            {/* TODO: link da plataforma oficial de doações, no período permitido pela legislação eleitoral */}
+            <a href="#" className="btn-donate fi d3">
+              Quero apoiar ➔
+            </a>
+            <div className="support-trust fi d3">
+              Valores meramente ilustrativos · Doações somente pela{" "}
+              <strong>plataforma oficial</strong>, que será divulgada aqui no período
+              permitido pela legislação eleitoral.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="mt-bloco">
             <h2>Comece agora</h2>
             <p>O primeiro passo é entrar para a rede de apoiadores.</p>
             <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
