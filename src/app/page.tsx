@@ -22,9 +22,6 @@ export default async function Home() {
     <>
       <HomeFx />
       <section className="hero" id="hero">
-        {/* Textura de mapa militar */}
-        <div className="topo-bg" style={{ opacity: 0.4, WebkitMaskImage: 'none', maskImage: 'none' }}></div>
-
         {/* Mapa do Brasil (marca d'água) — SVG decorativo posicionado via CSS;
             next/image não otimiza SVG e o dimensionamento vem do CSS .hero-map */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
