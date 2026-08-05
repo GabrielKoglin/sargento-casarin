@@ -271,7 +271,7 @@ body::after {
 
 /* Mapa do Brasil â marca d'Ã¡gua atrÃ¡s do nome */
 .hero-map {
-  position:absolute; left:15%; top:26%;
+  position:absolute; left:17%; top:47%;
   width:min(700px, 54vw); height:auto;
   transform:translateY(-50%);
   opacity:.45; z-index:0;
