@@ -48,14 +48,14 @@ export default async function AgendaPage() {
                 Entre para a Tropa e seja avisado das próximas mobilizações.
               </p>
               <Link href="/tropa" className="btn btn-gold">
-                Entrar para a Tropa ➔
+                Entrar para a Tropa <span aria-hidden="true">➔</span>
               </Link>
             </div>
           ) : (
             <div className="grupos-list" style={{ maxWidth: "720px" }}>
               {eventos.map((evento) => (
                 <div className="grupo-card fi" key={evento.id}>
-                  <div className="grupo-ico" style={{ background: "var(--B)", fontSize: "1.2rem" }}>
+                  <div className="grupo-ico" aria-hidden="true" style={{ background: "var(--B)", fontSize: "1.2rem" }}>
                     📅
                   </div>
                   <div className="grupo-txt">

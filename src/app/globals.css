@@ -40,6 +40,34 @@ ul { list-style:none; }
 button { cursor:pointer; border:none; background:none; font-family:var(--f); }
 
 /* ============================================
+   ACESSIBILIDADE
+============================================ */
+
+/* Anel de foco global visível no tema escuro (WCAG 2.4.7).
+   Amarelo da marca (--AU) contrasta em fundos escuros e claros. */
+:focus-visible { outline:2px solid var(--AU); outline-offset:2px; }
+/* .btn tem overflow:hidden (shine ::before); afasta o anel p/ não ser recortado */
+.btn:focus-visible { outline-offset:3px; }
+
+/* Esconde visualmente mantendo acessível a leitores de tela */
+.sr-only {
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+/* "Pular para o conteúdo": fora da tela por padrão, visível ao receber foco */
+.skip-link {
+  position:absolute; left:-9999px; top:0; z-index:1000;
+  background:var(--B); color:var(--W);
+  padding:.75rem 1.25rem; border-radius:var(--r);
+  font-weight:800; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase;
+}
+.skip-link:focus {
+  left:8px; top:8px; z-index:1000;
+  outline:2px solid var(--AU); outline-offset:2px;
+}
+
+/* ============================================
    TEXTURAS GLOBAIS
 ============================================ */
 
@@ -389,7 +417,7 @@ body::after {
 .why-caption {
   padding:1.5rem 0 0; text-align:center;
   font-size:.7rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
-  color:rgba(28,40,24,.3); position:relative; z-index:2;
+  color:rgba(28,40,24,.72); position:relative; z-index:2;
 }
 .why-wrap { display:grid; grid-template-columns:1fr 1fr; min-height:680px; align-items:center; position:relative; z-index:2; }
 .why-left { padding:5rem 4rem 5rem 0; }
@@ -398,7 +426,7 @@ body::after {
   text-transform:uppercase; color:var(--GX); line-height:.87; margin-bottom:2rem;
 }
 .why-title em { font-style:normal; color:var(--G); }
-.why-lead { font-size:.93rem; color:rgba(28,40,24,.6); max-width:420px; line-height:1.82; margin-bottom:1.25rem; }
+.why-lead { font-size:.93rem; color:rgba(28,40,24,.72); max-width:420px; line-height:1.82; margin-bottom:1.25rem; }
 .why-lead strong { color:var(--GX); }
 
 .why-right { position:relative; height:100%; min-height:680px; }
@@ -521,7 +549,7 @@ body::after {
 .stat { padding:2.5rem 1.5rem; text-align:center; border-right:1px solid rgba(255,255,255,.05); }
 .stat:last-child { border-right:none; }
 .stat-n { font-family:var(--fc); font-size:clamp(2.5rem,5vw,4rem); font-weight:900; color:var(--B); line-height:1; display:block; }
-.stat-l { font-size:.63rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-top:.5rem; display:block; }
+.stat-l { font-size:.63rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.62); margin-top:.5rem; display:block; }
 
 /* ============================================
    PROPOSTAS
@@ -668,7 +696,7 @@ body::after {
 .btn-donate:hover { animation-play-state:paused; transform:translateY(-3px) scale(1.03); }
 
 .support-trust {
-  margin-top:1.25rem; font-size:.8rem; color:rgba(255,255,255,.42);
+  margin-top:1.25rem; font-size:.8rem; color:rgba(255,255,255,.58);
   display:flex; gap:.45rem; align-items:center; justify-content:center; flex-wrap:wrap;
 }
 .support-trust strong { color:var(--BL); font-weight:600; }
@@ -685,7 +713,7 @@ body::after {
 .cta-tropa .ht { bottom:-80px; left:-80px; width:360px; height:360px; }
 .cta-tropa .d-lg { color:var(--W); margin-bottom:1.5rem; position:relative; }
 .cta-tropa .d-lg em { font-style:normal; color:var(--B); }
-.cta-lead { color:rgba(255,255,255,.45); max-width:400px; margin:0 auto 2.5rem; font-size:.9rem; position:relative; }
+.cta-lead { color:rgba(255,255,255,.58); max-width:400px; margin:0 auto 2.5rem; font-size:.9rem; position:relative; }
 
 /* ============================================
    PAGE HERO (sub-pÃ¡ginas)
@@ -726,7 +754,7 @@ body::after {
 .tl-item:last-child::before { display:none; }
 .tl-dot { width:2.75rem; height:2.75rem; border-radius:50%; background:var(--G); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--W); font-size:.85rem; font-weight:700; z-index:1; }
 .tl-body h3 { color:var(--G); font-size:.88rem; margin-bottom:.35rem; }
-.tl-body p { font-size:.88rem; color:rgba(28,40,24,.6); line-height:1.65; }
+.tl-body p { font-size:.88rem; color:rgba(28,40,24,.72); line-height:1.65; }
 
 /* ============================================
    PROPOSTAS (pÃ¡gina)
@@ -753,7 +781,7 @@ body::after {
 .manifesto-p p { color:rgba(255,255,255,.72); font-size:clamp(.95rem,1.6vw,1.1rem); line-height:1.8; margin-bottom:1.5rem; }
 .manifesto-stats { display:flex; flex-wrap:wrap; gap:2rem; margin:2.5rem 0; }
 .m-stat strong { font-family:var(--fc); font-size:clamp(2rem,5vw,3.5rem); font-weight:900; color:var(--B); display:block; }
-.m-stat span { font-size:.65rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.3); }
+.m-stat span { font-size:.65rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.6); }
 
 /* ============================================
    NOTÃCIAS
@@ -768,8 +796,8 @@ body::after {
 .news-body { padding:1.75rem; }
 .news-tag { display:inline-block; font-size:.58rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--B); border:1px solid rgba(196,168,130,.22); padding:.2rem .5rem; margin-bottom:.7rem; }
 .news-card h3 { color:var(--W); font-size:.92rem; line-height:1.4; margin-bottom:.5rem; }
-.news-card p { font-size:.82rem; color:rgba(255,255,255,.4); line-height:1.65; }
-.news-date { font-size:.7rem; color:rgba(255,255,255,.22); margin-top:1rem; font-weight:600; letter-spacing:.1em; }
+.news-card p { font-size:.82rem; color:rgba(255,255,255,.58); line-height:1.65; }
+.news-date { font-size:.7rem; color:rgba(255,255,255,.6); margin-top:1rem; font-weight:600; letter-spacing:.1em; }
 .filter-row { display:flex; gap:.5rem; flex-wrap:wrap; }
 .filter-btn { padding:.4rem 1rem; font-size:.63rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border:1px solid rgba(196,168,130,.18); color:rgba(255,255,255,.35); cursor:pointer; background:transparent; font-family:var(--f); transition:all .25s; }
 .filter-btn.active, .filter-btn:hover { background:var(--B); color:var(--GXX); border-color:var(--B); }
@@ -837,7 +865,7 @@ body::after {
 .tropa-hero { background:var(--GXX); padding:9rem 0 5rem; text-align:center; }
 .tropa-hero h1 { font-family:var(--fc); color:var(--W); text-transform:uppercase; font-size:clamp(3rem,8vw,7rem); }
 .tropa-hero h1 em { font-style:normal; color:var(--B); }
-.tropa-hero p { color:rgba(255,255,255,.45); max-width:500px; margin:1.5rem auto 0; font-size:.93rem; }
+.tropa-hero p { color:rgba(255,255,255,.58); max-width:500px; margin:1.5rem auto 0; font-size:.93rem; }
 .form-wrap { padding:5rem 0; background:var(--GX); }
 .form-box { background:rgba(255,255,255,.03); border:1px solid rgba(196,168,130,.1); padding:3rem; max-width:680px; margin:0 auto; }
 .form-box h2 { font-family:var(--fc); text-transform:uppercase; color:var(--B); font-size:clamp(1.5rem,3vw,2.2rem); margin-bottom:.5rem; }
@@ -876,7 +904,7 @@ body::after {
 .fg.full { grid-column:1/-1; }
 .fg label { font-size:.7rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.62); }
 .fg input, .fg select { padding:.85rem 1rem; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.04); font-family:var(--f); font-size:.9rem; color:var(--W); outline:none; transition:border-color .25s; }
-.fg input::placeholder { color:rgba(255,255,255,.35); }
+.fg input::placeholder { color:rgba(255,255,255,.5); }
 .fg select option { background:var(--GX); }
 .fg input:focus, .fg select:focus { border-color:var(--B); }
 .form-consent { display:flex; gap:.75rem; align-items:flex-start; margin:1.5rem 0; padding:1rem; background:rgba(196,168,130,.04); border:1px solid rgba(196,168,130,.08); }
@@ -885,7 +913,7 @@ body::after {
 .form-consent a { color:var(--B); }
 .wpp-section { padding-top:4rem; }
 .wpp-section h2 { font-family:var(--fc); text-transform:uppercase; color:var(--B); margin-bottom:.5rem; }
-.wpp-section > p { color:rgba(255,255,255,.38); font-size:.88rem; margin-bottom:2rem; }
+.wpp-section > p { color:rgba(255,255,255,.58); font-size:.88rem; margin-bottom:2rem; }
 .wpp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr)); gap:4px; }
 .wpp-card { background:rgba(255,255,255,.03); border:1px solid rgba(196,168,130,.07); border-left:3px solid var(--G); padding:1.1rem 1.25rem; display:flex; align-items:center; gap:.75rem; transition:all .25s; }
 .wpp-card:hover { background:rgba(58,82,64,.22); border-left-color:var(--B); }
@@ -903,7 +931,7 @@ body::after {
 .contact-card:hover { background:rgba(58,82,64,.22); }
 .contact-icon { font-size:2.3rem; margin-bottom:1rem; }
 .contact-card h2 { color:var(--B); font-size:.82rem; letter-spacing:.15em; text-transform:uppercase; margin-bottom:.5rem; }
-.contact-card p, .contact-card a { font-size:.88rem; color:rgba(255,255,255,.4); }
+.contact-card p, .contact-card a { font-size:.88rem; color:rgba(255,255,255,.6); }
 .contact-card a:hover { color:var(--B); }
 
 /* ============================================
@@ -914,7 +942,7 @@ body::after {
 .priv-body h2:first-child { margin-top:0; }
 .priv-body p { margin-bottom:1rem; font-size:.92rem; }
 .priv-body ul { padding-left:1.5rem; margin-bottom:1rem; }
-.priv-body li { list-style:disc; font-size:.9rem; color:rgba(255,255,255,.4); line-height:1.7; margin-bottom:.35rem; }
+.priv-body li { list-style:disc; font-size:.9rem; color:rgba(255,255,255,.58); line-height:1.7; margin-bottom:.35rem; }
 .priv-body a { color:var(--B); }
 
 /* ============================================
@@ -1078,8 +1106,11 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   .hud, .corner, .hud-cross { display:none; }
 }
 @media(max-width:768px) {
-  .nav-links { position:fixed; top:0; right:-100%; height:100vh; width:min(290px,82vw); background:var(--GXX); flex-direction:column; align-items:flex-start; padding:5rem 2rem 2rem; transition:right .3s; border-left:1px solid rgba(196,168,130,.07); }
-  .nav-links.open { right:0; }
+  /* drawer fechado: fora da tela E fora do tab order (visibility:hidden).
+     visibility com delay = .3s no fechamento p/ não cortar a animação de saída;
+     imediata (0s) na abertura p/ o slide-in aparecer. */
+  .nav-links { position:fixed; top:0; right:-100%; height:100vh; width:min(290px,82vw); background:var(--GXX); flex-direction:column; align-items:flex-start; padding:5rem 2rem 2rem; visibility:hidden; transition:right .3s, visibility 0s linear .3s; border-left:1px solid rgba(196,168,130,.07); }
+  .nav-links.open { right:0; visibility:visible; transition:right .3s, visibility 0s linear 0s; }
   .nav-links a { font-size:.88rem; padding:.85rem 0; width:100%; border-bottom:1px solid rgba(255,255,255,.05); }
   .btn-tropa-nav { margin-top:1rem; width:100%; text-align:center; justify-content:center; }
   .nav-toggle { display:flex; }
@@ -1149,7 +1180,7 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   background:rgba(255,255,255,.04); font-family:var(--f); font-size:.9rem;
   color:var(--W); outline:none; transition:border-color .25s; resize:vertical;
 }
-.fg textarea::placeholder { color:rgba(255,255,255,.35); }
+.fg textarea::placeholder { color:rgba(255,255,255,.5); }
 .fg textarea:focus { border-color:var(--B); }
 
 /* Honeypot anti-spam — fora da tela, invisível para humanos */

@@ -25,7 +25,7 @@ export default function AjudarPage() {
       <section className="section" style={{ paddingTop: "3.5rem" }}>
         <div className="container">
           <div className="legal-alert fi">
-            <span className="legal-alert-icon">⚖️</span>
+            <span className="legal-alert-icon" aria-hidden="true">⚖️</span>
             <p>
               Estamos em fase de <strong>pré-campanha</strong>. Doações financeiras seguem as
               regras da legislação eleitoral e só serão recebidas pela plataforma oficial,
@@ -36,7 +36,7 @@ export default function AjudarPage() {
 
           <div className="contact-grid">
             <div className="contact-card fi">
-              <div className="contact-icon">📣</div>
+              <div className="contact-icon" aria-hidden="true">📣</div>
               <h2>Divulgue</h2>
               <p>
                 Compartilhe as propostas com amigos e familiares. Boca a boca é a arma mais
@@ -44,14 +44,14 @@ export default function AjudarPage() {
               </p>
             </div>
             <div className="contact-card fi d1">
-              <div className="contact-icon">🤝</div>
+              <div className="contact-icon" aria-hidden="true">🤝</div>
               <h2>Seja voluntário</h2>
               <p>
                 Entre para a Tropa e participe das mobilizações na sua cidade ou região.
               </p>
             </div>
             <div className="contact-card fi d2">
-              <div className="contact-icon">💡</div>
+              <div className="contact-icon" aria-hidden="true">💡</div>
               <h2>Envie ideias</h2>
               <p>
                 Conte os problemas da sua região e ajude a construir propostas que funcionam
@@ -94,7 +94,7 @@ export default function AjudarPage() {
             </div>
             {/* TODO: link da plataforma oficial de doações, no período permitido pela legislação eleitoral */}
             <a href="#" className="btn-donate fi d3">
-              Quero apoiar ➔
+              Quero apoiar <span aria-hidden="true">➔</span>
             </a>
             <div className="support-trust fi d3">
               Valores meramente ilustrativos · Doações somente pela{" "}
@@ -112,7 +112,7 @@ export default function AjudarPage() {
             <p>O primeiro passo é entrar para a rede de apoiadores.</p>
             <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
               <Link href="/tropa" className="btn btn-gold">
-                Entre para a Tropa ➔
+                Entre para a Tropa <span aria-hidden="true">➔</span>
               </Link>
               <Link href="/contato" className="btn btn-ghost">
                 Falar com a equipe

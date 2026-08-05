@@ -63,9 +63,9 @@ export default async function Home() {
               15 anos na linha de frente da segurança pública. Agora, a missão é levar essa experiência para onde as decisões são tomadas.
             </p>
             <div className="hero-actions sl d4">
-              <Link href="/ajudar" className="btn btn-help">💪 Quero ajudar</Link>
-              <Link href="/tropa" className="btn btn-gold">Entre para a Tropa ➔</Link>
-              <Link href="/sobre" className="btn btn-ghost">Quem é Casarin</Link>
+              <Link href="/ajudar" className="btn btn-help"><span aria-hidden="true">💪</span> Quero ajudar</Link>
+              <Link href="/tropa" className="btn btn-gold">Entre para a Tropa <span aria-hidden="true">➔</span></Link>
+              <Link href="/sobre" className="btn btn-ghost">Quem é o Casarin</Link>
             </div>
             <div className="ribbons">
               <span className="ribbon ribbon-green">NINGUÉM</span>
@@ -129,7 +129,7 @@ export default async function Home() {
               <p className="why-lead fi d4">
                 Por isso o sargento decidiu avançar: levar a experiência de quem conhece o problema de perto para onde as decisões são tomadas.
               </p>
-              <Link href="/sobre" className="btn btn-outline fi d4" style={{ marginTop: '1.75rem' }}>Conheça a trajetória ➔</Link>
+              <Link href="/sobre" className="btn btn-outline fi d4" style={{ marginTop: '1.75rem' }}>Conheça a trajetória <span aria-hidden="true">➔</span></Link>
             </div>
 
             <div className="why-right" id="whyRight">
@@ -177,7 +177,7 @@ export default async function Home() {
             <div className="propostas-grid">
               {propostas.map((p, i) => (
                 <div className={`prop-card fi ${i > 0 ? `d${i}` : ''}`} key={p.id}>
-                  <div className="prop-icon">
+                  <div className="prop-icon" aria-hidden="true">
                     {p.slug === 'seguranca-publica' ? '🛡️'
                       : p.slug === 'valorizacao-dos-profissionais' ? '🎖️'
                       : p.slug === 'educacao-e-valores' ? '📚'
@@ -186,7 +186,7 @@ export default async function Home() {
                   </div>
                   <h3>{p.title}</h3>
                   <p>{p.description}</p>
-                  <Link href={`/propostas/${p.slug}`} className="prop-link">Ver proposta ➔</Link>
+                  <Link href={`/propostas/${p.slug}`} className="prop-link">Ver proposta <span aria-hidden="true">➔</span></Link>
                 </div>
               ))}
             </div>
@@ -215,7 +215,7 @@ export default async function Home() {
           <div className="eyebrow fi" style={{ justifyContent: 'center', display: 'flex', marginBottom: '1.25rem' }}>Comunidade</div>
           <h2 className="d-lg fi d1">FAÇA PARTE<br />DA <em>TROPA</em></h2>
           <p className="cta-lead fi d2">Receba conteúdos exclusivos, participe das mobilizações e ajude a levar essa mensagem por todo o Mato Grosso.</p>
-          <Link href="/tropa" className="btn btn-gold fi d3">Quero entrar para a Tropa ➔</Link>
+          <Link href="/tropa" className="btn btn-gold fi d3">Quero entrar para a Tropa <span aria-hidden="true">➔</span></Link>
         </div>
       </section>
     </>

@@ -61,7 +61,7 @@ export default function MidiasPage() {
                 rel="noopener noreferrer"
                 className="contact-card fi"
               >
-                <div className="contact-icon">{canal.icon}</div>
+                <div className="contact-icon" aria-hidden="true">{canal.icon}</div>
                 <h2>{canal.name}</h2>
                 <p>{canal.handle}</p>
               </a>
@@ -72,7 +72,7 @@ export default function MidiasPage() {
             <h2>Não perca nenhuma novidade</h2>
             <p>Entre para a Tropa e receba os conteúdos direto no seu WhatsApp.</p>
             <Link href="/tropa" className="btn btn-gold">
-              Entre para a Tropa ➔
+              Entre para a Tropa <span aria-hidden="true">➔</span>
             </Link>
           </div>
         </div>

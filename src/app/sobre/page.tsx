@@ -97,7 +97,7 @@ export default function SobrePage() {
               </div>
 
               <Link href="/propostas" className="btn btn-outline fi" style={{ marginTop: "1.5rem" }}>
-                Conheça as propostas ➔
+                Conheça as propostas <span aria-hidden="true">➔</span>
               </Link>
             </div>
           </div>

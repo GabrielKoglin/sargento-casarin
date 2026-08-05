@@ -52,7 +52,7 @@ export default async function PropostasPage() {
           ) : (
             propostas.map((p) => (
               <Link href={`/propostas/${p.slug}`} className="eixo-card fi" key={p.id}>
-                <div className="eixo-icon">{iconFor(p.slug, p.category)}</div>
+                <div className="eixo-icon" aria-hidden="true">{iconFor(p.slug, p.category)}</div>
                 <div>
                   <h2>{p.title}</h2>
                   <p>{p.description}</p>
@@ -68,7 +68,7 @@ export default async function PropostasPage() {
               sua ideia — cada mensagem é lida pela equipe.
             </p>
             <Link href="/contato" className="btn btn-gold">
-              Enviar sugestão ➔
+              Enviar sugestão <span aria-hidden="true">➔</span>
             </Link>
           </div>
         </div>

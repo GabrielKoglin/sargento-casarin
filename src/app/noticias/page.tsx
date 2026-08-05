@@ -49,10 +49,12 @@ export default async function NoticiasPage() {
                 primeira mão.
               </p>
               <Link href="/tropa" className="btn btn-gold">
-                Entre para a Tropa ➔
+                Entre para a Tropa <span aria-hidden="true">➔</span>
               </Link>
             </div>
           ) : (
+            <>
+            <h2 className="sr-only">Últimas publicações</h2>
             <div className="news-grid">
               {noticias.map((noticia) => {
                 const card = (
@@ -62,9 +64,9 @@ export default async function NoticiasPage() {
                         /* Imagem remota de host arbitrário (vem do banco/CMS); next/image
                            exige hostname fixo em images.remotePatterns, então mantemos <img>. */
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={noticia.image} alt={noticia.title} />
+                        <img src={noticia.image} alt="" />
                       ) : (
-                        <div className="news-ph">📰</div>
+                        <div className="news-ph" aria-hidden="true">📰</div>
                       )}
                     </div>
                     <div className="news-body">
@@ -84,6 +86,7 @@ export default async function NoticiasPage() {
                 );
               })}
             </div>
+            </>
           )}
         </div>
       </section>

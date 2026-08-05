@@ -38,8 +38,13 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning className={`${inter.variable} antialiased`}>
       <body className="min-h-screen flex flex-col font-sans">
+        <a href="#conteudo" className="skip-link">
+          Pular para o conteúdo
+        </a>
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="conteudo" className="flex-1">
+          {children}
+        </main>
         <Footer />
         <Link href="/tropa" className="wa-float" aria-label="Entre para a Tropa">
           <span className="wa-tip">Entre para a Tropa ➔</span>
