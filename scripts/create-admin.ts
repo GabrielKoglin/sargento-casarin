@@ -10,7 +10,7 @@
 // (tsx não resolve o alias "@/..." por padrão) + adapter better-sqlite3.
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { hashPassword } from "../src/lib/password";
 
 // DEFAULTS de desenvolvimento — TROQUE em produção via variáveis de ambiente.
@@ -18,8 +18,8 @@ const DEFAULT_EMAIL = "admin@casarin.local";
 const DEFAULT_PASSWORD = "trocar-esta-senha";
 const DEFAULT_NAME = "Administrador";
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./dev.db",
+const adapter = new PrismaPg({
+  connectionString: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
 });
 const prisma = new PrismaClient({ adapter });
 
