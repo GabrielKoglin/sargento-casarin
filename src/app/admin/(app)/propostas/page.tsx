@@ -7,7 +7,6 @@
 // PAGINAÇÃO: só as PAGE_SIZE propostas da página atual são carregadas.
 //   ?page = 1..N  (default: 1; sempre "clampado" ao intervalo válido)
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
 import { deleteProposal } from "./actions";
 import { DeleteButton } from "./delete-button";
@@ -45,19 +44,21 @@ export default async function PropostasAdminPage({
 
   return (
     <>
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
-        <header className="admin-page-header" style={{ marginBottom: 0 }}>
+      <header className="admin-page-header admin-page-header--row">
+        <div>
           <span className="admin-page-header__eyebrow">Conteúdo</span>
           <h1 className="admin-page-header__title">Propostas</h1>
           <p className="admin-page-header__subtitle">
             Gerencie os eixos de atuação exibidos no site.
           </p>
-        </header>
+        </div>
 
-        <Link href="/admin/propostas/new" className="admin-btn">
-          + Nova proposta
-        </Link>
-      </div>
+        <div className="admin-page-header__actions">
+          <Link href="/admin/propostas/new" className="admin-btn">
+            + Nova proposta
+          </Link>
+        </div>
+      </header>
 
       {total === 0 ? (
         <div className="admin-note">
@@ -74,41 +75,36 @@ export default async function PropostasAdminPage({
         <div className="overflow-x-auto rounded-[4px] border border-[var(--a-line)] bg-[var(--a-panel)]">
           <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-[var(--a-line)]">
-                <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
+              <tr>
+                <th className="text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
                   Título
                 </th>
-                <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
+                <th className="text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
                   Categoria
                 </th>
-                <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
+                <th className="text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
                   Slug
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
+                <th className="text-right text-xs font-bold uppercase tracking-wider text-[var(--a-muted)]">
                   Ações
                 </th>
               </tr>
             </thead>
             <tbody>
               {propostas.map((p) => (
-                <tr
-                  key={p.id}
-                  className="border-b border-[var(--a-line)] last:border-0 hover:bg-[var(--a-panel-2)]"
-                >
-                  <td className="px-4 py-3 font-semibold text-[var(--a-text)]">
+                <tr key={p.id} className="hover:bg-[var(--a-panel-2)]">
+                  <td className="font-semibold text-[var(--a-text)]">
                     {p.title}
                   </td>
-                  <td className="px-4 py-3 text-[var(--a-muted)]">
-                    {p.category}
+                  <td className="text-[var(--a-muted)]">{p.category}</td>
+                  <td>
+                    <code className="admin-chip">{p.slug}</code>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-[var(--a-muted)]">
-                    {p.slug}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="admin-cell--actions">
+                    <div className="admin-actions">
                       <Link
                         href={`/admin/propostas/${p.id}/edit`}
-                        className="inline-flex items-center rounded-[3px] border border-[var(--a-line)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--a-green-bright)] transition-colors hover:border-[var(--a-green)] hover:bg-[rgba(0,184,75,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(0,184,75,0.4)]"
+                        className="admin-btn admin-btn--ghost admin-btn--sm"
                       >
                         Editar
                       </Link>
@@ -127,21 +123,12 @@ export default async function PropostasAdminPage({
 
       {/* ------------------------------------------------------ paginação */}
       {total > 0 && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            marginTop: "1.25rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <span style={{ fontSize: "0.8rem", color: "var(--a-muted)" }}>
+        <div className="admin-pager">
+          <span className="admin-pager__info">
             Página {page} de {totalPages} · {total}{" "}
             {total === 1 ? "proposta" : "propostas"}
           </span>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="admin-pager__nav">
             <PagerLink
               href={prevPage ? `/admin/propostas?page=${prevPage}` : null}
               label="← Anterior"
@@ -159,27 +146,15 @@ export default async function PropostasAdminPage({
 
 // Link de paginação; quando `href` é null vira um botão "apagado" (sem navegar).
 function PagerLink({ href, label }: { href: string | null; label: string }) {
-  const base: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "0.4rem 0.85rem",
-    borderRadius: "3px",
-    border: "1px solid var(--a-line)",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-  };
   if (!href) {
     return (
-      <span
-        aria-disabled="true"
-        style={{ ...base, color: "var(--a-muted)", opacity: 0.4 }}
-      >
+      <span aria-disabled="true" className="admin-pager__btn">
         {label}
       </span>
     );
   }
   return (
-    <Link href={href} style={{ ...base, color: "var(--a-text)" }}>
+    <Link href={href} className="admin-pager__btn">
       {label}
     </Link>
   );

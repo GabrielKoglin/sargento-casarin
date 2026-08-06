@@ -48,8 +48,7 @@ export default async function AdminConfigPage({
       {/* Adicionar / atualizar por chave */}
       <form
         action={upsertSetting}
-        className="mb-8 flex flex-col gap-4 rounded border p-4 sm:flex-row sm:items-end"
-        style={{ borderColor: "var(--a-line)", background: "var(--a-panel)" }}
+        className="admin-form-card flex flex-col gap-4 sm:flex-row sm:items-end"
       >
         <div className="admin-field sm:flex-1">
           <label htmlFor="key" className="admin-field__label">
@@ -97,25 +96,18 @@ export default async function AdminConfigPage({
                 className="text-xs uppercase tracking-wider"
                 style={{ color: "var(--a-muted)" }}
               >
-                <th className="px-4 py-3 font-semibold">Chave</th>
-                <th className="px-4 py-3 font-semibold">Valor</th>
-                <th className="px-4 py-3 text-right font-semibold">Ações</th>
+                <th className="font-semibold">Chave</th>
+                <th className="font-semibold">Valor</th>
+                <th className="text-right font-semibold">Ações</th>
               </tr>
             </thead>
             <tbody>
               {settings.map((setting) => (
-                <tr
-                  key={setting.id}
-                  className="border-t align-middle"
-                  style={{ borderColor: "var(--a-line)" }}
-                >
-                  <td
-                    className="whitespace-nowrap px-4 py-3 font-mono font-semibold"
-                    style={{ color: "var(--a-text)" }}
-                  >
-                    {setting.key}
+                <tr key={setting.id} className="align-middle">
+                  <td className="whitespace-nowrap">
+                    <code className="admin-chip">{setting.key}</code>
                   </td>
-                  <td className="px-4 py-3">
+                  <td>
                     {/* Edição inline: reusa upsertSetting com a chave da linha. */}
                     <form
                       action={upsertSetting}
@@ -132,21 +124,19 @@ export default async function AdminConfigPage({
                       />
                       <button
                         type="submit"
-                        className="cursor-pointer whitespace-nowrap text-xs font-semibold uppercase tracking-wider"
-                        style={{ color: "var(--a-green-bright)" }}
+                        className="admin-btn admin-btn--ghost admin-btn--sm"
                       >
                         Salvar
                       </button>
                     </form>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end">
+                  <td className="admin-cell--actions">
+                    <div className="admin-actions">
                       <form action={deleteSetting}>
                         <input type="hidden" name="id" value={setting.id} />
                         <button
                           type="submit"
-                          className="cursor-pointer bg-transparent text-xs font-semibold uppercase tracking-wider"
-                          style={{ color: "var(--a-danger)" }}
+                          className="admin-btn admin-btn--danger admin-btn--sm"
                         >
                           Excluir
                         </button>

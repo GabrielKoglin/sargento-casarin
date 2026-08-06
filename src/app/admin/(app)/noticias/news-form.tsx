@@ -284,16 +284,7 @@ export function DeleteButton({ label }: { label?: string }) {
           e.preventDefault();
         }
       }}
-      style={{
-        background: "transparent",
-        border: "none",
-        padding: 0,
-        color: "var(--a-danger)",
-        fontFamily: "inherit",
-        fontSize: "inherit",
-        fontWeight: 600,
-        cursor: "pointer",
-      }}
+      className="admin-btn admin-btn--danger admin-btn--sm"
     >
       Excluir
     </button>

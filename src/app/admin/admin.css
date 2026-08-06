@@ -227,6 +227,10 @@ body:has(.admin-login) {
 .admin-btn--danger:hover:not(:disabled) {
   background: rgba(255, 90, 90, 0.2);
 }
+.admin-btn--ok   { background: rgba(0,184,75,0.12);  color: var(--a-green-bright); border: 1px solid rgba(0,184,75,0.45); }
+.admin-btn--ok:hover:not(:disabled)   { background: rgba(0,184,75,0.2); }
+.admin-btn--warn { background: rgba(245,197,24,0.1); color: #f5c518;              border: 1px solid rgba(245,197,24,0.45); }
+.admin-btn--warn:hover:not(:disabled) { background: rgba(245,197,24,0.18); }
 
 /* ------------------------------------------------------------------ ERROR */
 .admin-login__error {
@@ -554,6 +558,11 @@ a.admin-card:hover .admin-card__icon {
 .admin-main a:hover {
   text-decoration: underline;
 }
+/* Botões renderizados como <a>: evita verde-sobre-verde ilegível. */
+.admin-main a.admin-btn { color: #04140a; }
+.admin-main a.admin-btn:hover { text-decoration: none; }
+.admin-main a.admin-btn--ghost { color: var(--a-text); }
+.admin-main a.admin-btn--danger { color: #ff9a9a; }
 /* Cartões/blocos e headings de seção herdados do markup Tailwind. */
 .admin-main h2 {
   color: #fff;
@@ -578,15 +587,20 @@ a.admin-card:hover .admin-card__icon {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-align: left;
+  padding: 0.7rem 1rem;
   border-bottom: 1px solid var(--a-line);
 }
 .admin-main tbody td {
+  padding: 0.85rem 1rem;
   border-top: 1px solid var(--a-line-soft);
   color: var(--a-text);
   vertical-align: middle;
 }
 .admin-main tbody tr {
   transition: background 0.1s ease;
+}
+.admin-main tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
 }
 .admin-main tbody tr:hover {
   background: rgba(0, 184, 75, 0.05);
@@ -621,6 +635,7 @@ a.admin-card:hover .admin-card__icon {
 @media (max-width: 860px) {
   .admin-shell {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
   .admin-sidebar {
     position: static;
@@ -882,3 +897,57 @@ a.admin-card:hover .admin-card__icon {
   padding: 0.35rem 0.6rem;
   font-size: 0.85rem;
 }
+
+/* ============================================================================
+   COMPONENTES DE LISTA/CONTEÚDO (contrato compartilhado entre páginas)
+   ============================================================================ */
+
+/* Cabeçalho de página com ação à direita */
+.admin-page-header--row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem 1.5rem; flex-wrap: wrap; }
+.admin-page-header__actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.25rem; }
+
+/* Célula de ações da tabela */
+.admin-actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; white-space: nowrap; }
+.admin-main td.admin-cell--actions { width: 1%; }
+.admin-main td.admin-cell--check { width: 1%; padding-right: 0.25rem; }
+
+/* Slug/valor técnico como chip */
+.admin-main code.admin-chip { font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--a-panel-3); color: var(--a-muted); border: 1px solid var(--a-line-soft); }
+
+/* Abas de filtro (notícias) */
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1.25rem; }
+.admin-main a.admin-tab { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.95rem; border-radius: 999px; border: 1px solid var(--a-line); color: var(--a-muted); font-size: 0.82rem; font-weight: 600; transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease; }
+.admin-main a.admin-tab:hover { text-decoration: none; color: var(--a-text); border-color: rgba(0,184,75,0.35); }
+.admin-main a.admin-tab[aria-current="page"] { border-color: var(--a-green); background: var(--a-green-dim); color: var(--a-green-bright); }
+.admin-tab__count { font-size: 0.72rem; font-weight: 700; opacity: 0.85; }
+
+/* Paginação */
+.admin-pager { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.admin-pager__info { font-size: 0.8rem; color: var(--a-muted); }
+.admin-pager__nav { display: flex; gap: 0.5rem; }
+.admin-pager__btn { display: inline-flex; align-items: center; padding: 0.45rem 0.9rem; border-radius: var(--a-radius-sm); border: 1px solid var(--a-line); color: var(--a-text); font-size: 0.8rem; font-weight: 600; }
+.admin-main a.admin-pager__btn:hover { text-decoration: none; border-color: rgba(0,184,75,0.4); background: var(--a-panel-2); }
+span.admin-pager__btn[aria-disabled="true"] { color: var(--a-faint); opacity: 0.55; }
+
+/* Toolbar acima de listas */
+.admin-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin: 0 0 1rem; }
+
+/* Aviso de ingestão + texto de ajuda */
+.admin-notice { margin: 0 0 1.25rem; padding: 0.75rem 1rem; border-radius: var(--a-radius-sm); border: 1px solid var(--a-line); font-size: 0.85rem; font-weight: 600; }
+.admin-notice--ok   { border-color: rgba(0,184,75,0.4);  background: rgba(0,184,75,0.12); color: var(--a-green-bright); }
+.admin-notice--fail { border-color: rgba(255,90,90,0.4); background: rgba(255,90,90,0.1); color: #ff9a9a; }
+.admin-help { margin: -0.5rem 0 1.25rem; font-size: 0.78rem; color: var(--a-muted); }
+
+/* Barra de moderação em massa (notícias) */
+.admin-bulkbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; padding: 0.7rem 0.9rem; border-radius: var(--a-radius-sm); border: 1px solid var(--a-line); background: var(--a-panel); }
+.admin-bulkbar__group { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin: 0; }
+.admin-bulkbar__count { font-size: 0.8rem; font-weight: 700; color: var(--a-muted); min-width: 6.5rem; }
+.admin-bulkbar__count.is-active { color: var(--a-text); }
+
+/* Cartão de formulário (config, mídia) */
+.admin-form-card { padding: 1.25rem; margin: 0 0 2rem; border: 1px solid var(--a-line); border-radius: var(--a-radius); background: var(--a-panel); }
+
+/* Interior do cartão de mensagem */
+.admin-msg__contacts { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; margin-top: 0.6rem; font-size: 0.85rem; }
+.admin-msg__body { margin-top: 0.8rem; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; color: var(--a-text); }
+.admin-msg__footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 0.9rem; padding-top: 0.75rem; border-top: 1px solid var(--a-line-soft); }

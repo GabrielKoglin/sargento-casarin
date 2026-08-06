@@ -6,7 +6,6 @@
 // PAGINAÇÃO: só os PAGE_SIZE eventos da página atual são carregados.
 //   ?page = 1..N  (default: 1; sempre "clampado" ao intervalo válido)
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
 import { deleteEvent } from "./actions";
 import { formatEventDate } from "./date-utils";
@@ -45,7 +44,7 @@ export default async function AdminAgendaPage({
 
   return (
     <>
-      <header className="admin-page-header flex flex-wrap items-start justify-between gap-4">
+      <header className="admin-page-header admin-page-header--row">
         <div>
           <span className="admin-page-header__eyebrow">Operações</span>
           <h1 className="admin-page-header__title">Agenda</h1>
@@ -53,9 +52,11 @@ export default async function AdminAgendaPage({
             Eventos e mobilizações exibidos na página pública /agenda.
           </p>
         </div>
-        <Link href="/admin/agenda/new" className="admin-btn">
-          Novo evento
-        </Link>
+        <div className="admin-page-header__actions">
+          <Link href="/admin/agenda/new" className="admin-btn">
+            Novo evento
+          </Link>
+        </div>
       </header>
 
       {total === 0 ? (
@@ -74,34 +75,27 @@ export default async function AdminAgendaPage({
                 className="text-xs uppercase tracking-wider"
                 style={{ color: "var(--a-muted)" }}
               >
-                <th className="px-4 py-3 font-semibold">Título</th>
-                <th className="px-4 py-3 font-semibold">Data</th>
-                <th className="px-4 py-3 font-semibold">Local</th>
-                <th className="px-4 py-3 text-right font-semibold">Ações</th>
+                <th className="font-semibold">Título</th>
+                <th className="font-semibold">Data</th>
+                <th className="font-semibold">Local</th>
+                <th className="text-right font-semibold">Ações</th>
               </tr>
             </thead>
             <tbody>
               {eventos.map((evento) => (
-                <tr
-                  key={evento.id}
-                  className="border-t align-top"
-                  style={{ borderColor: "var(--a-line)" }}
-                >
-                  <td className="px-4 py-3 font-semibold" style={{ color: "var(--a-text)" }}>
+                <tr key={evento.id} className="align-top">
+                  <td className="font-semibold" style={{ color: "var(--a-text)" }}>
                     {evento.title}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3" style={{ color: "var(--a-muted)" }}>
+                  <td className="whitespace-nowrap" style={{ color: "var(--a-muted)" }}>
                     {formatEventDate(evento.date)}
                   </td>
-                  <td className="px-4 py-3" style={{ color: "var(--a-muted)" }}>
-                    {evento.location}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-4">
+                  <td style={{ color: "var(--a-muted)" }}>{evento.location}</td>
+                  <td className="admin-cell--actions">
+                    <div className="admin-actions">
                       <Link
                         href={`/admin/agenda/${evento.id}/edit`}
-                        className="font-semibold uppercase tracking-wider"
-                        style={{ color: "var(--a-green-bright)" }}
+                        className="admin-btn admin-btn--ghost admin-btn--sm"
                       >
                         Editar
                       </Link>
@@ -109,8 +103,7 @@ export default async function AdminAgendaPage({
                         <input type="hidden" name="id" value={evento.id} />
                         <button
                           type="submit"
-                          className="cursor-pointer bg-transparent font-semibold uppercase tracking-wider"
-                          style={{ color: "var(--a-danger)" }}
+                          className="admin-btn admin-btn--danger admin-btn--sm"
                         >
                           Excluir
                         </button>
@@ -126,21 +119,12 @@ export default async function AdminAgendaPage({
 
       {/* ------------------------------------------------------ paginação */}
       {total > 0 && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            marginTop: "1.25rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <span style={{ fontSize: "0.8rem", color: "var(--a-muted)" }}>
+        <div className="admin-pager">
+          <span className="admin-pager__info">
             Página {page} de {totalPages} · {total}{" "}
             {total === 1 ? "evento" : "eventos"}
           </span>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="admin-pager__nav">
             <PagerLink
               href={prevPage ? `/admin/agenda?page=${prevPage}` : null}
               label="← Anterior"
@@ -158,27 +142,15 @@ export default async function AdminAgendaPage({
 
 // Link de paginação; quando `href` é null vira um botão "apagado" (sem navegar).
 function PagerLink({ href, label }: { href: string | null; label: string }) {
-  const base: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "0.4rem 0.85rem",
-    borderRadius: "3px",
-    border: "1px solid var(--a-line)",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-  };
   if (!href) {
     return (
-      <span
-        aria-disabled="true"
-        style={{ ...base, color: "var(--a-muted)", opacity: 0.4 }}
-      >
+      <span aria-disabled="true" className="admin-pager__btn">
         {label}
       </span>
     );
   }
   return (
-    <Link href={href} style={{ ...base, color: "var(--a-text)" }}>
+    <Link href={href} className="admin-pager__btn">
       {label}
     </Link>
   );

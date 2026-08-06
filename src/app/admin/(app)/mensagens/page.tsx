@@ -9,7 +9,6 @@
 // nunca carregamos a tabela inteira — só as PAGE_SIZE mensagens da página atual.
 //   ?page = 1..N  (default: 1; sempre "clampado" ao intervalo válido)
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
 import {
   deleteContact,
@@ -71,13 +70,7 @@ export default async function AdminMensagensPage({
       </header>
 
       {unread > 0 ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: "1rem",
-          }}
-        >
+        <div className="admin-toolbar">
           <form action={markAllContactsRead}>
             <button type="submit" className="admin-btn admin-btn--ghost admin-btn--sm">
               Marcar todas como lidas
@@ -125,42 +118,18 @@ export default async function AdminMensagensPage({
                 </time>
               </div>
 
-              <div
-                className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm"
-                style={{ color: "var(--a-muted)" }}
-              >
-                <a
-                  href={`mailto:${msg.email}`}
-                  className="underline-offset-2 hover:underline"
-                  style={{ color: "var(--a-green-bright)" }}
-                >
-                  {msg.email}
-                </a>
-                <a
-                  href={`tel:${msg.phone}`}
-                  className="underline-offset-2 hover:underline"
-                  style={{ color: "var(--a-green-bright)" }}
-                >
-                  {msg.phone}
-                </a>
+              <div className="admin-msg__contacts">
+                <a href={`mailto:${msg.email}`}>{msg.email}</a>
+                <a href={`tel:${msg.phone}`}>{msg.phone}</a>
               </div>
 
-              <p
-                className="mt-3 whitespace-pre-wrap text-sm leading-relaxed"
-                style={{ color: "var(--a-text)" }}
-              >
-                {msg.message}
-              </p>
+              <p className="admin-msg__body">{msg.message}</p>
 
-              <div className="mt-3 flex justify-end gap-4">
+              <div className="admin-msg__footer">
                 {!msg.read ? (
                   <form action={markContactRead}>
                     <input type="hidden" name="id" value={msg.id} />
-                    <button
-                      type="submit"
-                      className="cursor-pointer bg-transparent text-xs font-semibold uppercase tracking-wider"
-                      style={{ color: "var(--a-green-bright)" }}
-                    >
+                    <button type="submit" className="admin-linkbtn">
                       Marcar como lida
                     </button>
                   </form>
@@ -169,8 +138,7 @@ export default async function AdminMensagensPage({
                   <input type="hidden" name="id" value={msg.id} />
                   <button
                     type="submit"
-                    className="cursor-pointer bg-transparent text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: "var(--a-danger)" }}
+                    className="admin-linkbtn admin-linkbtn--danger"
                   >
                     Excluir
                   </button>
@@ -183,21 +151,12 @@ export default async function AdminMensagensPage({
 
       {/* ------------------------------------------------------ paginação */}
       {total > 0 && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            marginTop: "1.25rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <span style={{ fontSize: "0.8rem", color: "var(--a-muted)" }}>
+        <div className="admin-pager">
+          <span className="admin-pager__info">
             Página {page} de {totalPages} · {total}{" "}
             {total === 1 ? "mensagem" : "mensagens"}
           </span>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="admin-pager__nav">
             <PagerLink
               href={prevPage ? `/admin/mensagens?page=${prevPage}` : null}
               label="← Anterior"
@@ -215,27 +174,15 @@ export default async function AdminMensagensPage({
 
 // Link de paginação; quando `href` é null vira um botão "apagado" (sem navegar).
 function PagerLink({ href, label }: { href: string | null; label: string }) {
-  const base: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "0.4rem 0.85rem",
-    borderRadius: "3px",
-    border: "1px solid var(--a-line)",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-  };
   if (!href) {
     return (
-      <span
-        aria-disabled="true"
-        style={{ ...base, color: "var(--a-muted)", opacity: 0.4 }}
-      >
+      <span aria-disabled="true" className="admin-pager__btn">
         {label}
       </span>
     );
   }
   return (
-    <Link href={href} style={{ ...base, color: "var(--a-text)" }}>
+    <Link href={href} className="admin-pager__btn">
       {label}
     </Link>
   );

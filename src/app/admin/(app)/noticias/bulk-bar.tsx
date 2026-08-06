@@ -107,48 +107,14 @@ export function SelectAllCheckbox() {
 }
 
 // ------------------------------------------------------------------- botões ---
-const btnBase: React.CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "0.4rem",
-  padding: "0.4rem 0.85rem",
-  borderRadius: "6px",
-  border: "1px solid var(--a-line)",
-  background: "transparent",
-  fontFamily: "inherit",
-  fontSize: "0.82rem",
-  fontWeight: 600,
-  cursor: "pointer",
-};
-
-const approveBtn: React.CSSProperties = {
-  ...btnBase,
-  border: "1px solid rgba(0,184,75,0.5)",
-  background: "rgba(0,184,75,0.12)",
-  color: "var(--a-green-bright)",
-};
-const rejectBtn: React.CSSProperties = {
-  ...btnBase,
-  border: "1px solid rgba(245,197,24,0.5)",
-  background: "rgba(245,197,24,0.1)",
-  color: "#f5c518",
-};
-const dangerBtn: React.CSSProperties = {
-  ...btnBase,
-  border: "1px solid rgba(255,90,90,0.5)",
-  background: "rgba(255,90,90,0.1)",
-  color: "#ff9a9a",
-};
-const disabledBtn: React.CSSProperties = { opacity: 0.4, cursor: "not-allowed" };
-
 // Botão de submit que confirma via window.confirm antes de deixar o form seguir.
 function ConfirmButton({
   message,
-  style,
+  className,
   children,
 }: {
   message: string;
-  style: React.CSSProperties;
+  className: string;
   children: React.ReactNode;
 }) {
   return (
@@ -157,7 +123,7 @@ function ConfirmButton({
       onClick={(event) => {
         if (!window.confirm(message)) event.preventDefault();
       }}
-      style={style}
+      className={className}
     >
       {children}
     </button>
@@ -179,33 +145,14 @@ export function BulkBar({
   const selectedLabel = count === 1 ? "1 selecionada" : `${count} selecionadas`;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "0.75rem",
-        flexWrap: "wrap",
-        marginBottom: "0.9rem",
-        padding: "0.7rem 0.85rem",
-        borderRadius: "8px",
-        border: "1px solid var(--a-line)",
-        background: "var(--a-panel)",
-      }}
-    >
+    <div className="admin-bulkbar">
       {/* Ações sobre a SELEÇÃO. O <form id="bulk-form"> não embrulha a tabela:
           os checkboxes das linhas se ligam a ele via `form="bulk-form"`. */}
-      <form
-        id={BULK_FORM_ID}
-        style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap", margin: 0 }}
-      >
+      <form id={BULK_FORM_ID} className="admin-bulkbar__group">
         <span
-          style={{
-            fontSize: "0.8rem",
-            fontWeight: 700,
-            color: hasSelection ? "var(--a-text)" : "var(--a-muted)",
-            minWidth: "6.5rem",
-          }}
+          className={
+            "admin-bulkbar__count" + (hasSelection ? " is-active" : "")
+          }
         >
           {hasSelection ? selectedLabel : "Nenhuma selecionada"}
         </span>
@@ -213,37 +160,37 @@ export function BulkBar({
           type="submit"
           formAction={approveManyNews}
           disabled={!hasSelection}
-          style={hasSelection ? approveBtn : { ...approveBtn, ...disabledBtn }}
+          className="admin-btn admin-btn--sm admin-btn--ok"
         >
-          ✓ Aprovar selecionadas
+          Aprovar selecionadas
         </button>
         <button
           type="submit"
           formAction={rejectManyNews}
           disabled={!hasSelection}
-          style={hasSelection ? rejectBtn : { ...rejectBtn, ...disabledBtn }}
+          className="admin-btn admin-btn--sm admin-btn--warn"
         >
-          ✕ Rejeitar selecionadas
+          Rejeitar selecionadas
         </button>
       </form>
 
       {/* Ações sobre TODA a fila (independem da seleção e da página). Cada uma é
           um <form> irmão — NUNCA aninhado no #bulk-form. */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+      <div className="admin-bulkbar__group">
         {pendingCount > 0 && (
           <>
-            <form action={approveAllPending} style={{ margin: 0 }}>
+            <form action={approveAllPending}>
               <ConfirmButton
                 message={`Aprovar TODAS as ${pendingCount} notícias pendentes? Isso afeta a fila inteira, não só esta página. Todas vão ao ar no site.`}
-                style={approveBtn}
+                className="admin-btn admin-btn--sm admin-btn--ok"
               >
                 Aprovar TODAS as pendentes ({pendingCount})
               </ConfirmButton>
             </form>
-            <form action={rejectAllPending} style={{ margin: 0 }}>
+            <form action={rejectAllPending}>
               <ConfirmButton
                 message={`Rejeitar TODAS as ${pendingCount} notícias pendentes? Isso afeta a fila inteira, não só esta página.`}
-                style={rejectBtn}
+                className="admin-btn admin-btn--sm admin-btn--warn"
               >
                 Rejeitar TODAS as pendentes ({pendingCount})
               </ConfirmButton>
@@ -251,12 +198,12 @@ export function BulkBar({
           </>
         )}
         {status === "rejected" && rejectedCount > 0 && (
-          <form action={deleteRejected} style={{ margin: 0 }}>
+          <form action={deleteRejected}>
             <ConfirmButton
               message={`Excluir DEFINITIVAMENTE as ${rejectedCount} notícias rejeitadas? Esta ação não pode ser desfeita.`}
-              style={dangerBtn}
+              className="admin-btn admin-btn--sm admin-btn--danger"
             >
-              🗑 Excluir todas as rejeitadas ({rejectedCount})
+              Excluir todas as rejeitadas ({rejectedCount})
             </ConfirmButton>
           </form>
         )}

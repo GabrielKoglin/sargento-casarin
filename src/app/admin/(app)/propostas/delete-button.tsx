@@ -15,7 +15,7 @@ export function DeleteButton({ label }: { label: string }) {
         );
         if (!ok) event.preventDefault();
       }}
-      className="inline-flex cursor-pointer items-center rounded-[3px] border border-[rgba(255,90,90,0.35)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--a-danger)] transition-colors hover:bg-[rgba(255,90,90,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(255,90,90,0.5)]"
+      className="admin-btn admin-btn--danger admin-btn--sm"
     >
       Excluir
     </button>

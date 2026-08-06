@@ -10,11 +10,11 @@
 //   ?page   = 1..N                                   (default: 1)
 // Nunca renderizamos milhares de linhas: só as 40 da página atual.
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
 import { approveNews, rejectNews, deleteNews, ingestNow } from "./actions";
 import { DeleteButton } from "./news-form";
 import { BulkBar, SelectAllCheckbox } from "./bulk-bar";
+import { IngestButton } from "./ingest-button";
 
 // Lista sempre "ao vivo" — nunca pré-renderizar em build.
 export const dynamic = "force-dynamic";
@@ -117,25 +117,9 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-// Botão de ação por linha (aprovar/rejeitar) — mesmo "peso" visual do "Editar".
-const actionButtonBase: CSSProperties = {
-  background: "transparent",
-  border: "none",
-  padding: 0,
-  fontFamily: "inherit",
-  fontSize: "inherit",
-  fontWeight: 600,
-  cursor: "pointer",
-};
-const approveStyle: CSSProperties = {
-  ...actionButtonBase,
-  color: "var(--a-green-bright)",
-};
-const rejectStyle: CSSProperties = { ...actionButtonBase, color: "#f5c518" };
-
 const emptyMessages: Record<StatusFilter, string> = {
   pending:
-    "Nenhuma notícia pendente. Use “Buscar notícias agora” para ingerir novas manchetes dos portais.",
+    "Nenhuma notícia pendente. Use “Buscar notícias agora” para ingerir novas manchetes dos portais. Itens já revisados e descartados ficam na aba Rejeitadas.",
   approved: "Nenhuma notícia aprovada ainda.",
   rejected: "Nenhuma notícia rejeitada.",
   all: "Nenhuma notícia cadastrada ainda.",
@@ -203,16 +187,7 @@ export default async function AdminNoticiasPage({
 
   return (
     <>
-      <header
-        className="admin-page-header"
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
+      <header className="admin-page-header admin-page-header--row">
         <div>
           <span className="admin-page-header__eyebrow">Conteúdo</span>
           <h1 className="admin-page-header__title">Notícias</h1>
@@ -221,77 +196,29 @@ export default async function AdminNoticiasPage({
             irem ao ar.
           </p>
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.6rem",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="admin-page-header__actions">
           <form action={ingestNow}>
-            <button type="submit" className="admin-btn" title="Busca os feeds agora">
-              🔄 Buscar notícias agora
-            </button>
+            <IngestButton />
           </form>
-          <Link
-            href="/admin/noticias/new"
-            className="admin-btn"
-            style={{
-              background: "transparent",
-              border: "1px solid var(--a-line)",
-              color: "var(--a-text)",
-            }}
-          >
+          <Link href="/admin/noticias/new" className="admin-btn admin-btn--ghost">
             Nova notícia
           </Link>
         </div>
       </header>
 
       {notice && (
-        <div
-          role="status"
-          style={{
-            margin: "0 0 1.25rem",
-            padding: "0.7rem 1rem",
-            borderRadius: "6px",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            border: `1px solid ${
-              notice.tone === "ok" ? "rgba(0,184,75,0.4)" : "rgba(255,90,90,0.4)"
-            }`,
-            background:
-              notice.tone === "ok"
-                ? "rgba(0,184,75,0.12)"
-                : "rgba(255,90,90,0.1)",
-            color: notice.tone === "ok" ? "var(--a-green-bright)" : "#ff9a9a",
-          }}
-        >
+        <div role="status" className={"admin-notice admin-notice--" + notice.tone}>
           {notice.message}
         </div>
       )}
 
-      <p
-        style={{
-          margin: "-0.75rem 0 1.25rem",
-          fontSize: "0.78rem",
-          color: "var(--a-muted)",
-        }}
-      >
+      <p className="admin-help">
         A busca consulta ~25 portais de Mato Grosso e pode levar alguns segundos.
         As manchetes novas entram como <strong>Pendentes</strong> para revisão.
       </p>
 
       {/* ------------------------------------------------------------ abas */}
-      <nav
-        aria-label="Filtrar por status"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "0.4rem",
-          marginBottom: "1.25rem",
-        }}
-      >
+      <nav aria-label="Filtrar por status" className="admin-tabs">
         {tabs.map((tab) => {
           const active = tab.key === status;
           return (
@@ -299,30 +226,10 @@ export default async function AdminNoticiasPage({
               key={tab.key}
               href={`/admin/noticias?status=${tab.key}`}
               aria-current={active ? "page" : undefined}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                padding: "0.4rem 0.85rem",
-                borderRadius: "999px",
-                border: `1px solid ${active ? "var(--a-green)" : "var(--a-line)"}`,
-                background: active ? "rgba(0,184,75,0.14)" : "transparent",
-                color: active ? "var(--a-green-bright)" : "var(--a-muted)",
-                fontSize: "0.82rem",
-                fontWeight: 600,
-              }}
+              className="admin-tab"
             >
               {tab.label}
-              <span
-                style={{
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  color: active ? "var(--a-green-bright)" : "var(--a-muted)",
-                  opacity: 0.85,
-                }}
-              >
-                {tab.count}
-              </span>
+              <span className="admin-tab__count">{tab.count}</span>
             </Link>
           );
         })}
@@ -355,7 +262,7 @@ export default async function AdminNoticiasPage({
             <table className="w-full min-w-[640px] border-collapse text-left text-sm">
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--a-line)" }}>
-                  <th className="px-4 py-3" style={{ width: "1%" }}>
+                  <th className="admin-cell--check">
                     <SelectAllCheckbox />
                   </th>
                   {["Título", "Fonte", "Publicação", "Status"].map((h) => (
@@ -377,12 +284,8 @@ export default async function AdminNoticiasPage({
               </thead>
               <tbody>
                 {noticias.map((noticia) => (
-                  <tr
-                    key={noticia.id}
-                    className="[&:not(:last-child)]:border-b"
-                    style={{ borderColor: "var(--a-line)" }}
-                  >
-                    <td className="px-4 py-3 align-middle">
+                  <tr key={noticia.id}>
+                    <td className="admin-cell--check">
                       <input
                         type="checkbox"
                         name="ids"
@@ -427,12 +330,15 @@ export default async function AdminNoticiasPage({
                     <td className="px-4 py-3">
                       <StatusBadge status={noticia.status} />
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
+                    <td className="admin-cell--actions">
+                      <div className="admin-actions">
                         {noticia.status !== "approved" && (
                           <form action={approveNews}>
                             <input type="hidden" name="id" value={noticia.id} />
-                            <button type="submit" style={approveStyle}>
+                            <button
+                              type="submit"
+                              className="admin-btn admin-btn--ok admin-btn--sm"
+                            >
                               Aprovar
                             </button>
                           </form>
@@ -440,14 +346,17 @@ export default async function AdminNoticiasPage({
                         {noticia.status !== "rejected" && (
                           <form action={rejectNews}>
                             <input type="hidden" name="id" value={noticia.id} />
-                            <button type="submit" style={rejectStyle}>
+                            <button
+                              type="submit"
+                              className="admin-btn admin-btn--warn admin-btn--sm"
+                            >
                               Rejeitar
                             </button>
                           </form>
                         )}
                         <Link
                           href={`/admin/noticias/${noticia.id}/edit`}
-                          style={{ color: "var(--a-green-bright)", fontWeight: 600 }}
+                          className="admin-btn admin-btn--ghost admin-btn--sm"
                         >
                           Editar
                         </Link>
@@ -466,21 +375,12 @@ export default async function AdminNoticiasPage({
 
       {/* ------------------------------------------------------ paginação */}
       {total > 0 && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            marginTop: "1.25rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <span style={{ fontSize: "0.8rem", color: "var(--a-muted)" }}>
+        <div className="admin-pager">
+          <span className="admin-pager__info">
             Página {page} de {totalPages} · {total}{" "}
             {total === 1 ? "notícia" : "notícias"}
           </span>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="admin-pager__nav">
             <PagerLink
               href={
                 prevPage
@@ -506,27 +406,15 @@ export default async function AdminNoticiasPage({
 
 // Link de paginação; quando `href` é null vira um botão "apagado" (sem navegar).
 function PagerLink({ href, label }: { href: string | null; label: string }) {
-  const base: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "0.4rem 0.85rem",
-    borderRadius: "3px",
-    border: "1px solid var(--a-line)",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-  };
   if (!href) {
     return (
-      <span
-        aria-disabled="true"
-        style={{ ...base, color: "var(--a-muted)", opacity: 0.4 }}
-      >
+      <span aria-disabled="true" className="admin-pager__btn">
         {label}
       </span>
     );
   }
   return (
-    <Link href={href} style={{ ...base, color: "var(--a-text)" }}>
+    <Link href={href} className="admin-pager__btn">
       {label}
     </Link>
   );
