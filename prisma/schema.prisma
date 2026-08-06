@@ -59,6 +59,25 @@ model News {
   @@index([url])
 }
 
+// Galeria de mídia gerida pelo admin (guia "Mídia"). Uma linha por foto ou
+// vídeo. `type` = "photo" | "video". Foto: `src` é /uploads/... (upload local
+// otimizado) ou uma URL externa. Vídeo: `src` é a URL do embed (YouTube etc.)
+// e `poster` uma miniatura opcional. `order` controla a ordenação manual e
+// `published` esconde do site sem apagar. A página pública /galeria lê daqui.
+model Media {
+  id        String   @id @default(cuid())
+  type      String   @default("photo")
+  title     String?
+  src       String
+  poster    String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type, published, order])
+}
+
 model Event {
   id          String   @id @default(cuid())
   title       String

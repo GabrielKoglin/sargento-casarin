@@ -45,6 +45,9 @@ export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
               alt={photo.alt}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              // Fotos por URL externa (não iniciam com "/") não passam pelo
+              // otimizador do Next — evita exigir images.remotePatterns e um 500.
+              unoptimized={!photo.src.startsWith("/")}
             />
             <span className="gallery-overlay"></span>
           </button>
@@ -61,7 +64,13 @@ export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
           aria-label={active.alt}
           tabIndex={-1}
         >
-          <Image src={active.src} alt={active.alt} width={1920} height={1280} />
+          <Image
+            src={active.src}
+            alt={active.alt}
+            width={1920}
+            height={1280}
+            unoptimized={!active.src.startsWith("/")}
+          />
           <button type="button" className="lb-close" aria-label="Fechar" onClick={() => setActive(null)}>
             ×
           </button>

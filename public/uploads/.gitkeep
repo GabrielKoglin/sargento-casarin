@@ -1,0 +1,3 @@
+# Destino dos uploads locais de imagens da galeria (server action createMedia).
+# Mantido no git via .gitkeep para a pasta existir em qualquer checkout; os
+# arquivos enviados (/uploads/<uuid>.webp) NÃO são versionados.
