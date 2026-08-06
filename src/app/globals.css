@@ -984,7 +984,14 @@ body::after {
 /* ============================================
    FOOTER
 ============================================ */
-footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem; border-top:1px solid rgba(196,168,130,.06); }
+footer {
+  /* Fundo VERDE-escuro (o clima verde da hero) — antes era #020b14, um preto-azulado. */
+  background:
+    radial-gradient(120% 140% at 15% -10%, rgba(0,184,75,.16), transparent 60%),
+    #06170e;
+  color:rgba(255,255,255,.4); padding:4rem 0 2rem;
+  border-top:1px solid rgba(0,184,75,.18);
+}
 .foot-grid { display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:3rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,.04); margin-bottom:2rem; }
 .foot-logo img { height:46px; margin-bottom:1.25rem; opacity:.8; }
 .foot-logo p { font-size:.82rem; line-height:1.7; max-width:240px; color:rgba(255,255,255,.6); }
@@ -1251,9 +1258,7 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
   font-family:var(--fc); font-weight:900; font-size:1.6rem; letter-spacing:.08em;
   text-transform:uppercase; color:var(--W); line-height:1;
 }
-/* Wordmark "CASARIN" (logo do header e do rodapé) no verde da hero, sem contorno.
-   O nome grande do hero (.hero-name em) segue navy — decisão anterior do logo. */
-.nav-wordmark em { font-style:normal; color:var(--B); -webkit-text-stroke:0; }
+.nav-wordmark em { font-style:normal; color:#1e2a6e; -webkit-text-stroke:1px #fff; paint-order:stroke; }
 /* divisa dourada no lugar do "A" de CASARIN no logo */
 .nav-badge { display:inline-block; width:.66em; height:.66em; vertical-align:-.04em; margin:0 .01em; }
 .nav-badge svg { display:block; width:100%; height:100%; overflow:visible; }
