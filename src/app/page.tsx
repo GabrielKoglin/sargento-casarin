@@ -156,12 +156,12 @@ export default async function Home() {
         <div className="container">
           <div className="propostas-head">
             <div className="eyebrow fi">Eixos de atuação</div>
-            <h2 className="d-md fi d1" style={{ color: 'var(--W)', marginTop: '.75rem' }}>
+            <h2 className="d-md fi d1" style={{ color: 'var(--GX)', marginTop: '.75rem' }}>
               O QUE CASARIN<br /><em style={{ fontStyle: 'normal', color: 'var(--B)' }}>VAI DEFENDER</em>
             </h2>
           </div>
           {propostas.length === 0 ? (
-            <p className="fi" style={{ color: 'rgba(255,255,255,.62)' }}>
+            <p className="fi" style={{ color: 'rgba(26,26,26,.62)' }}>
               As propostas detalhadas serão publicadas em breve.
             </p>
           ) : (
