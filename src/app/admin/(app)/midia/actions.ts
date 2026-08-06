@@ -19,12 +19,13 @@
 // framework.
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { writeFile, mkdir, unlink } from "node:fs/promises";
+import { unlink } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import { uploadImage, deleteImage, isStorageUrl } from "@/lib/storage";
 
 /** Estado do formulário — erro de validação consumido por useActionState. */
 export type MediaFormState = { error: string | null };
@@ -84,23 +85,18 @@ function safeMediaUrl(value: string): string | null | false {
   return false;
 }
 
-// Salva uma imagem enviada em public/uploads, otimizada com sharp: auto-orient
-// pelo EXIF (.rotate()), redimensiona o maior lado para ~1600px sem AMPLIAR, e
-// grava como WebP q80. Retorna o caminho público ("/uploads/<uuid>.webp").
+// Otimiza a imagem enviada com sharp (auto-orient pelo EXIF, maior lado ~1600px
+// sem ampliar, WebP q80) e SOBE ao Supabase Storage (bucket público "media").
+// Retorna a URL PÚBLICA — persiste em serverless, ao contrário de public/uploads.
 async function saveUploadedImage(file: File): Promise<string> {
   const inputBuffer = Buffer.from(await file.arrayBuffer());
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(uploadsDir, { recursive: true });
-
-  const filename = `${randomUUID()}.webp`;
   const outputBuffer = await sharp(inputBuffer)
     .rotate() // aplica a orientação do EXIF e a remove (fotos de celular)
     .resize(1600, 1600, { fit: "inside", withoutEnlargement: true })
     .webp({ quality: 80 })
     .toBuffer();
 
-  await writeFile(path.join(uploadsDir, filename), outputBuffer);
-  return `/uploads/${filename}`;
+  return uploadImage(`${randomUUID()}.webp`, outputBuffer, "image/webp");
 }
 
 /**
@@ -219,8 +215,12 @@ export async function deleteMedia(id: string): Promise<void> {
 
   try {
     const media = await prisma.media.delete({ where: { id } });
-    if (media.src.startsWith("/uploads/")) {
-      // basename() descarta qualquer componente de diretório → sem path traversal.
+    if (isStorageUrl(media.src)) {
+      // Objeto no Supabase Storage → apaga do bucket (best-effort).
+      await deleteImage(media.src);
+    } else if (media.src.startsWith("/uploads/")) {
+      // Legado (upload local antigo): apaga do disco. basename() descarta
+      // qualquer componente de diretório → sem path traversal.
       const filePath = path.join(
         process.cwd(),
         "public",
