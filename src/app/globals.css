@@ -423,7 +423,7 @@ body::after {
 .cred-item {
   padding:2.25rem 2rem;
   border-right:1px solid rgba(255,255,255,.05);
-  display:flex; align-items:center; gap:1.15rem;
+  display:flex; align-items:center; justify-content:center; gap:1.15rem;
   transition:background .25s;
 }
 .cred-item:last-child { border-right:none; }
@@ -435,7 +435,7 @@ body::after {
   line-height:1; flex-shrink:0; opacity:.6;
   min-width:3.4rem; letter-spacing:.01em;
 }
-.cred-txt { min-width:0; }
+.cred-txt { min-width:0; max-width:14rem; }
 .cred-txt strong { display:block; color:var(--W); font-size:.88rem; line-height:1.25; margin-bottom:.35rem; }
 .cred-txt span { font-size:.78rem; color:rgba(255,255,255,.62); line-height:1.55; }
 
