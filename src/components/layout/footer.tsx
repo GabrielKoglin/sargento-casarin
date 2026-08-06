@@ -17,8 +17,15 @@ const participeFooter = [
   { name: "Quero Ajudar", href: "/ajudar" },
   { name: "Nossas Mídias", href: "/midias" },
   { name: "Contato", href: "/contato" },
-  { name: "Política de Privacidade", href: "/privacidade" },
+];
+
+// Links legais/compliance — agrupados na barra inferior do rodapé.
+const legalFooter = [
+  { name: "Privacidade", href: "/privacidade" },
   { name: "Termos de Uso", href: "/termos" },
+  { name: "Cookies", href: "/cookies" },
+  { name: "LGPD", href: "/lgpd" },
+  { name: "Regras e Normas", href: "/regras" },
 ];
 
 // TODO: substituir pelos perfis oficiais quando definidos
@@ -87,14 +94,20 @@ export function Footer() {
           </div>
         </div>
         <div className="foot-bottom">
-          <p>
-            © {currentYear} Sargento Dickson Casarin · Material de campanha · Todos os
-            direitos reservados
-          </p>
-          <div className="foot-legal">
-            <Link href="/privacidade">Privacidade</Link>
-            <Link href="/contato">Contato</Link>
+          <div className="foot-bottom__left">
+            <p>
+              © {currentYear} Sargento Dickson Casarin · Material de campanha · Todos os
+              direitos reservados
+            </p>
+            <p className="foot-credit">
+              Desenvolvido por <span>Gabriel Koglin</span>
+            </p>
           </div>
+          <nav className="foot-legal" aria-label="Links legais">
+            {legalFooter.map((link) => (
+              <Link key={link.href} href={link.href}>{link.name}</Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

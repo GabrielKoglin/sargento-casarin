@@ -998,7 +998,10 @@ footer { background:var(--GXX); color:rgba(255,255,255,.4); padding:4rem 0 2rem;
 .foot-bottom { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
 .foot-bottom p, .foot-bottom a { font-size:.73rem; color:rgba(255,255,255,.55); }
 .foot-bottom a:hover { color:var(--B); }
-.foot-legal { display:flex; gap:2rem; }
+.foot-legal { display:flex; flex-wrap:wrap; gap:.4rem 1.35rem; }
+.foot-bottom__left { display:flex; flex-direction:column; gap:.3rem; }
+.foot-bottom__left .foot-credit { font-size:.72rem; color:rgba(255,255,255,.4); }
+.foot-bottom__left .foot-credit span { color:var(--B); font-weight:600; }
 
 /* ============================================
    WHATSAPP FLUTUANTE
