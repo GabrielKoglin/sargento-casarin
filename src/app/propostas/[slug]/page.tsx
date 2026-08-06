@@ -83,11 +83,11 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
           <div className="mt-bloco" style={{ marginTop: "3rem" }}>
             <h2>Concorda com essa proposta?</h2>
             <p>
-              Entre para a Tropa e ajude a levar essa ideia para todo o Mato Grosso.
+              Entre nos nossos grupos e ajude a levar essa ideia para todo o Mato Grosso.
             </p>
             <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
               <Link href="/tropa" className="btn btn-gold">
-                Entre para a Tropa ➔
+                Nossos Grupos ➔
               </Link>
               <Link href="/propostas" className="btn btn-ghost">
                 Ver todas as propostas

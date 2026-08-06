@@ -30,9 +30,9 @@ export default function TermosPage() {
 
             <h2>2. Finalidade do site</h2>
             <p>
-              Este é um site institucional de pré-campanha, destinado a divulgar a
+              Este é um site institucional de campanha, destinado a divulgar a
               trajetória, as propostas e os canais de participação do Sargento Dickson
-              Casarin, pré-candidato a Deputado Estadual por Mato Grosso.
+              Casarin, candidato a Deputado Estadual por Mato Grosso.
             </p>
 
             <h2>3. Uso adequado</h2>
@@ -44,7 +44,7 @@ export default function TermosPage() {
 
             <h2>4. Propriedade intelectual</h2>
             <p>
-              Textos, marcas, fotos e demais conteúdos deste site pertencem à pré-campanha
+              Textos, marcas, fotos e demais conteúdos deste site pertencem à campanha
               ou a seus licenciantes. O compartilhamento para fins de divulgação é
               incentivado, desde que sem alteração de contexto.
             </p>

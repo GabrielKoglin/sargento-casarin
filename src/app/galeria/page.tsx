@@ -3,7 +3,7 @@ import { GalleryGrid, type GalleryPhoto } from "@/components/gallery-grid";
 
 export const metadata: Metadata = {
   title: "Galeria",
-  description: "Fotos do Sargento Dickson Casarin e da pré-campanha em Mato Grosso.",
+  description: "Fotos do Sargento Dickson Casarin e da campanha em Mato Grosso.",
 };
 
 const photos: GalleryPhoto[] = [
@@ -21,7 +21,7 @@ export default function GaleriaPage() {
             GALERIA DE <em>CAMPO</em>
           </h1>
           <p className="fi d2">
-            Momentos da trajetória e da pré-campanha pelo Mato Grosso. Novas fotos serão
+            Momentos da trajetória e da campanha pelo Mato Grosso. Novas fotos serão
             adicionadas ao longo da caminhada.
           </p>
         </div>

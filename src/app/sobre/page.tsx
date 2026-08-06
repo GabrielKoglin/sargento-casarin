@@ -26,7 +26,7 @@ const timeline = [
   },
   {
     label: "04",
-    title: "Pré-candidatura 2026",
+    title: "Candidatura 2026",
     text: "A nova missão: levar a experiência da linha de frente para onde as decisões são tomadas, como Deputado Estadual por Mato Grosso.",
   },
 ];

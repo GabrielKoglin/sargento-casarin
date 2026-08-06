@@ -25,8 +25,8 @@ export default function PrivacidadePage() {
           <div className="priv-body">
             <h2>1. Quem somos</h2>
             <p>
-              Este site é o canal institucional da pré-campanha do Sargento Dickson Casarin,
-              pré-candidato a Deputado Estadual por Mato Grosso. Ao usar o site, você
+              Este site é o canal institucional da campanha do Sargento Dickson Casarin,
+              candidato a Deputado Estadual por Mato Grosso. Ao usar o site, você
               concorda com os termos desta política, elaborada em conformidade com a Lei
               Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD).
             </p>
@@ -47,7 +47,7 @@ export default function PrivacidadePage() {
             <ul>
               <li>Responder às mensagens enviadas pelos canais de contato.</li>
               <li>
-                Enviar comunicações da pré-campanha (novidades, eventos e mobilizações) a
+                Enviar comunicações da campanha (novidades, eventos e mobilizações) a
                 quem se cadastrou voluntariamente.
               </li>
               <li>Organizar a rede de apoiadores por região.</li>
@@ -63,7 +63,7 @@ export default function PrivacidadePage() {
             <h2>5. Compartilhamento</h2>
             <p>
               Os seus dados não são vendidos nem compartilhados com terceiros para fins
-              comerciais. Eles são acessados apenas pela equipe da pré-campanha e por
+              comerciais. Eles são acessados apenas pela equipe da campanha e por
               fornecedores de tecnologia estritamente necessários à operação do site.
             </p>
 

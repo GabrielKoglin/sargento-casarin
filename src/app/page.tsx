@@ -206,7 +206,7 @@ export default async function Home() {
           <div className="eyebrow fi" style={{ justifyContent: 'center', display: 'flex', marginBottom: '1.25rem' }}>Comunidade</div>
           <h2 className="d-lg fi d1">FAÇA PARTE<br />DA <em>TROPA</em></h2>
           <p className="cta-lead fi d2">Receba conteúdos exclusivos, participe das mobilizações e ajude a levar essa mensagem por todo o Mato Grosso.</p>
-          <Link href="/tropa" className="btn btn-gold fi d3">Quero entrar para a Tropa <span aria-hidden="true">➔</span></Link>
+          <Link href="/tropa" className="btn btn-gold fi d3">Nossos Grupos <span aria-hidden="true">➔</span></Link>
         </div>
       </section>
     </>

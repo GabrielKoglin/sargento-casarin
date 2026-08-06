@@ -70,9 +70,9 @@ export default function MidiasPage() {
 
           <div className="mt-bloco" style={{ marginTop: "3rem" }}>
             <h2>Não perca nenhuma novidade</h2>
-            <p>Entre para a Tropa e receba os conteúdos direto no seu WhatsApp.</p>
+            <p>Entre nos nossos grupos e receba os conteúdos direto no seu WhatsApp.</p>
             <Link href="/tropa" className="btn btn-gold">
-              Entre para a Tropa <span aria-hidden="true">➔</span>
+              Nossos Grupos <span aria-hidden="true">➔</span>
             </Link>
           </div>
         </div>

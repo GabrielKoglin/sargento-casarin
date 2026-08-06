@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Notícias",
-  description: "Acompanhe as novidades da pré-campanha do Sargento Dickson Casarin.",
+  description: "Acompanhe as novidades da campanha do Sargento Dickson Casarin.",
 };
 
 const dateFormat = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
@@ -29,7 +29,7 @@ export default async function NoticiasPage() {
             ÚLTIMAS <em>NOTÍCIAS</em>
           </h1>
           <p className="fi d2">
-            Novidades da pré-campanha e a presença do Sargento Casarin na imprensa.
+            Novidades da campanha e a presença do Sargento Casarin na imprensa.
           </p>
         </div>
       </section>
@@ -49,11 +49,11 @@ export default async function NoticiasPage() {
                 <em style={{ fontStyle: "normal", color: "var(--B)" }}>NO MOMENTO</em>
               </h2>
               <p style={{ color: "rgba(255,255,255,.55)", lineHeight: 1.75, marginBottom: "2rem" }}>
-                Ainda não há notícias publicadas. Entre para a Tropa e receba as novidades em
+                Ainda não há notícias publicadas. Entre nos nossos grupos e receba as novidades em
                 primeira mão.
               </p>
               <Link href="/tropa" className="btn btn-gold">
-                Entre para a Tropa <span aria-hidden="true">➔</span>
+                Nossos Grupos <span aria-hidden="true">➔</span>
               </Link>
             </div>
           ) : (

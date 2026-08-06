@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 // Metadados da imagem (convenção App Router / Next 16)
 export const alt =
-  'Sargento Dickson Casarin — Pré-candidato a Deputado Estadual · Mato Grosso 2026'
+  'Sargento Dickson Casarin — Candidato a Deputado Estadual · Mato Grosso 2026'
 
 export const size = {
   width: 1200,
@@ -158,7 +158,7 @@ export default async function Image() {
                 letterSpacing: 2,
               }}
             >
-              PRÉ-CANDIDATO A DEPUTADO ESTADUAL · MATO GROSSO 2026
+              CANDIDATO A DEPUTADO ESTADUAL · MATO GROSSO 2026
             </div>
           </div>
 

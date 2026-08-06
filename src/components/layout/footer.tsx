@@ -13,8 +13,8 @@ const navFooter = [
 ];
 
 const participeFooter = [
-  { name: "Entre para a Tropa", href: "/tropa" },
-  { name: "Quero Ajudar", href: "https://apoiar.me/sargentocasarin" },
+  { name: "Nossos Grupos", href: "/tropa" },
+  { name: "Quero Ajudar", href: "/ajudar" },
   { name: "Nossas Mídias", href: "/midias" },
   { name: "Contato", href: "/contato" },
   { name: "Política de Privacidade", href: "/privacidade" },
@@ -43,7 +43,7 @@ export function Footer() {
               </span>
             </Link>
             <p style={{ marginTop: "1.25rem" }}>
-              Sargento Dickson Casarin, pré-candidato a Deputado Estadual por Mato Grosso.
+              Sargento Dickson Casarin, candidato a Deputado Estadual por Mato Grosso.
               Eleições 2026.
             </p>
             <div className="foot-social">
@@ -88,7 +88,7 @@ export function Footer() {
         </div>
         <div className="foot-bottom">
           <p>
-            © {currentYear} Sargento Dickson Casarin · Material de pré-campanha · Todos os
+            © {currentYear} Sargento Dickson Casarin · Material de campanha · Todos os
             direitos reservados
           </p>
           <div className="foot-legal">

@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Agenda",
-  description: "Agenda de eventos e mobilizações da pré-campanha do Sargento Dickson Casarin.",
+  description: "Agenda de eventos e mobilizações da campanha do Sargento Dickson Casarin.",
 };
 
 const dateFormat = new Intl.DateTimeFormat("pt-BR", {
@@ -45,10 +45,10 @@ export default async function AgendaPage() {
               <div className="eyebrow" style={{ justifyContent: "center" }}>Situação atual</div>
               <h2 style={{ marginTop: "1rem" }}>NENHUMA OPERAÇÃO AGENDADA</h2>
               <p style={{ margin: "1rem auto 1.5rem" }}>
-                Entre para a Tropa e seja avisado das próximas mobilizações.
+                Entre nos nossos grupos e seja avisado das próximas mobilizações.
               </p>
               <Link href="/tropa" className="btn btn-gold">
-                Entrar para a Tropa <span aria-hidden="true">➔</span>
+                Nossos Grupos <span aria-hidden="true">➔</span>
               </Link>
             </div>
           ) : (

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Quero Ajudar",
-  description: "Formas de apoiar a pré-campanha do Sargento Dickson Casarin em Mato Grosso.",
+  description: "Formas de apoiar a campanha do Sargento Dickson Casarin em Mato Grosso.",
 };
 
 export default function AjudarPage() {
@@ -27,10 +27,10 @@ export default function AjudarPage() {
           <div className="legal-alert fi">
             <span className="legal-alert-icon" aria-hidden="true">⚖️</span>
             <p>
-              Estamos em fase de <strong>pré-campanha</strong>. Doações financeiras seguem as
-              regras da legislação eleitoral e só serão recebidas pela plataforma oficial,
-              que será divulgada aqui no período permitido. Desconfie de qualquer pedido de
-              dinheiro em nome do Sargento Casarin fora dos canais oficiais.
+              O apoio financeiro é feito exclusivamente pela plataforma oficial
+              (<strong>apoiar.me/sargentocasarin</strong>), sempre de acordo com as regras
+              da legislação eleitoral. Desconfie de qualquer pedido de dinheiro em nome do
+              Sargento Casarin fora desse canal.
             </p>
           </div>
 
@@ -47,7 +47,7 @@ export default function AjudarPage() {
               <div className="contact-icon" aria-hidden="true">🤝</div>
               <h2>Seja voluntário</h2>
               <p>
-                Entre para a Tropa e participe das mobilizações na sua cidade ou região.
+                Entre nos nossos grupos e participe das mobilizações na sua cidade ou região.
               </p>
             </div>
             <div className="contact-card fi d2">
@@ -66,7 +66,7 @@ export default function AjudarPage() {
         <div className="topo-bg"></div>
         <div className="container">
           <div className="support-inner">
-            <div className="eyebrow fi">Apoio à pré-campanha</div>
+            <div className="eyebrow fi">Apoio à campanha</div>
             <h2 className="support-title fi d1">
               FORTALEÇA
               <br />
@@ -75,7 +75,7 @@ export default function AjudarPage() {
             <p className="support-lead fi d2">
               Esta é uma caminhada <strong>independente</strong>, sem máquina política,
               construída por gente comum que acredita que Mato Grosso pode ser mais seguro.
-              Quando a legislação eleitoral permitir, cada reforço vai ajudar a manter essa
+              Cada reforço, dentro das regras da legislação eleitoral, ajuda a manter essa
               missão de pé.
             </p>
             <div className="support-amounts fi d2">
@@ -101,9 +101,9 @@ export default function AjudarPage() {
               Quero apoiar <span aria-hidden="true">➔</span>
             </a>
             <div className="support-trust fi d3">
-              Valores meramente ilustrativos · Doações somente pela{" "}
-              <strong>plataforma oficial</strong>, que será divulgada aqui no período
-              permitido pela legislação eleitoral.
+              Valores meramente ilustrativos · O apoio é feito pela{" "}
+              <strong>plataforma oficial apoiar.me/sargentocasarin</strong>, conforme a
+              legislação eleitoral.
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function AjudarPage() {
             <p>O primeiro passo é entrar para a rede de apoiadores.</p>
             <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
               <Link href="/tropa" className="btn btn-gold">
-                Entre para a Tropa <span aria-hidden="true">➔</span>
+                Nossos Grupos <span aria-hidden="true">➔</span>
               </Link>
               <Link href="/contato" className="btn btn-ghost">
                 Falar com a equipe

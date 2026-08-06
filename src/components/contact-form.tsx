@@ -77,7 +77,7 @@ export function ContactForm({
       <div className="form-consent">
         <input type="checkbox" id={`consent-${origin}`} name="consent" required />
         <label htmlFor={`consent-${origin}`}>
-          Autorizo o uso dos meus dados para receber comunicações da pré-campanha, conforme a{" "}
+          Autorizo o uso dos meus dados para receber comunicações da campanha, conforme a{" "}
           <Link href="/privacidade">Política de Privacidade</Link>. Você pode sair da lista
           quando quiser.
         </label>

@@ -17,7 +17,7 @@ export default function ContatoPage() {
           </h1>
           <p className="fi d2">
             Dúvidas, sugestões de propostas ou convites para eventos: cada mensagem é lida
-            pela equipe da pré-campanha.
+            pela equipe da campanha.
           </p>
         </div>
       </section>

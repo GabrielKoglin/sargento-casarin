@@ -65,7 +65,7 @@ export default function ManifestoPage() {
 
           <div className="fi d3" style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
             <Link href="/tropa" className="btn btn-gold">
-              Entre para a Tropa ➔
+              Nossos Grupos ➔
             </Link>
             <Link href="/propostas" className="btn btn-ghost">
               Ver as propostas

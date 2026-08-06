@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact-form";
 
 export const metadata: Metadata = {
-  title: "Entre para a Tropa",
+  title: "Nossos Grupos",
   description:
     "Faça parte da Tropa do Sargento Casarin: receba conteúdos exclusivos e participe das mobilizações em Mato Grosso.",
 };
@@ -46,7 +46,7 @@ export default function TropaPage() {
       <section className="tropa-hero">
         <div className="container">
           <h1 className="sl">
-            ENTRE PARA A <em>TROPA</em>
+            NOSSOS <em>GRUPOS</em>
           </h1>
           <p className="fi d1">
             Receba conteúdos exclusivos, participe das mobilizações e ajude a levar essa
@@ -65,9 +65,9 @@ export default function TropaPage() {
             </p>
             <ContactForm
               origin="tropa"
-              submitLabel="Quero entrar para a Tropa ➔"
+              submitLabel="Quero participar ➔"
               successTitle="Bem-vindo à Tropa!"
-              successText="Cadastro recebido. Em breve você receberá as novidades e os canais oficiais da pré-campanha."
+              successText="Cadastro recebido. Em breve você receberá as novidades e os canais oficiais da campanha."
             />
           </div>
 
