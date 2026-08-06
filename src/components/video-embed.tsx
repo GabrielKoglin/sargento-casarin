@@ -32,6 +32,23 @@ function isVideoFile(src: string): boolean {
   return /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(src);
 }
 
+// Redes que BLOQUEIAM iframe (X-Frame-Options: DENY) — Instagram, TikTok,
+// Facebook. Para elas não dá para embutir o player; mostramos um card que
+// abre o vídeo na origem. Retorna o rótulo/gradiente da plataforma (ou null
+// quando não é uma dessas — aí cai no iframe genérico, ex.: Vimeo).
+function blockedPlatform(src: string): { name: string; grad: string } | null {
+  if (/instagram\.com/i.test(src)) {
+    return { name: "Instagram", grad: "linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)" };
+  }
+  if (/tiktok\.com/i.test(src)) {
+    return { name: "TikTok", grad: "linear-gradient(135deg,#25f4ee,#111,#fe2c55)" };
+  }
+  if (/facebook\.com|fb\.watch/i.test(src)) {
+    return { name: "Facebook", grad: "linear-gradient(135deg,#1877f2,#0a2e4f)" };
+  }
+  return null;
+}
+
 const wrapperStyle: CSSProperties = {
   position: "relative",
   width: "100%",
@@ -53,6 +70,64 @@ const fillStyle: CSSProperties = {
 export function VideoEmbed({ src, poster, title }: VideoItem) {
   const label = title ?? "Vídeo do Sargento Dickson Casarin";
   const ytId = youTubeId(src);
+  const blocked = ytId || isVideoFile(src) ? null : blockedPlatform(src);
+
+  // Instagram/TikTok/Facebook não permitem iframe → card clicável que abre o
+  // vídeo na origem (evita o "conexão recusada"). Usa o poster, se houver.
+  if (blocked) {
+    return (
+      <a
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Assistir ${label} no ${blocked.name} (abre em nova aba)`}
+        style={{
+          ...wrapperStyle,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.7rem",
+          textDecoration: "none",
+          color: "#fff",
+          background: poster ? undefined : blocked.grad,
+        }}
+      >
+        {poster ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={poster}
+              alt=""
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+            />
+            <span style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.45)" }} aria-hidden="true" />
+          </>
+        ) : null}
+        <span
+          aria-hidden="true"
+          style={{
+            position: "relative",
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,.92)",
+            color: "#111",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.4rem",
+            paddingLeft: 4,
+          }}
+        >
+          ▶
+        </span>
+        <span style={{ position: "relative", fontWeight: 700, fontSize: "0.92rem" }}>
+          Assistir no {blocked.name}
+        </span>
+      </a>
+    );
+  }
 
   return (
     <div style={wrapperStyle}>
@@ -76,7 +151,7 @@ export function VideoEmbed({ src, poster, title }: VideoItem) {
           <track kind="captions" />
         </video>
       ) : (
-        // URL de embed genérica (ex.: Vimeo) que não é YouTube nem arquivo.
+        // URL de embed genérica (ex.: Vimeo) que permite iframe.
         <iframe
           src={src}
           title={label}
