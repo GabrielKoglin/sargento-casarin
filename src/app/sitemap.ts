@@ -19,6 +19,9 @@ const routes = [
   "/midias",
   "/privacidade",
   "/termos",
+  "/cookies",
+  "/lgpd",
+  "/regras",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
