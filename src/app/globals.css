@@ -738,16 +738,18 @@ body::after {
 /* ============================================
    CTA TROPA
 ============================================ */
-.cta-tropa { background:var(--GAB); padding:7rem 0; text-align:center; position:relative; overflow:hidden; }
+.cta-tropa { background:var(--CR); padding:7rem 0; text-align:center; position:relative; overflow:hidden; }
+/* No fundo claro, as linhas topográficas viram traços escuros bem sutis. */
+.cta-tropa .topo-bg { filter:brightness(0); opacity:.05; }
 .cta-tropa .container { position:relative; z-index:2; }
 .cta-tropa::before {
   content:''; position:absolute; top:-40%; left:50%; transform:translateX(-50%);
   width:700px; height:700px; border-radius:50%; border:100px solid rgba(196,168,130,.04); pointer-events:none;
 }
 .cta-tropa .ht { bottom:-80px; left:-80px; width:360px; height:360px; }
-.cta-tropa .d-lg { color:var(--W); margin-bottom:1.5rem; position:relative; }
+.cta-tropa .d-lg { color:var(--GX); margin-bottom:1.5rem; position:relative; }
 .cta-tropa .d-lg em { font-style:normal; color:var(--B); }
-.cta-lead { color:rgba(255,255,255,.58); max-width:400px; margin:0 auto 2.5rem; font-size:.9rem; position:relative; }
+.cta-lead { color:rgba(26,26,26,.6); max-width:400px; margin:0 auto 2.5rem; font-size:.9rem; position:relative; }
 
 /* ============================================
    PAGE HERO (sub-pÃ¡ginas)
