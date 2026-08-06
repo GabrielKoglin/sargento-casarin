@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SiFacebook, SiInstagram, SiX, SiYoutube } from "react-icons/si";
+import { SiFacebook, SiInstagram, SiThreads, SiTiktok, SiX, SiYoutube } from "react-icons/si";
 import { SgtBadge } from "@/components/sgt-badge";
 
 const navFooter = [
@@ -32,7 +32,9 @@ const legalFooter = [
 const socialLinks = [
   { name: "Instagram", icon: SiInstagram, href: "https://instagram.com" },
   { name: "Facebook", icon: SiFacebook, href: "https://facebook.com" },
+  { name: "Threads", icon: SiThreads, href: "https://www.threads.net" },
   { name: "X (Twitter)", icon: SiX, href: "https://twitter.com" },
+  { name: "TikTok", icon: SiTiktok, href: "https://www.tiktok.com" },
   { name: "YouTube", icon: SiYoutube, href: "https://youtube.com" },
 ];
 
