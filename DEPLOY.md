@@ -12,6 +12,7 @@ O arquivo `.env` é ignorado pelo Git. Cadastre estas variáveis no ambiente de 
 | `ADMIN_EMAIL` | E-mail do administrador inicial. |
 | `ADMIN_PASSWORD` | Senha forte do administrador inicial; nunca use o padrão de desenvolvimento. |
 | `ADMIN_NAME` | Nome exibido para o administrador inicial. |
+| `ANTHROPIC_API_KEY` | **Opcional.** Ativa o assistente de IA (Claude) em `/api/chat`. SEM a chave, o assistente funciona em modo curado (respostas seguras pré-aprovadas, sem custo). COM a chave, usa o Claude Haiku com guarda-corpos. Obtenha em console.anthropic.com. Atenção: tem custo por mensagem — considere isso num site público. |
 
 ## Cron de notícias
 
