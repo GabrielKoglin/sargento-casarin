@@ -791,9 +791,9 @@ body::after {
    GALERIA
 ============================================ */
 .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr)); gap:4px; margin-top:2rem; }
-.gallery-item { position:relative; overflow:hidden; aspect-ratio:4/3; cursor:pointer; }
-.gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease); filter:saturate(.8); }
-.gallery-item:hover img { transform:scale(1.07); filter:saturate(1); }
+.gallery-item { position:relative; overflow:hidden; aspect-ratio:3/4; cursor:pointer; background:#0a1420; }
+.gallery-item img { width:100%; height:100%; object-fit:contain; transition:transform .5s var(--ease); filter:saturate(.85); }
+.gallery-item:hover img { transform:scale(1.02); filter:saturate(1); }
 .gallery-overlay { position:absolute; inset:0; background:rgba(17,26,21,0); transition:background .3s; }
 .gallery-item:hover .gallery-overlay { background:rgba(17,26,21,.35); }
 .lightbox { position:fixed; inset:0; background:rgba(0,0,0,.96); z-index:9999; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s; }
@@ -801,6 +801,11 @@ body::after {
 .lightbox img { max-width:90vw; max-height:90vh; object-fit:contain; }
 .lb-close { position:absolute; top:1.5rem; right:1.5rem; color:var(--W); font-size:2rem; cursor:pointer; opacity:.5; transition:opacity .2s; background:none; border:none; }
 .lb-close:hover { opacity:1; }
+/* Legenda/título do vídeo (abaixo do embed 16:9) — usada na /galeria. */
+.video-cap { margin:.6rem 0 0; font-size:.95rem; font-weight:600; color:rgba(255,255,255,.85); }
+/* Título "VÍDEOS" da /galeria: sem regra de cor, o h2 herdava texto escuro sobre
+   o navy (ilegível). Força branco + tratamento de título de seção. */
+.videos-head { color:var(--W); font-family:var(--fc); text-transform:uppercase; font-size:clamp(1.6rem,4vw,2.4rem); line-height:1; letter-spacing:.01em; }
 
 /* ============================================
    TROPA
@@ -1093,6 +1098,35 @@ footer {
   /* Bloco "Tem uma sugestão?" / "Comece agora" (.mt-bloco) centralizado */
   .mt-bloco { text-align:center; }
   .mt-bloco > div { justify-content:center; }
+
+  /* ===== /manifesto — texto, régua, stats e CTAs centralizados ===== */
+  .manifesto-content { text-align:center; }
+  .manifesto-hr { margin-inline:auto; }
+  .manifesto-stats { justify-content:center; }
+  .m-stat { text-align:center; }
+  .manifesto-content > .fi.d3 { flex-direction:column; justify-content:center; }
+  .manifesto-content > .fi.d3 .btn { width:100%; justify-content:center; }
+
+  /* ===== /sobre (bio) — timeline PERMANECE à esquerda ===== */
+  .bio-text { text-align:center; }
+  .bio-text .timeline, .bio-text .tl-body { text-align:left; }
+  .bio-text .btn { width:100%; justify-content:center; }
+
+  /* ===== /propostas — cartões de eixo centralizados ===== */
+  .eixo-card { text-align:center; justify-items:center; }
+
+  /* ===== /contato e /tropa — labels/inputs FICAM à esquerda ===== */
+  .form-box h2, .form-box > p { text-align:center; }
+  .form-box .btn { width:100%; justify-content:center; }
+  .tropa-res-ok .res-title, .tropa-res-ok .res-sub { text-align:center; }
+
+  /* ===== Home — faixa de credenciais empilha e centraliza ===== */
+  .cred-item { flex-direction:column; text-align:center; gap:.5rem; padding:2rem 1.25rem; }
+  .cred-num { min-width:0; }
+  .cred-txt { max-width:24rem; }
+
+  /* ===== /galeria — legenda do vídeo centralizada (heading já em .videos-head) ===== */
+  .video-cap { text-align:center; }
 }
 
 @media(max-width:480px) {

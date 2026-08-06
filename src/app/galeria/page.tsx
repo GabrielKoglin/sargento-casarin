@@ -84,7 +84,7 @@ export default async function GaleriaPage() {
       {videos.length > 0 && (
         <section className="section">
           <div className="container">
-            <h2 className="sl" style={{ marginBottom: "1.5rem" }}>
+            <h2 className="sl videos-head" style={{ marginBottom: "1.5rem" }}>
               VÍDEOS
             </h2>
             <div
@@ -92,6 +92,9 @@ export default async function GaleriaPage() {
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
                 gap: "1.5rem",
+                // Embeds verticais (Reel/TikTok) têm alturas diferentes — alinha
+                // cada célula ao topo em vez de esticar.
+                alignItems: "start",
               }}
             >
               {videos.map((video, index) => (
@@ -102,15 +105,7 @@ export default async function GaleriaPage() {
                     title={video.title}
                   />
                   {video.title ? (
-                    <p
-                      style={{
-                        margin: "0.6rem 0 0",
-                        fontSize: "0.95rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {video.title}
-                    </p>
+                    <p className="video-cap">{video.title}</p>
                   ) : null}
                 </div>
               ))}

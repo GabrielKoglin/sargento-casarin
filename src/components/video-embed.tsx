@@ -5,6 +5,7 @@
 // <video controls> (arquivo de vídeo) a partir do `src`. O wrapper mantém a
 // proporção 16:9 e o conteúdo o preenche por completo.
 import type { CSSProperties } from "react";
+import { SocialVideo, type SocialPlatform } from "@/components/social-embed";
 
 export type VideoItem = {
   src: string;
@@ -32,10 +33,24 @@ function isVideoFile(src: string): boolean {
   return /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(src);
 }
 
-// Redes que BLOQUEIAM iframe (X-Frame-Options: DENY) — Instagram, TikTok,
-// Facebook. Para elas não dá para embutir o player; mostramos um card que
-// abre o vídeo na origem. Retorna o rótulo/gradiente da plataforma (ou null
-// quando não é uma dessas — aí cai no iframe genérico, ex.: Vimeo).
+// Redes cujo player REPRODUZ inline no site (via SocialEmbed). Só entram aqui
+// URLs claramente embutíveis; shortlinks (fb.watch, vm.tiktok.com) e formatos
+// estranhos caem no card de fallback (blockedPlatform). Retorna a plataforma ou
+// null quando o `src` não é um post/vídeo reconhecível.
+function embeddablePlatform(src: string): SocialPlatform | null {
+  // Instagram: post/reel/tv com slug (ex.: /reel/DYiatxQPX-a/).
+  if (/instagram\.com\/(?:reel|reels|p|tv)\/[\w-]+/i.test(src)) return "instagram";
+  // TikTok: /video/<id> ou /v/<id> (shortlink vm.tiktok.com não casa → card).
+  if (/tiktok\.com\/(?:.*\/)?(?:video|v)\/\d+/i.test(src)) return "tiktok";
+  // Facebook: .../videos/<id> (fb.watch não casa → card).
+  if (/facebook\.com\/[^/]+\/videos\/\d+/i.test(src)) return "facebook";
+  return null;
+}
+
+// Redes que BLOQUEIAM iframe direto (X-Frame-Options: DENY) e cujo `src` NÃO é
+// embutível pelo SocialEmbed (ex.: shortlink fb.watch, vm.tiktok.com, ou link de
+// perfil). Para elas mostramos um card que abre o vídeo na origem. Retorna o
+// rótulo/gradiente da plataforma (ou null — aí cai no iframe genérico, ex.: Vimeo).
 function blockedPlatform(src: string): { name: string; grad: string } | null {
   if (/instagram\.com/i.test(src)) {
     return { name: "Instagram", grad: "linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)" };
@@ -70,10 +85,21 @@ const fillStyle: CSSProperties = {
 export function VideoEmbed({ src, poster, title }: VideoItem) {
   const label = title ?? "Vídeo do Sargento Dickson Casarin";
   const ytId = youTubeId(src);
-  const blocked = ytId || isVideoFile(src) ? null : blockedPlatform(src);
+  const isFile = isVideoFile(src);
+  const social = ytId || isFile ? null : embeddablePlatform(src);
+  const blocked = ytId || isFile ? null : blockedPlatform(src);
 
-  // Instagram/TikTok/Facebook não permitem iframe → card clicável que abre o
-  // vídeo na origem (evita o "conexão recusada"). Usa o poster, se houver.
+  // Instagram (reel/post), TikTok (/video/) e Facebook (/videos/) reproduzem
+  // DENTRO do site: card por padrão, player embutido ao clicar (SocialVideo).
+  // Evita a "caixa branca" do embed no load e carrega o script de terceiro só
+  // por ação do usuário. Vertical, sem wrapper 16:9.
+  if (social) {
+    return <SocialVideo platform={social} url={src} poster={poster} title={title} />;
+  }
+
+  // Redes sem player embutível (shortlink fb.watch, vm.tiktok.com, link de
+  // perfil) → card clicável que abre o vídeo na origem (evita o "conexão
+  // recusada"). Usa o poster, se houver.
   if (blocked) {
     return (
       <a
