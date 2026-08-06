@@ -146,6 +146,9 @@ body::after {
   border-bottom:1px solid rgba(196,168,130,.1);
   backdrop-filter:blur(8px);
 }
+/* Menu mobile aberto: eleva o header acima do FAB do assistente (10001),
+   VLibras (9996) e banner de cookies (9995) para o popup cobrir tudo. */
+.navbar:has(.nav-links.open) { z-index:10050; }
 .navbar .container { display:flex; align-items:center; justify-content:space-between; }
 
 .nav-links { display:flex; align-items:center; }
@@ -979,11 +982,44 @@ footer {
   /* drawer fechado: fora da tela E fora do tab order (visibility:hidden).
      visibility com delay = .3s no fechamento p/ não cortar a animação de saída;
      imediata (0s) na abertura p/ o slide-in aparecer. */
-  .nav-links { position:fixed; top:0; right:-100%; height:100vh; height:100dvh; width:min(290px,82vw); background:var(--GXX); flex-direction:column; align-items:flex-start; padding:5rem 2rem 2rem; visibility:hidden; transition:right .3s, visibility 0s linear .3s; border-left:1px solid rgba(196,168,130,.07); }
-  .nav-links.open { right:0; visibility:visible; transition:right .3s, visibility 0s linear 0s; }
-  .nav-links a { font-size:.88rem; padding:.85rem 0; width:100%; border-bottom:1px solid rgba(255,255,255,.05); }
-  .btn-tropa-nav { margin-top:1rem; width:100%; text-align:center; justify-content:center; }
-  .nav-toggle { display:flex; }
+  /* ===== MENU MOBILE — popup full-screen (overlay escuro + blur) ===== */
+  .nav-toggle { display:flex; position:relative; z-index:2; }
+  .nav-logo { position:relative; z-index:2; }
+  .nav-links {
+    position:fixed; inset:0; width:100%; height:100vh; height:100dvh; z-index:1;
+    /* fundo sólido (sem vazar o conteúdo por trás) com leve profundidade */
+    background:linear-gradient(165deg,#0b1a2b 0%,#050e1a 60%,#04101c 100%);
+    flex-direction:column; align-items:center; justify-content:center; gap:.55rem;
+    padding:6rem 1.5rem 3rem;
+    opacity:0; visibility:hidden; transform:scale(1.03);
+    transition:opacity .3s var(--ease), transform .3s var(--ease), visibility 0s linear .3s;
+    border-left:none;
+  }
+  .nav-links.open {
+    opacity:1; visibility:visible; transform:scale(1);
+    transition:opacity .3s var(--ease), transform .3s var(--ease), visibility 0s linear 0s;
+  }
+  .nav-links li { width:auto; }
+  .nav-links a {
+    font-family:var(--fc); font-size:1.65rem; font-weight:700; letter-spacing:.04em;
+    color:rgba(255,255,255,.82); padding:.45rem 1rem; width:auto; border:none;
+  }
+  .nav-links a::after { display:none; }
+  .nav-links a.active { color:var(--B); }
+  .btn-tropa-nav {
+    /* inline-flex p/ a margem vertical valer (margin-top não afeta <a> inline) */
+    display:inline-flex; align-items:center; justify-content:center;
+    margin:2.4rem 0 0 !important; width:auto; text-align:center;
+    font-size:.95rem !important; padding:.95rem 2.4rem !important;
+  }
+  /* stagger suave dos itens ao abrir */
+  .nav-links li { opacity:0; transform:translateY(12px); transition:opacity .35s var(--ease), transform .35s var(--ease); }
+  .nav-links.open li { opacity:1; transform:none; }
+  .nav-links.open li:nth-child(1){transition-delay:.05s} .nav-links.open li:nth-child(2){transition-delay:.09s}
+  .nav-links.open li:nth-child(3){transition-delay:.13s} .nav-links.open li:nth-child(4){transition-delay:.17s}
+  .nav-links.open li:nth-child(5){transition-delay:.21s} .nav-links.open li:nth-child(6){transition-delay:.25s}
+  .nav-links.open li:nth-child(7){transition-delay:.29s} .nav-links.open li:nth-child(8){transition-delay:.33s}
+  .nav-links.open li:nth-child(9){transition-delay:.37s}
   .hero-actions { flex-direction:column; }
   .hero-actions .btn { width:100%; justify-content:center; }
   .propostas-grid { grid-template-columns:1fr; }
@@ -1053,6 +1089,10 @@ footer {
   /* Cartões de proposta: conteúdo centralizado */
   .prop-card { text-align:center; }
   .prop-icon { display:flex; justify-content:center; }
+
+  /* Bloco "Tem uma sugestão?" / "Comece agora" (.mt-bloco) centralizado */
+  .mt-bloco { text-align:center; }
+  .mt-bloco > div { justify-content:center; }
 }
 
 @media(max-width:480px) {
@@ -1125,6 +1165,9 @@ footer {
 .vw-plugin-wrapper {
   left:1rem !important; right:auto !important; z-index:9996 !important;
 }
+/* Com o menu mobile aberto, o widget VLibras (z-index próprio do plugin) some
+   para não vazar por cima do popup. Volta ao fechar. */
+body:has(.nav-links.open) [vw] { display:none !important; }
 
 /* ============================================================
    MODO ALTO CONTRASTE — html.a11y-contrast
