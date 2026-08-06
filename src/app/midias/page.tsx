@@ -6,25 +6,37 @@ export const metadata: Metadata = {
   description: "Canais oficiais do Sargento Dickson Casarin nas redes sociais.",
 };
 
-// TODO: substituir pelos perfis oficiais quando definidos
+// Perfis oficiais. TODO: YouTube e X (Twitter) ainda são placeholder ("em breve").
 const canais = [
   {
     icon: "📷",
     name: "Instagram",
-    handle: "Perfil oficial em breve",
-    href: "https://instagram.com",
+    handle: "@sargentocasarin",
+    href: "https://www.instagram.com/sargentocasarin",
+  },
+  {
+    icon: "🧵",
+    name: "Threads",
+    handle: "@sargentocasarin",
+    href: "https://www.threads.com/@sargentocasarin",
+  },
+  {
+    icon: "📘",
+    name: "Facebook",
+    handle: "/sargentocasarin",
+    href: "https://www.facebook.com/sargentocasarin",
+  },
+  {
+    icon: "🎵",
+    name: "TikTok",
+    handle: "@sargentocasarin",
+    href: "https://www.tiktok.com/@sargentocasarin",
   },
   {
     icon: "▶️",
     name: "YouTube",
     handle: "Canal oficial em breve",
     href: "https://youtube.com",
-  },
-  {
-    icon: "📘",
-    name: "Facebook",
-    handle: "Página oficial em breve",
-    href: "https://facebook.com",
   },
   {
     icon: "✖️",

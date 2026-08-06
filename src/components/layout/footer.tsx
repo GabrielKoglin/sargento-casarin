@@ -28,13 +28,14 @@ const legalFooter = [
   { name: "Regras e Normas", href: "/regras" },
 ];
 
-// TODO: substituir pelos perfis oficiais quando definidos
+// Perfis oficiais. TODO: X (Twitter) e YouTube ainda são placeholder — trocar
+// quando o cliente enviar os links.
 const socialLinks = [
-  { name: "Instagram", icon: SiInstagram, href: "https://instagram.com" },
-  { name: "Facebook", icon: SiFacebook, href: "https://facebook.com" },
-  { name: "Threads", icon: SiThreads, href: "https://www.threads.net" },
+  { name: "Instagram", icon: SiInstagram, href: "https://www.instagram.com/sargentocasarin" },
+  { name: "Facebook", icon: SiFacebook, href: "https://www.facebook.com/sargentocasarin" },
+  { name: "Threads", icon: SiThreads, href: "https://www.threads.com/@sargentocasarin" },
   { name: "X (Twitter)", icon: SiX, href: "https://twitter.com" },
-  { name: "TikTok", icon: SiTiktok, href: "https://www.tiktok.com" },
+  { name: "TikTok", icon: SiTiktok, href: "https://www.tiktok.com/@sargentocasarin" },
   { name: "YouTube", icon: SiYoutube, href: "https://youtube.com" },
 ];
 
