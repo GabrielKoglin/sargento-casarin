@@ -103,7 +103,14 @@ export function Footer() {
               direitos reservados
             </p>
             <p className="foot-credit">
-              Desenvolvido por <span>Gabriel Koglin</span>
+              Desenvolvido por{" "}
+              <a
+                href="https://www.devgabrielkoglin.com.br"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Gabriel Koglin</span>
+              </a>
             </p>
           </div>
           <nav className="foot-legal" aria-label="Links legais">
