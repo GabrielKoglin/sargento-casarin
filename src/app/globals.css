@@ -308,7 +308,8 @@ body::after {
 .corner-br { bottom:1.4rem; right:1.4rem; border-bottom:1px solid var(--NV); border-right:1px solid var(--NV); }
 
 /* ConteÃºdo */
-.hero-content { position:relative; z-index:5; width:100%; padding:8rem 0 7rem; }
+/* padding lateral vem do .container (evita o texto colar/cortar na borda no mobile) */
+.hero-content { position:relative; z-index:5; width:100%; padding-top:8rem; padding-bottom:7rem; }
 .hero-inner { max-width:640px; }
 
 .hero-eyebrow {
@@ -954,8 +955,10 @@ footer {
    RESPONSIVO
 ============================================ */
 @media(max-width:1024px) {
-  .hero-bg { width:100%; opacity:.45; }
-  .hero-map { width:66vw; opacity:.32; }
+  /* no mobile a foto vira um pano de fundo BEM discreto (o texto lê por cima do
+     fundo escuro da hero, sem competir com o recorte) */
+  .hero-bg { width:100%; opacity:.16; background-position:center bottom; }
+  .hero-map { width:66vw; opacity:.2; }
   .why-wrap { grid-template-columns:1fr; }
   .why-right { height:480px; min-height:480px; }
   .why-left { padding:5rem 0; }
@@ -996,10 +999,12 @@ footer {
   .why-right { height:auto; min-height:0; display:flex; flex-direction:column; }
   .why-photo { position:relative; inset:auto; height:360px; }
   .why-scan { height:360px; bottom:auto; }
+  /* no mobile os marcadores viram uma LISTA visível abaixo da foto (não dependem
+     mais do "scanning" via scroll, que deixava um vão vazio) */
   .tgt {
     position:static; right:auto; top:auto !important;
-    width:100%; margin-top:.4rem;
-    transform:translateY(10px);
+    width:100%; margin-top:.5rem;
+    opacity:1; transform:none;
   }
   .tgt:first-of-type { margin-top:1rem; }
   .why-right.scanning .tgt { transform:none; }
