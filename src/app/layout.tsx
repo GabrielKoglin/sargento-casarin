@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { TacticalFx } from "@/components/tactical-fx";
+import { CookieConsent } from "@/components/cookie-consent";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -53,6 +54,7 @@ export default function RootLayout({
           </svg>
         </Link>
         <TacticalFx />
+        <CookieConsent />
       </body>
     </html>
   );
