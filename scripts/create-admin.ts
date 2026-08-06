@@ -29,6 +29,24 @@ async function main() {
   const name = process.env.ADMIN_NAME ?? DEFAULT_NAME;
 
   const usingDefaultPassword = password === DEFAULT_PASSWORD;
+
+  // Trava de segurança: fora de desenvolvimento NUNCA criar/atualizar o admin
+  // com a senha DEFAULT (pública/conhecida). "Fora de dev" = NODE_ENV de
+  // produção OU um DATABASE_URL que não seja SQLite local (`file:`). Abortamos
+  // ANTES de qualquer escrita no banco.
+  const databaseUrl = process.env.DATABASE_URL ?? "file:./dev.db";
+  const isProductionLike =
+    process.env.NODE_ENV === "production" || !databaseUrl.startsWith("file:");
+  if (isProductionLike && usingDefaultPassword) {
+    console.error(
+      `\n❌ ABORTADO: recusando criar admin com a senha DEFAULT ("${DEFAULT_PASSWORD}") ` +
+        "fora de desenvolvimento.\n" +
+        "   Defina ADMIN_PASSWORD (diferente da default) no ambiente e rode\n" +
+        "   `npm run create-admin` novamente.",
+    );
+    process.exit(1);
+  }
+
   const hashed = await hashPassword(password);
 
   // A conta principal é sempre "owner" (titular): gerencia a equipe em

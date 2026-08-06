@@ -77,6 +77,31 @@ function resolveChatIp(req: Request): string | null {
   );
 }
 
+// Barra POST cross-site (sequestro de custo da IA a partir de OUTROS sites). O
+// widget do próprio site sempre envia um POST same-origin. Estratégia:
+//   1) sec-fetch-site (enviado por navegadores modernos): "same-origin"/
+//      "same-site"/"none" são OK; só "cross-site" é bloqueado.
+//   2) Fallback pelo header `origin`: compara seu host com o host da request.
+// Sem NENHUM dos dois (ex.: curl, navegação direta) NÃO afirmamos cross-site e
+// deixamos passar — o rate-limit e o modo curado seguem valendo como defesa.
+function isCrossSiteRequest(req: Request): boolean {
+  const secFetchSite = req.headers.get("sec-fetch-site");
+  if (secFetchSite) {
+    return secFetchSite === "cross-site";
+  }
+
+  const origin = req.headers.get("origin");
+  if (origin) {
+    try {
+      return new URL(origin).host !== req.headers.get("host");
+    } catch {
+      return true; // origin malformado → trata como cross-site
+    }
+  }
+
+  return false;
+}
+
 // ---------------------------------------------------------------------------
 // Fatos oficiais — ÚNICA fonte de verdade do assistente (curado + LLM).
 // Editar aqui para atualizar o que a IA "sabe". NÃO inventar nada além disto.
@@ -215,6 +240,12 @@ function streamText(text: string): Response {
 // Handler
 // ---------------------------------------------------------------------------
 export async function POST(req: Request): Promise<Response> {
+  // Barra POST cross-site (evita sequestro de custo da IA a partir de OUTROS
+  // sites). O widget do próprio site sempre envia um POST same-origin.
+  if (isCrossSiteRequest(req)) {
+    return new Response("Origem não autorizada.", { status: 403 });
+  }
+
   // Rate-limit por IP (best-effort). Ao exceder, responde uma mensagem amigável
   // como stream de texto — o widget consome igual a qualquer resposta.
   const ip = resolveChatIp(req);

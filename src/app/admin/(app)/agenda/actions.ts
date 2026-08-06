@@ -78,8 +78,8 @@ export async function createEvent(
 
   try {
     await prisma.event.create({ data });
-  } catch {
-    console.error("Falha ao criar evento.");
+  } catch (error) {
+    console.error("Falha ao criar evento.", error);
     return { error: "Não foi possível salvar o evento. Tente novamente." };
   }
 
@@ -104,8 +104,8 @@ export async function updateEvent(
 
   try {
     await prisma.event.update({ where: { id }, data });
-  } catch {
-    console.error("Falha ao atualizar evento.");
+  } catch (error) {
+    console.error("Falha ao atualizar evento.", error);
     return { error: "Não foi possível salvar as alterações. Tente novamente." };
   }
 
@@ -123,8 +123,8 @@ export async function deleteEvent(formData: FormData): Promise<void> {
 
   try {
     await prisma.event.delete({ where: { id } });
-  } catch {
-    console.error("Falha ao excluir evento.");
+  } catch (error) {
+    console.error("Falha ao excluir evento.", error);
   }
 
   revalidateAgenda();

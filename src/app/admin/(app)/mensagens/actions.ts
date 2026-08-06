@@ -21,8 +21,8 @@ export async function deleteContact(formData: FormData): Promise<void> {
 
   try {
     await prisma.contact.delete({ where: { id } });
-  } catch {
-    console.error("Falha ao excluir mensagem.");
+  } catch (error) {
+    console.error("Falha ao excluir mensagem.", error);
   }
 
   // "layout" também: o badge de não lidas vive na sidebar (layout do painel).
@@ -39,8 +39,8 @@ export async function markContactRead(formData: FormData): Promise<void> {
 
   try {
     await prisma.contact.update({ where: { id }, data: { read: true } });
-  } catch {
-    console.error("Falha ao marcar mensagem como lida.");
+  } catch (error) {
+    console.error("Falha ao marcar mensagem como lida.", error);
   }
 
   revalidatePath("/admin/mensagens", "layout");
@@ -56,8 +56,8 @@ export async function markAllContactsRead(): Promise<void> {
       where: { read: false },
       data: { read: true },
     });
-  } catch {
-    console.error("Falha ao marcar todas as mensagens como lidas.");
+  } catch (error) {
+    console.error("Falha ao marcar todas as mensagens como lidas.", error);
   }
 
   revalidatePath("/admin/mensagens", "layout");

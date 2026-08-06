@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import type { News } from "@/generated/prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -11,14 +12,24 @@ export const metadata: Metadata = {
 
 const dateFormat = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
 
+// Só notícias APROVADAS vão ao público — as ingeridas dos feeds ficam "pending"
+// até o admin aprovar (moderação). `take` evita renderizar milhares. Uma falha
+// de I/O vira lista vazia, caindo no empty-state em vez de estourar 500.
+async function loadNoticias(): Promise<News[]> {
+  try {
+    return await prisma.news.findMany({
+      where: { status: "approved" },
+      orderBy: { publishedAt: "desc" },
+      take: 30,
+    });
+  } catch (error) {
+    console.error("Falha ao carregar notícias.", error);
+    return [];
+  }
+}
+
 export default async function NoticiasPage() {
-  // Só notícias APROVADAS vão ao público — as ingeridas dos feeds ficam
-  // "pending" até o admin aprovar (moderação). `take` evita renderizar milhares.
-  const noticias = await prisma.news.findMany({
-    where: { status: "approved" },
-    orderBy: { publishedAt: "desc" },
-    take: 30,
-  });
+  const noticias = await loadNoticias();
 
   return (
     <>

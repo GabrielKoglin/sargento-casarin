@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import type { Proposal } from "@/generated/prisma/client";
 import { HomeFx } from "@/components/home-fx";
 import { SgtBadge } from "@/components/sgt-badge";
 
@@ -13,11 +14,22 @@ const marqueeItems = [
   "VAMOS VENCER",
 ];
 
+// A home é a porta de entrada — um soluço do banco não pode derrubá-la. Em
+// falha de I/O cai numa lista vazia (a seção de propostas mostra "em breve").
+async function loadPropostas(): Promise<Proposal[]> {
+  try {
+    return await prisma.proposal.findMany({
+      orderBy: { createdAt: "asc" },
+      take: 4,
+    });
+  } catch (error) {
+    console.error("Falha ao carregar propostas na home.", error);
+    return [];
+  }
+}
+
 export default async function Home() {
-  const propostas = await prisma.proposal.findMany({
-    orderBy: { createdAt: "asc" },
-    take: 4,
-  });
+  const propostas = await loadPropostas();
 
   return (
     <>

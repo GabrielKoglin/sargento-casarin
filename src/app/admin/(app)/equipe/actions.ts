@@ -82,8 +82,8 @@ export async function createMember(
     await prisma.user.create({
       data: { name: name.slice(0, 120), email: email.slice(0, 160), password: hashed, role },
     });
-  } catch {
-    console.error("Falha ao criar membro da equipe.");
+  } catch (error) {
+    console.error("Falha ao criar membro da equipe.", error);
     return { error: "Não foi possível criar o membro agora.", ok: false };
   }
 
@@ -113,8 +113,8 @@ export async function deleteMember(formData: FormData): Promise<void> {
       if (owners <= 1) return;
     }
     await prisma.user.delete({ where: { id } });
-  } catch {
-    console.error("Falha ao excluir membro da equipe.");
+  } catch (error) {
+    console.error("Falha ao excluir membro da equipe.", error);
   }
 
   revalidatePath("/admin/equipe");
@@ -132,8 +132,8 @@ export async function resetMemberPassword(formData: FormData): Promise<void> {
   try {
     const hashed = await hashPassword(password);
     await prisma.user.update({ where: { id }, data: { password: hashed } });
-  } catch {
-    console.error("Falha ao redefinir senha do membro.");
+  } catch (error) {
+    console.error("Falha ao redefinir senha do membro.", error);
   }
 
   revalidatePath("/admin/equipe");
@@ -161,8 +161,8 @@ export async function setMemberRole(formData: FormData): Promise<void> {
       }
     }
     await prisma.user.update({ where: { id }, data: { role: roleRaw } });
-  } catch {
-    console.error("Falha ao alterar papel do membro.");
+  } catch (error) {
+    console.error("Falha ao alterar papel do membro.", error);
   }
 
   revalidatePath("/admin/equipe");

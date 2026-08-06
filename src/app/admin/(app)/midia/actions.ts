@@ -71,6 +71,19 @@ function normalizeVideoUrl(raw: string): string {
   return id ? `https://www.youtube.com/embed/${id}` : raw;
 }
 
+// Espelha safeUrl de noticias/actions.ts, mas aceita TAMBÉM o caminho interno
+// "/uploads/..." gerado pelo upload local. `src`/`poster` vão direto para
+// <Image src>/<video>: uma URL SEM protocolo faz o next/image LANÇAR e derruba
+// a /galeria; esquemas perigosos (javascript:, data:) também são recusados.
+// Aceita string vazia (→ null), URL http(s) ou "/uploads/...". Retorna `false`
+// = inválido (erro claro ao usuário; nada é gravado).
+function safeMediaUrl(value: string): string | null | false {
+  if (!value) return null;
+  if (/^https?:\/\//i.test(value)) return value;
+  if (value.startsWith("/uploads/")) return value;
+  return false;
+}
+
 // Salva uma imagem enviada em public/uploads, otimizada com sharp: auto-orient
 // pelo EXIF (.rotate()), redimensiona o maior lado para ~1600px sem AMPLIAR, e
 // grava como WebP q80. Retorna o caminho público ("/uploads/<uuid>.webp").
@@ -118,8 +131,22 @@ export async function createMedia(
     if (!srcField) {
       return { error: "Informe a URL do vídeo (YouTube ou embed)." };
     }
-    finalSrc = normalizeVideoUrl(srcField);
-    poster = field(formData, "poster") || null;
+    // `src` vai direto para <iframe>/<video src>: valida http(s):// (ou o
+    // caminho interno /uploads/) para não gravar URL sem protocolo nem esquema
+    // perigoso. normalizeVideoUrl já pode ter convertido o YouTube para embed.
+    const validatedSrc = safeMediaUrl(normalizeVideoUrl(srcField));
+    if (!validatedSrc) {
+      return { error: "A URL do vídeo deve começar com http(s)://." };
+    }
+    finalSrc = validatedSrc;
+    // Poster (opcional) também vira <video poster>/<Image src>: mesma validação.
+    const validatedPoster = safeMediaUrl(field(formData, "poster"));
+    if (validatedPoster === false) {
+      return {
+        error: "O poster do vídeo deve ser uma URL http(s) válida (ou ficar vazio).",
+      };
+    }
+    poster = validatedPoster;
   } else {
     // FOTO: preferimos o arquivo enviado; senão, a URL externa.
     const fileEntry = formData.get("file");
@@ -149,7 +176,15 @@ export async function createMedia(
         };
       }
     } else if (srcField) {
-      finalSrc = srcField;
+      // Foto por URL externa: vai direto para <Image src>, que LANÇA numa URL
+      // sem protocolo e derruba a /galeria. Aceita só http(s):// (ou /uploads/).
+      const validatedSrc = safeMediaUrl(srcField);
+      if (!validatedSrc) {
+        return {
+          error: "A URL da foto deve começar com http(s):// (ou envie um arquivo).",
+        };
+      }
+      finalSrc = validatedSrc;
     } else {
       return { error: "Envie um arquivo de imagem ou informe a URL da foto." };
     }

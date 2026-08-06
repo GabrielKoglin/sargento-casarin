@@ -89,8 +89,8 @@ export async function login(
       ok = true;
       userId = user.id;
     }
-  } catch {
-    console.error("Falha ao verificar credenciais de login.");
+  } catch (error) {
+    console.error("Falha ao verificar credenciais de login.", error);
     return { error: GENERIC_ERROR };
   }
 
@@ -105,8 +105,8 @@ export async function login(
   try {
     const token = await signSession({ sub: userId, email });
     await setSessionCookie(token);
-  } catch {
-    console.error("Falha ao assinar/gravar a sessão (AUTH_SECRET ausente?).");
+  } catch (error) {
+    console.error("Falha ao assinar/gravar a sessão (AUTH_SECRET ausente?).", error);
     return { error: GENERIC_ERROR };
   }
 

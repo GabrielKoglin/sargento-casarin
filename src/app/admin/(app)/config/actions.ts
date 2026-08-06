@@ -51,8 +51,8 @@ export async function upsertSetting(formData: FormData): Promise<void> {
       update: { value },
       create: { key, value },
     });
-  } catch {
-    console.error("Falha ao salvar configuração.");
+  } catch (error) {
+    console.error("Falha ao salvar configuração.", error);
     ok = false;
   }
 
@@ -72,8 +72,8 @@ export async function deleteSetting(formData: FormData): Promise<void> {
   let ok = true;
   try {
     await prisma.settings.delete({ where: { id } });
-  } catch {
-    console.error("Falha ao excluir configuração.");
+  } catch (error) {
+    console.error("Falha ao excluir configuração.", error);
     ok = false;
   }
 

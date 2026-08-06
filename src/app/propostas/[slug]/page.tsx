@@ -2,14 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import type { Proposal } from "@/generated/prisma/client";
 
 export const dynamic = "force-dynamic";
+
+// Lê a proposta pelo slug. Uma falha de I/O vira `null` (tratado como "não
+// encontrada" pelo chamador) em vez de estourar 500. O `notFound()` legítimo
+// fica FORA daqui — quem chama decide o 404 a partir do `null` retornado.
+async function loadProposta(slug: string): Promise<Proposal | null> {
+  try {
+    return await prisma.proposal.findUnique({ where: { slug } });
+  } catch (error) {
+    console.error("Falha ao carregar proposta.", error);
+    return null;
+  }
+}
 
 export async function generateMetadata(
   props: PageProps<"/propostas/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const proposta = await prisma.proposal.findUnique({ where: { slug } });
+  const proposta = await loadProposta(slug);
   if (!proposta) return { title: "Proposta" };
 
   const url = `/propostas/${proposta.slug}`;
@@ -30,7 +43,9 @@ export async function generateMetadata(
 
 export default async function PropostaPage(props: PageProps<"/propostas/[slug]">) {
   const { slug } = await props.params;
-  const proposta = await prisma.proposal.findUnique({ where: { slug } });
+  const proposta = await loadProposta(slug);
+  // Registro inexistente OU leitura falha → 404 (nunca 500). `notFound()` mora
+  // fora do try/catch do loader para não ser engolido.
   if (!proposta) notFound();
 
   const goals = proposta.goals.split("\n").filter(Boolean);

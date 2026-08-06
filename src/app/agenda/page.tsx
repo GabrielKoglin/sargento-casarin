@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import type { Event } from "@/generated/prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -15,14 +16,25 @@ const dateFormat = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Cuiaba",
 });
 
-export default async function AgendaPage() {
-  // This force-dynamic route must filter events using the request-time clock.
-  // eslint-disable-next-line react-hooks/purity
+// Uma falha de I/O não pode derrubar a página: cai numa lista vazia, que mostra
+// o empty-state "nenhuma operação agendada" em vez de estourar 500.
+async function loadEventos(): Promise<Event[]> {
+  // Rota force-dynamic: filtra eventos pelo relógio do request. Fora do componente
+  // (numa função async comum), então não precisa mais do disable de react-hooks/purity.
   const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const eventos = await prisma.event.findMany({
-    where: { date: { gte: cutoff } },
-    orderBy: { date: "asc" },
-  });
+  try {
+    return await prisma.event.findMany({
+      where: { date: { gte: cutoff } },
+      orderBy: { date: "asc" },
+    });
+  } catch (error) {
+    console.error("Falha ao carregar eventos da agenda.", error);
+    return [];
+  }
+}
+
+export default async function AgendaPage() {
+  const eventos = await loadEventos();
 
   return (
     <>

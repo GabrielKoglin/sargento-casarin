@@ -115,8 +115,8 @@ export async function saveContact(
         message: message ? `[${origin}] ${message.slice(0, 2000)}` : `[${origin}]`,
       },
     });
-  } catch {
-    console.error("Contact submission could not be saved.");
+  } catch (error) {
+    console.error("Contact submission could not be saved.", error);
     return {
       status: "error",
       message: "Não foi possível enviar agora. Tente novamente em instantes.",

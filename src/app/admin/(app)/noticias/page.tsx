@@ -19,6 +19,10 @@ import { IngestButton } from "./ingest-button";
 // Lista sempre "ao vivo" — nunca pré-renderizar em build.
 export const dynamic = "force-dynamic";
 
+// A ingestão (ingestNow) consulta ~25 fontes e pode passar de 60s. Esta config
+// de segmento vale para as Server Actions da página, dando mais fôlego ao POST.
+export const maxDuration = 60;
+
 const PAGE_SIZE = 40;
 
 const STATUS_FILTERS = ["pending", "approved", "rejected", "all"] as const;

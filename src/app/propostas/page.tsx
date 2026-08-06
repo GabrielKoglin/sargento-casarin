@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import type { Proposal } from "@/generated/prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -24,10 +25,21 @@ function iconFor(slug: string, category: string) {
   return "📌";
 }
 
+// Uma falha de I/O não pode derrubar a página: cai numa lista vazia, que
+// mostra o empty-state "em breve" em vez de estourar 500.
+async function loadPropostas(): Promise<Proposal[]> {
+  try {
+    return await prisma.proposal.findMany({
+      orderBy: { createdAt: "asc" },
+    });
+  } catch (error) {
+    console.error("Falha ao carregar propostas.", error);
+    return [];
+  }
+}
+
 export default async function PropostasPage() {
-  const propostas = await prisma.proposal.findMany({
-    orderBy: { createdAt: "asc" },
-  });
+  const propostas = await loadPropostas();
 
   return (
     <>
