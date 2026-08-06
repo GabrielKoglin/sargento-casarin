@@ -7,8 +7,10 @@
 //
 // Dois tipos de fonte:
 //   - "rss":   o portal publica um feed RSS/Atom nativo (campo `url`).
-//   - "gnews": não há feed nativo confiável; usamos o Google News RSS filtrado
-//              por domínio (`domain`), restrito aos últimos 7 dias.
+//   - "gnews": não há feed nativo confiável; usamos o Google News RSS. Pode ser
+//              filtrado por domínio (`domain`, site:, últimos 7 dias) OU por um
+//              termo de busca dedicado (`query`, últimos 30 dias). Quando ambos
+//              existirem, `query` tem precedência.
 
 export type NewsSourceType = "rss" | "gnews";
 
@@ -18,8 +20,15 @@ export interface NewsSource {
   type: NewsSourceType;
   /** Feed nativo — obrigatório quando type === "rss". */
   url?: string;
-  /** Domínio do portal — obrigatório quando type === "gnews". */
+  /** Domínio do portal — usado quando type === "gnews" (busca `site:domain`). */
   domain?: string;
+  /**
+   * Termo de busca literal para o Google News. Quando presente numa fonte
+   * "gnews", tem PRECEDÊNCIA sobre `domain`: a URL vira uma busca por esse termo
+   * (últimos 30 dias) em vez de `site:domain`. Use aspas para frase exata,
+   * ex.: '"Sargento Casarin"'.
+   */
+  query?: string;
 }
 
 export const NEWS_SOURCES: NewsSource[] = [
@@ -43,6 +52,12 @@ export const NEWS_SOURCES: NewsSource[] = [
   // TODO: "A Folha de Notícias" — domínio ainda a confirmar pelo cliente.
   //       NÃO inventar o domínio; adicionar aqui (type "gnews") quando confirmado.
 
+  // --- Google News: busca DEDICADA por termo (o candidato), últimos 30 dias ---
+  // Já vêm super-relevantes; ainda assim o filtro de relevância da ingestão se
+  // aplica (defesa dupla). O cliente pode ajustar/expandir estes termos.
+  { name: "Google News — Sargento Casarin", type: "gnews", query: '"Sargento Casarin"' },
+  { name: "Google News — Dickson Casarin", type: "gnews", query: '"Dickson Casarin"' },
+
   // --- Google News (busca por domínio, últimos 7 dias) ---------------------
   { name: "Olhar Direto", type: "gnews", domain: "olhardireto.com.br" },
   { name: "MidiaNews", type: "gnews", domain: "midianews.com.br" },
@@ -59,12 +74,19 @@ export const NEWS_SOURCES: NewsSource[] = [
 /**
  * Resolve a URL de feed a ser buscada para uma fonte.
  * - rss:   retorna o feed nativo configurado.
- * - gnews: monta a busca do Google News RSS por domínio, só dos últimos 7 dias.
+ * - gnews: monta a busca do Google News RSS. `query` (busca por termo, últimos
+ *          30 dias) tem PRECEDÊNCIA sobre `domain` (busca `site:`, últimos 7 dias).
  */
 export function sourceFeedUrl(source: NewsSource): string {
   if (source.type === "gnews") {
+    // `query` tem precedência sobre `domain`: busca por termo em vez de site:.
+    if (source.query) {
+      return `https://news.google.com/rss/search?q=${encodeURIComponent(source.query)}%20when:30d&hl=pt-BR&gl=BR&ceid=BR:pt`;
+    }
     if (!source.domain) {
-      throw new Error(`Fonte gnews "${source.name}" sem \`domain\` configurado`);
+      throw new Error(
+        `Fonte gnews "${source.name}" sem \`query\` ou \`domain\` configurado`,
+      );
     }
     return `https://news.google.com/rss/search?q=site:${source.domain}%20when:7d&hl=pt-BR&gl=BR&ceid=BR:pt`;
   }

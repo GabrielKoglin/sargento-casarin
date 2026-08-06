@@ -88,6 +88,11 @@ export interface IngestSummary {
   sources: number;
   fetched: number;
   inserted: number;
+  /**
+   * Itens descartados pelo FILTRO DE RELEVÂNCIA (não citam o candidato).
+   * Contador separado de `skipped` (que é dedupe/sem-título/erro de insert).
+   */
+  filtered: number;
   skipped: number;
   errors: IngestError[];
   /** Amostra das notícias inseridas nesta execução (para log/relatório). */
@@ -153,6 +158,52 @@ function slugify(input: string): string {
 
 function hash6(input: string): string {
   return createHash("sha1").update(input).digest("hex").slice(0, 6);
+}
+
+// ---------------------------------------------------------------------------
+// Filtro de relevância
+// ---------------------------------------------------------------------------
+// Os portais de MT trazem MILHARES de manchetes; só interessam as que citam /
+// têm a ver com o candidato. Antes de inserir, normalizamos título+resumo e
+// exigimos ao menos um RELEVANCE_TERMS por substring (case + acento-insensível).
+
+/**
+ * Termos que tornam uma notícia RELEVANTE para a campanha. Já normalizados
+ * (minúsculas, SEM acento). "casarin" como substring já cobre a maioria dos
+ * casos. O CLIENTE pode ajustar/expandir esta lista livremente — ex.: adicionar
+ * o nome de urna, apelidos ou variações; termos com acento também funcionam
+ * (são normalizados no match).
+ */
+export const RELEVANCE_TERMS = [
+  "casarin",
+  "dickson casarin",
+  "sargento casarin",
+  "sgt casarin",
+];
+
+/**
+ * minúsculas + sem acento (mesmo padrão NFD + COMBINING_MARKS do slugify),
+ * porém PRESERVANDO o texto (só colapsa espaços) — para casar termos com espaço
+ * como "dickson casarin".
+ */
+function normalizeForMatch(input: string): string {
+  return input
+    .normalize("NFD")
+    .replace(COMBINING_MARKS, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * true se o título OU o resumo citarem algum RELEVANCE_TERMS (match por
+ * SUBSTRING, insensível a maiúsculas/acentos). Exportada para testabilidade.
+ */
+export function isRelevant(title: string, summary: string): boolean {
+  const haystack = normalizeForMatch(`${title} ${summary}`);
+  return RELEVANCE_TERMS.some((term) =>
+    haystack.includes(normalizeForMatch(term)),
+  );
 }
 
 /** Extrai a URL de dentro de um nó media:content/thumbnail (xml2js). */
@@ -326,6 +377,7 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
     sources: NEWS_SOURCES.length,
     fetched: 0,
     inserted: 0,
+    filtered: 0,
     skipped: 0,
     errors: [],
     inserted_news: [],
@@ -353,6 +405,16 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
           continue;
         }
 
+        const itemSummary = buildSummary(item);
+
+        // FILTRO DE RELEVÂNCIA: só interessam notícias que citam / têm a ver com
+        // o candidato. Fora do tema → descarta (contado em `filtered`, não em
+        // `skipped`) e nem consulta o banco.
+        if (!isRelevant(title, itemSummary)) {
+          summary.filtered += 1;
+          continue;
+        }
+
         // Dedupe por URL do artigo original (idempotente entre execuções).
         const existing = await prisma.news.findFirst({ where: { url } });
         if (existing) {
@@ -370,7 +432,7 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
               image: extractImage(item),
               source: source.name,
               url,
-              summary: buildSummary(item),
+              summary: itemSummary,
               status: "pending",
               publishedAt: parseDate(item),
             },
