@@ -421,16 +421,23 @@ body::after {
 .cred-strip .ht { top:-100px; right:-80px; width:340px; height:340px; opacity:.1; }
 .cred-strip-inner { display:grid; grid-template-columns:repeat(3,1fr); position:relative; z-index:2; }
 .cred-item {
-  padding:2.5rem 2rem;
+  padding:2.25rem 2rem;
   border-right:1px solid rgba(255,255,255,.05);
-  display:flex; align-items:flex-start; gap:1.25rem;
+  display:flex; align-items:center; gap:1.15rem;
   transition:background .25s;
 }
 .cred-item:last-child { border-right:none; }
 .cred-item:hover { background:rgba(58,82,64,.2); }
-.cred-num { font-family:var(--fc); font-size:3rem; font-weight:900; color:var(--B); line-height:1; flex-shrink:0; opacity:.6; }
-.cred-txt strong { display:block; color:var(--W); font-size:.88rem; margin-bottom:.3rem; }
-.cred-txt span { font-size:.78rem; color:rgba(255,255,255,.62); line-height:1.6; }
+/* min-width dá uma "faixa" fixa ao número: "15"/"MT" ocupam a mesma largura, então
+   o texto ao lado começa alinhado entre as colunas (ROTAM, mais largo, cresce além). */
+.cred-num {
+  font-family:var(--fc); font-size:2.75rem; font-weight:900; color:var(--B);
+  line-height:1; flex-shrink:0; opacity:.6;
+  min-width:3.4rem; letter-spacing:.01em;
+}
+.cred-txt { min-width:0; }
+.cred-txt strong { display:block; color:var(--W); font-size:.88rem; line-height:1.25; margin-bottom:.35rem; }
+.cred-txt span { font-size:.78rem; color:rgba(255,255,255,.62); line-height:1.55; }
 
 /* ============================================
    SEÃÃO "POR QUE" â editorial claro
