@@ -1016,6 +1016,45 @@ footer {
   .why-right.scanning .tgt.t4 { transition-delay:.6s; }
   .why-right.scanning .tgt.t5 { transition-delay:.75s; }
 }
+
+/* ============================================================
+   CENTRALIZAÇÃO NO MOBILE — cabeçalhos, footer, hero e textos
+   ficam centralizados no celular (mantém formulários/timeline
+   com alinhamento próprio para não prejudicar leitura/uso).
+============================================================ */
+@media(max-width:768px) {
+  /* Footer: marca, descrição, ícones e colunas centralizados */
+  .foot-grid, .foot-logo, .foot-col { text-align:center; }
+  .foot-logo { display:flex; flex-direction:column; align-items:center; }
+  .foot-social, .foot-legal { justify-content:center; }
+  .foot-bottom__left { align-items:center; }
+
+  /* Hero (home) */
+  .hero-inner { margin-inline:auto; text-align:center; }
+  .hero-eyebrow, .hero-actions { justify-content:center; }
+  .hero-lead { margin-inline:auto; }
+  .ribbons { align-items:center; transform-origin:center bottom; }
+
+  /* Cabeçalho das sub-páginas */
+  .page-hero .container { text-align:center; }
+  .page-hero .eyebrow { justify-content:center; }
+  .page-hero p { margin-inline:auto; }
+
+  /* Seção "Por que entrar" */
+  .why .container, .why-left { text-align:center; }
+  .why-left .eyebrow { justify-content:center; }
+  .why-lead, .why-caption { margin-inline:auto; }
+
+  /* Cabeçalhos de seção centralizados */
+  .eyebrow { justify-content:center; }
+  .propostas-head, .videos-head { text-align:center; }
+  .propostas-head .eyebrow, .videos-head .eyebrow { justify-content:center; }
+
+  /* Cartões de proposta: conteúdo centralizado */
+  .prop-card { text-align:center; }
+  .prop-icon { display:flex; justify-content:center; }
+}
+
 @media(max-width:480px) {
   .section { padding:4.5rem 0; }
   .hero-name { font-size:clamp(4rem,18vw,6rem); }
