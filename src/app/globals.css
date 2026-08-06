@@ -472,7 +472,7 @@ body::after {
     linear-gradient(to right, var(--CR) 0%, transparent 18%),
     linear-gradient(to bottom, var(--CR) 0%, transparent 12%),
     linear-gradient(to left, rgba(242,237,229,.35) 0%, transparent 14%),
-    linear-gradient(to top, var(--CR) 0%, transparent 14%);
+    linear-gradient(to top, var(--CR) 3%, transparent 34%);
 }
 /* halftone sobre a foto */
 .why-photo::after {
