@@ -34,7 +34,11 @@ const timeline = [
 export default function SobrePage() {
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero page-hero--map">
+        {/* Mapa do Brasil com Mato Grosso destacado (decorativo) — ocupa o lugar
+            do anel do page-hero. Base: @svg-maps/brazil (CC BY 4.0). */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="page-hero-map" src="/brazil-mt.svg" alt="" aria-hidden="true" />
         <div className="container">
           <div className="eyebrow sl">Trajetória</div>
           <h1 className="sl d1">

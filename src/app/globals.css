@@ -771,6 +771,17 @@ body::after {
 .page-hero h1 em { font-style:normal; color:var(--B); }
 .page-hero p { color:rgba(255,255,255,.5); max-width:520px; position:relative; z-index:1; }
 
+/* Variante com o mapa do Brasil (MT destacado) no lugar do anel decorativo. */
+.page-hero--map::after { display:none; }
+.page-hero-map {
+  position:absolute; right:-1%; top:50%; transform:translateY(-50%);
+  width:min(540px,44vw); height:auto; opacity:.5; z-index:0; pointer-events:none;
+  filter:drop-shadow(0 0 22px rgba(0,184,75,.3));
+}
+@media(max-width:768px) {
+  .page-hero-map { width:74vw; opacity:.26; right:-14%; }
+}
+
 /* ============================================
    BIO
 ============================================ */
