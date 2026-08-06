@@ -254,6 +254,111 @@ export async function rejectNews(formData: FormData): Promise<void> {
   await setNewsStatus(formData, "rejected");
 }
 
+// ---------------------------------------------------------------- em massa ---
+// Moderação em MASSA da fila. Com milhares de "pending", aprovar/rejeitar de um
+// em um é inviável — estas ações resolvem lotes (ids marcados) ou o status
+// inteiro numa ÚNICA query (updateMany), evitando N round-trips ao banco.
+
+// Lê os ids marcados (checkboxes name="ids") do FormData. `getAll` pode devolver
+// File (input forjado) → filtramos só strings não vazias e deduplicamos, para
+// não passar lixo ao `where: { id: { in } }`.
+function readSelectedIds(formData: FormData): string[] {
+  const raw = formData.getAll("ids");
+  const ids = raw.filter(
+    (value): value is string => typeof value === "string" && value.length > 0,
+  );
+  return Array.from(new Set(ids));
+}
+
+// Sempre revalida as duas rotas afetadas por uma mudança de status: a fila do
+// admin e a listagem pública (que só mostra "approved").
+function revalidateNews(): void {
+  revalidatePath("/admin/noticias");
+  revalidatePath("/noticias");
+}
+
+// Fatora approve/reject em massa dos ids marcados: uma query updateMany só. Erro
+// do Prisma é logado sem 500 — a lista revalidada reflete o estado real.
+async function setManyNewsStatus(
+  ids: string[],
+  status: "approved" | "rejected",
+): Promise<void> {
+  // Nada marcado: não há o que atualizar, mas ainda revalidamos (a UI volta ao
+  // estado limpo) e evitamos um updateMany com `in: []`.
+  if (ids.length > 0) {
+    try {
+      await prisma.news.updateMany({
+        where: { id: { in: ids } },
+        data: { status },
+      });
+    } catch (error) {
+      console.error(`Falha ao definir status "${status}" em massa.`, error);
+    }
+  }
+  revalidateNews();
+}
+
+/** Aprova em massa as notícias marcadas na fila (checkboxes name="ids"). */
+export async function approveManyNews(formData: FormData): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+  await setManyNewsStatus(readSelectedIds(formData), "approved");
+}
+
+/** Rejeita em massa as notícias marcadas na fila. */
+export async function rejectManyNews(formData: FormData): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+  await setManyNewsStatus(readSelectedIds(formData), "rejected");
+}
+
+// Move TODAS as pendentes de uma vez — o alvo é `where: { status: "pending" }`,
+// não uma lista de ids. É UMA query mesmo com milhares de linhas (ok).
+async function setAllPendingStatus(
+  status: "approved" | "rejected",
+): Promise<void> {
+  try {
+    await prisma.news.updateMany({
+      where: { status: "pending" },
+      data: { status },
+    });
+  } catch (error) {
+    console.error(`Falha ao mover TODAS as pendentes para "${status}".`, error);
+  }
+  revalidateNews();
+}
+
+/** Aprova TODAS as notícias pendentes de uma vez (não só a página visível). */
+export async function approveAllPending(): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+  await setAllPendingStatus("approved");
+}
+
+/** Rejeita TODAS as notícias pendentes de uma vez (não só a página visível). */
+export async function rejectAllPending(): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+  await setAllPendingStatus("rejected");
+}
+
+/**
+ * Limpa a fila: remove DEFINITIVAMENTE todas as notícias rejeitadas numa única
+ * query (deleteMany). Diferente de rejeitar, isto apaga os registros — usado
+ * para esvaziar a aba "Rejeitadas" quando ela acumula.
+ */
+export async function deleteRejected(): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+
+  try {
+    await prisma.news.deleteMany({ where: { status: "rejected" } });
+  } catch (error) {
+    console.error("Falha ao excluir as notícias rejeitadas.", error);
+  }
+  revalidateNews();
+}
+
 /**
  * Dispara a ingestão dos feeds AGORA (botão do painel). Reusa ingestNews(); as
  * manchetes novas entram como "pending" para moderação. Pode demorar alguns

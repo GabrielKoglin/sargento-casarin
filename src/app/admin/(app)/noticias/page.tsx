@@ -14,6 +14,7 @@ import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
 import { approveNews, rejectNews, deleteNews, ingestNow } from "./actions";
 import { DeleteButton } from "./news-form";
+import { BulkBar, SelectAllCheckbox } from "./bulk-bar";
 
 // Lista sempre "ao vivo" — nunca pré-renderizar em build.
 export const dynamic = "force-dynamic";
@@ -341,101 +342,126 @@ export default async function AdminNoticiasPage({
           .
         </div>
       ) : (
-        <div
-          className="overflow-x-auto rounded"
-          style={{ border: "1px solid var(--a-line)", background: "var(--a-panel)" }}
-        >
-          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
-            <thead>
-              <tr style={{ borderBottom: "1px solid var(--a-line)" }}>
-                {["Título", "Fonte", "Publicação", "Status"].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-xs font-bold uppercase tracking-wider"
-                    style={{ color: "var(--a-muted)" }}
-                  >
-                    {h}
+        <>
+          <BulkBar
+            pendingCount={pendingCount}
+            rejectedCount={rejectedCount}
+            status={status}
+          />
+          <div
+            className="overflow-x-auto rounded"
+            style={{ border: "1px solid var(--a-line)", background: "var(--a-panel)" }}
+          >
+            <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--a-line)" }}>
+                  <th className="px-4 py-3" style={{ width: "1%" }}>
+                    <SelectAllCheckbox />
                   </th>
-                ))}
-                <th
-                  className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider"
-                  style={{ color: "var(--a-muted)" }}
-                >
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {noticias.map((noticia) => (
-                <tr
-                  key={noticia.id}
-                  className="[&:not(:last-child)]:border-b"
-                  style={{ borderColor: "var(--a-line)" }}
-                >
-                  <td
-                    className="px-4 py-3 font-medium"
-                    style={{ color: "var(--a-text)", maxWidth: "28rem" }}
-                  >
-                    {noticia.url ? (
-                      <a
-                        href={noticia.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: "var(--a-text)" }}
-                        className="underline-offset-2 hover:underline"
-                      >
-                        {noticia.title}
-                      </a>
-                    ) : (
-                      noticia.title
-                    )}
-                  </td>
-                  <td className="px-4 py-3" style={{ color: "var(--a-muted)" }}>
-                    {noticia.source}
-                  </td>
-                  <td
-                    className="whitespace-nowrap px-4 py-3"
+                  {["Título", "Fonte", "Publicação", "Status"].map((h) => (
+                    <th
+                      key={h}
+                      className="px-4 py-3 text-xs font-bold uppercase tracking-wider"
+                      style={{ color: "var(--a-muted)" }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                  <th
+                    className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider"
                     style={{ color: "var(--a-muted)" }}
                   >
-                    {dateFormat.format(noticia.publishedAt)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={noticia.status} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
-                      {noticia.status !== "approved" && (
-                        <form action={approveNews}>
-                          <input type="hidden" name="id" value={noticia.id} />
-                          <button type="submit" style={approveStyle}>
-                            Aprovar
-                          </button>
-                        </form>
-                      )}
-                      {noticia.status !== "rejected" && (
-                        <form action={rejectNews}>
-                          <input type="hidden" name="id" value={noticia.id} />
-                          <button type="submit" style={rejectStyle}>
-                            Rejeitar
-                          </button>
-                        </form>
-                      )}
-                      <Link
-                        href={`/admin/noticias/${noticia.id}/edit`}
-                        style={{ color: "var(--a-green-bright)", fontWeight: 600 }}
-                      >
-                        Editar
-                      </Link>
-                      <form action={deleteNews.bind(null, noticia.id)}>
-                        <DeleteButton label={noticia.title} />
-                      </form>
-                    </div>
-                  </td>
+                    Ações
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {noticias.map((noticia) => (
+                  <tr
+                    key={noticia.id}
+                    className="[&:not(:last-child)]:border-b"
+                    style={{ borderColor: "var(--a-line)" }}
+                  >
+                    <td className="px-4 py-3 align-middle">
+                      <input
+                        type="checkbox"
+                        name="ids"
+                        value={noticia.id}
+                        form="bulk-form"
+                        aria-label={`Selecionar: ${noticia.title}`}
+                        style={{
+                          width: "1rem",
+                          height: "1rem",
+                          accentColor: "var(--a-green)",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </td>
+                    <td
+                      className="px-4 py-3 font-medium"
+                      style={{ color: "var(--a-text)", maxWidth: "28rem" }}
+                    >
+                      {noticia.url ? (
+                        <a
+                          href={noticia.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "var(--a-text)" }}
+                          className="underline-offset-2 hover:underline"
+                        >
+                          {noticia.title}
+                        </a>
+                      ) : (
+                        noticia.title
+                      )}
+                    </td>
+                    <td className="px-4 py-3" style={{ color: "var(--a-muted)" }}>
+                      {noticia.source}
+                    </td>
+                    <td
+                      className="whitespace-nowrap px-4 py-3"
+                      style={{ color: "var(--a-muted)" }}
+                    >
+                      {dateFormat.format(noticia.publishedAt)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={noticia.status} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
+                        {noticia.status !== "approved" && (
+                          <form action={approveNews}>
+                            <input type="hidden" name="id" value={noticia.id} />
+                            <button type="submit" style={approveStyle}>
+                              Aprovar
+                            </button>
+                          </form>
+                        )}
+                        {noticia.status !== "rejected" && (
+                          <form action={rejectNews}>
+                            <input type="hidden" name="id" value={noticia.id} />
+                            <button type="submit" style={rejectStyle}>
+                              Rejeitar
+                            </button>
+                          </form>
+                        )}
+                        <Link
+                          href={`/admin/noticias/${noticia.id}/edit`}
+                          style={{ color: "var(--a-green-bright)", fontWeight: 600 }}
+                        >
+                          Editar
+                        </Link>
+                        <form action={deleteNews.bind(null, noticia.id)}>
+                          <DeleteButton label={noticia.title} />
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* ------------------------------------------------------ paginação */}
