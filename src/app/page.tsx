@@ -67,8 +67,7 @@ export default async function Home() {
         <div className="hero-content container">
           <div className="hero-inner">
             <div className="hero-eyebrow sl">Sargento</div>
-            <h1 className="hero-name" id="heroName" aria-label="Dickson Casarin">
-              <span>DICKSON</span>
+            <h1 className="hero-name" id="heroName" aria-label="Casarin">
               <em>
                 C
                 <SgtBadge className="sgt-badge" />
