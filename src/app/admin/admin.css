@@ -3,6 +3,13 @@
    Carregado só nas rotas /admin (importado pelo layout do route group (app)
    e pela página de login). NÃO edita globals.css.
    Paleta reaproveitada do site: fundo #04111f/#020b14, verde #00b84b/#00d658.
+
+   Estrutura visual:
+     .admin-shell  = grid [sidebar | main]
+     .admin-main   = área de conteúdo rolável; .admin-main__inner limita largura
+   Além das classes BEM (.admin-*), há SKINS DE ELEMENTO escopados em .admin-main
+   (table/th/td/input/select/textarea/a) — assim as páginas de lista que usam
+   utilitários Tailwind herdam o tema escuro sem precisar editar cada uma.
 ============================================================================ */
 
 /* ---------------------------------------------------------------------------
@@ -27,16 +34,24 @@ body:has(.admin-login) {
   --a-bg: #020b14;
   --a-panel: #04111f;
   --a-panel-2: #071b2e;
+  --a-panel-3: #0a2338;
   --a-line: rgba(0, 184, 75, 0.16);
+  --a-line-soft: rgba(255, 255, 255, 0.06);
   --a-green: #00b84b;
   --a-green-bright: #00d658;
+  --a-green-dim: rgba(0, 184, 75, 0.14);
   --a-text: #e6f0ea;
   --a-muted: #8fa3ad;
+  --a-faint: #52646d;
   --a-danger: #ff5a5a;
+  --a-radius: 10px;
+  --a-radius-sm: 6px;
+  --a-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
   --a-font: "Manrope", system-ui, sans-serif;
   --a-font-cond: "Teko", "Manrope", sans-serif;
   color: var(--a-text);
   font-family: var(--a-font);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ------------------------------------------------------------------ LOGIN */
@@ -47,18 +62,18 @@ body:has(.admin-login) {
   justify-content: center;
   padding: 2rem 1.25rem;
   background:
-    radial-gradient(120% 80% at 50% -10%, rgba(0, 184, 75, 0.12), transparent 60%),
+    radial-gradient(120% 80% at 50% -10%, rgba(0, 184, 75, 0.14), transparent 60%),
     #020b14;
 }
 
 .admin-login__card {
   width: 100%;
   max-width: 420px;
-  background: var(--a-panel);
+  background: linear-gradient(180deg, var(--a-panel-2), var(--a-panel));
   border: 1px solid var(--a-line);
-  border-radius: 4px;
+  border-radius: var(--a-radius);
   padding: 2.25rem 2rem 2rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  box-shadow: var(--a-shadow);
 }
 
 .admin-login__brand {
@@ -124,11 +139,16 @@ body:has(.admin-login) {
   color: var(--a-muted);
 }
 
-.admin-field__input {
+/* Skin base compartilhado por .admin-field__input e por qualquer input/select/
+   textarea dentro do conteúdo (páginas com utilitários Tailwind herdam daqui). */
+.admin-field__input,
+.admin-main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.admin-main select,
+.admin-main textarea {
   width: 100%;
-  height: 2.75rem;
-  padding: 0 0.85rem;
-  border-radius: 3px;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--a-radius-sm);
   border: 1px solid var(--a-line);
   background: #020b14;
   color: var(--a-text);
@@ -136,13 +156,23 @@ body:has(.admin-login) {
   font-family: inherit;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.admin-field__input::placeholder {
-  color: #52646d;
+.admin-field__input::placeholder,
+.admin-main input::placeholder,
+.admin-main textarea::placeholder {
+  color: var(--a-faint);
 }
-.admin-field__input:focus-visible {
+.admin-field__input:focus-visible,
+.admin-main input:focus-visible,
+.admin-main select:focus-visible,
+.admin-main textarea:focus-visible {
   outline: none;
   border-color: var(--a-green);
   box-shadow: 0 0 0 3px rgba(0, 184, 75, 0.22);
+}
+.admin-main textarea {
+  min-height: 7rem;
+  resize: vertical;
+  line-height: 1.5;
 }
 
 /* ------------------------------------------------------------------ BUTTON */
@@ -154,7 +184,7 @@ body:has(.admin-login) {
   height: 2.75rem;
   padding: 0 1.25rem;
   border: none;
-  border-radius: 3px;
+  border-radius: var(--a-radius-sm);
   background: var(--a-green);
   color: #04140a;
   font-family: inherit;
@@ -172,12 +202,30 @@ body:has(.admin-login) {
   transform: translateY(1px);
 }
 .admin-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 .admin-btn:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(0, 184, 75, 0.35);
+}
+/* Variantes (para a guia Mídia e afins). */
+.admin-btn--ghost {
+  background: transparent;
+  color: var(--a-text);
+  border: 1px solid var(--a-line);
+}
+.admin-btn--ghost:hover:not(:disabled) {
+  background: var(--a-panel-2);
+  border-color: rgba(0, 184, 75, 0.4);
+}
+.admin-btn--danger {
+  background: rgba(255, 90, 90, 0.12);
+  color: #ff9a9a;
+  border: 1px solid rgba(255, 90, 90, 0.45);
+}
+.admin-btn--danger:hover:not(:disabled) {
+  background: rgba(255, 90, 90, 0.2);
 }
 
 /* ------------------------------------------------------------------ ERROR */
@@ -186,7 +234,7 @@ body:has(.admin-login) {
   padding: 0.6rem 0.75rem;
   border: 1px solid rgba(255, 90, 90, 0.4);
   border-left-width: 3px;
-  border-radius: 3px;
+  border-radius: var(--a-radius-sm);
   background: rgba(255, 90, 90, 0.08);
   color: #ff9a9a;
   font-size: 0.82rem;
@@ -196,26 +244,46 @@ body:has(.admin-login) {
 /* ------------------------------------------------------------------ SHELL */
 .admin-shell {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 248px 1fr;
   min-height: 100vh;
-  background: var(--a-bg);
+  background:
+    radial-gradient(90% 60% at 100% 0%, rgba(0, 184, 75, 0.05), transparent 55%),
+    var(--a-bg);
 }
 
 .admin-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding: 1.5rem 1rem;
-  background: var(--a-panel);
+  padding: 1.4rem 0.9rem 1.1rem;
+  background: linear-gradient(180deg, var(--a-panel-2), var(--a-panel));
   border-right: 1px solid var(--a-line);
 }
 
 .admin-sidebar__brand {
-  padding: 0.25rem 0.6rem 1.25rem;
+  display: block;
+  position: relative;
+  padding: 0.35rem 0.7rem 1.2rem;
   border-bottom: 1px solid var(--a-line);
   margin-bottom: 0.85rem;
 }
+.admin-sidebar__brand::before {
+  content: "";
+  position: absolute;
+  left: 0.7rem;
+  top: 0.4rem;
+  width: 22px;
+  height: 3px;
+  background: var(--a-green);
+  box-shadow: 0 6px 0 rgba(0, 184, 75, 0.55), 0 12px 0 rgba(0, 184, 75, 0.28);
+}
 .admin-sidebar__brand-eyebrow {
+  display: block;
+  margin-top: 1.05rem;
   font-size: 0.55rem;
   font-weight: 700;
   letter-spacing: 0.28em;
@@ -223,47 +291,106 @@ body:has(.admin-login) {
   color: var(--a-green-bright);
 }
 .admin-sidebar__brand-title {
+  display: block;
   font-family: var(--a-font-cond);
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   line-height: 1;
   text-transform: uppercase;
   color: #fff;
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 .admin-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.12rem;
   flex: 1;
+  overflow-y: auto;
 }
 
 .admin-nav__link {
-  display: block;
-  padding: 0.6rem 0.75rem;
-  border-radius: 3px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.62rem 0.75rem;
+  border-radius: var(--a-radius-sm);
   color: var(--a-muted);
   font-size: 0.88rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   transition: background 0.12s ease, color 0.12s ease;
 }
+.admin-nav__icon {
+  width: 1.1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--a-faint);
+  transition: color 0.12s ease;
+}
 .admin-nav__link:hover {
-  background: var(--a-panel-2);
+  background: var(--a-panel-3);
   color: var(--a-text);
 }
-.admin-nav__link[aria-current="page"] {
-  background: rgba(0, 184, 75, 0.14);
+.admin-nav__link:hover .admin-nav__icon {
   color: var(--a-green-bright);
+}
+.admin-nav__link[aria-current="page"] {
+  background: var(--a-green-dim);
+  color: var(--a-green-bright);
+}
+.admin-nav__link[aria-current="page"] .admin-nav__icon {
+  color: var(--a-green-bright);
+}
+.admin-nav__link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 1.35rem;
+  border-radius: 0 2px 2px 0;
+  background: var(--a-green-bright);
+}
+
+/* ------------------------------------------------------- sidebar footer */
+.admin-sidebar__footer {
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--a-line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.admin-user {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0 0.35rem;
+  min-width: 0;
+}
+.admin-user__label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--a-faint);
+}
+.admin-user__email {
+  font-size: 0.78rem;
+  color: var(--a-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-logout {
-  margin-top: 0.5rem;
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--a-line);
-  border-radius: 3px;
+  border-radius: var(--a-radius-sm);
   background: transparent;
   color: var(--a-muted);
   font-family: inherit;
@@ -286,12 +413,18 @@ body:has(.admin-login) {
 
 /* ------------------------------------------------------------------- MAIN */
 .admin-main {
-  padding: 2rem 2.25rem 3rem;
   min-width: 0;
+  padding: 2rem 2.25rem 3rem;
+}
+.admin-main__inner {
+  max-width: 1120px;
+  margin: 0 auto;
 }
 
 .admin-page-header {
   margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--a-line-soft);
 }
 .admin-page-header__eyebrow {
   font-size: 0.6rem;
@@ -303,7 +436,7 @@ body:has(.admin-login) {
 .admin-page-header__title {
   font-family: var(--a-font-cond);
   font-weight: 700;
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   line-height: 1;
   text-transform: uppercase;
   color: #fff;
@@ -318,20 +451,52 @@ body:has(.admin-login) {
 /* ------------------------------------------------------------------ CARDS */
 .admin-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   gap: 1rem;
 }
 
 .admin-card {
-  background: var(--a-panel);
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--a-panel-2), var(--a-panel));
   border: 1px solid var(--a-line);
-  border-radius: 4px;
-  padding: 1.25rem 1.25rem 1.1rem;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  border-radius: var(--a-radius);
+  padding: 1.2rem 1.25rem 1.1rem;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.admin-card:hover {
-  border-color: rgba(0, 184, 75, 0.4);
+.admin-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--a-green), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+a.admin-card:hover {
+  border-color: rgba(0, 184, 75, 0.45);
   transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+a.admin-card:hover::before {
+  opacity: 1;
+}
+a.admin-card:focus-visible {
+  outline: none;
+  border-color: var(--a-green);
+  box-shadow: 0 0 0 3px rgba(0, 184, 75, 0.3);
+}
+.admin-card__icon {
+  position: absolute;
+  top: 1rem;
+  right: 1.1rem;
+  font-size: 1rem;
+  color: var(--a-faint);
+  transition: color 0.15s ease;
+}
+a.admin-card:hover .admin-card__icon {
+  color: var(--a-green-bright);
 }
 .admin-card__label {
   font-size: 0.7rem;
@@ -343,10 +508,10 @@ body:has(.admin-login) {
 .admin-card__value {
   font-family: var(--a-font-cond);
   font-weight: 700;
-  font-size: 2.6rem;
+  font-size: 2.7rem;
   line-height: 1;
   color: var(--a-green-bright);
-  margin-top: 0.35rem;
+  margin-top: 0.3rem;
 }
 .admin-card__hint {
   font-size: 0.78rem;
@@ -358,42 +523,157 @@ body:has(.admin-login) {
   margin-top: 2rem;
   padding: 1rem 1.1rem;
   border: 1px dashed var(--a-line);
-  border-radius: 4px;
+  border-radius: var(--a-radius);
   background: rgba(0, 184, 75, 0.04);
   color: var(--a-muted);
   font-size: 0.85rem;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 .admin-note strong {
   color: var(--a-text);
 }
+.admin-note code,
+.admin-main code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.82em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--a-panel-3);
+  color: var(--a-green-bright);
+}
+
+/* ---------------------------------------------------- SKINS DE CONTEÚDO ---
+   Aplicados aos elementos semânticos dentro de .admin-main. As páginas de
+   lista (propostas, notícias, agenda, config, mensagens) usam utilitários
+   Tailwind no markup; estes seletores dão a elas o tema escuro sem editá-las.
+   Só cor/borda/fundo — padding fica com os utilitários (evita brigar). */
+.admin-main a {
+  color: var(--a-green-bright);
+  text-decoration: none;
+}
+.admin-main a:hover {
+  text-decoration: underline;
+}
+/* Cartões/blocos e headings de seção herdados do markup Tailwind. */
+.admin-main h2 {
+  color: #fff;
+}
+
+/* Wrapper rolável de tabela (ex.: <div class="overflow-x-auto rounded border">). */
+.admin-main div:has(> table) {
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius);
+  background: var(--a-panel);
+}
+.admin-main table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.admin-main thead th {
+  background: var(--a-panel-2);
+  color: var(--a-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  border-bottom: 1px solid var(--a-line);
+}
+.admin-main tbody td {
+  border-top: 1px solid var(--a-line-soft);
+  color: var(--a-text);
+  vertical-align: middle;
+}
+.admin-main tbody tr {
+  transition: background 0.1s ease;
+}
+.admin-main tbody tr:hover {
+  background: rgba(0, 184, 75, 0.05);
+}
+
+/* Chips de status genéricos (opcional; a guia Mídia pode usar). */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--a-line);
+  color: var(--a-muted);
+}
+.admin-badge--on {
+  border-color: rgba(0, 184, 75, 0.45);
+  background: rgba(0, 184, 75, 0.12);
+  color: var(--a-green-bright);
+}
+.admin-badge--off {
+  border-color: var(--a-line-soft);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--a-faint);
+}
 
 /* --------------------------------------------------------------- RESPONSIVE */
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .admin-shell {
     grid-template-columns: 1fr;
   }
   .admin-sidebar {
+    position: static;
+    height: auto;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    gap: 0.6rem;
     border-right: none;
     border-bottom: 1px solid var(--a-line);
+    padding: 0.9rem 1.1rem;
   }
   .admin-sidebar__brand {
     border-bottom: none;
     margin-bottom: 0;
-    padding: 0 0.6rem;
-    flex: 1 1 100%;
+    padding: 0 0.5rem;
+    flex: 1 1 auto;
+  }
+  .admin-sidebar__brand::before {
+    display: none;
+  }
+  .admin-sidebar__brand-eyebrow {
+    margin-top: 0;
   }
   .admin-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+    order: 3;
     flex: 1 1 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  .admin-nav__link {
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+  .admin-nav__link[aria-current="page"]::before {
+    display: none;
+  }
+  .admin-sidebar__footer {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .admin-user {
+    display: none;
   }
   .admin-logout {
     width: auto;
-    margin-top: 0;
   }
   .admin-main {
     padding: 1.5rem 1.25rem 2.5rem;

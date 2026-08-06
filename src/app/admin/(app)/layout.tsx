@@ -19,15 +19,17 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { clearSessionCookie, getSession } from "@/lib/session";
 import { logout } from "../actions";
+import { AdminNav, type AdminNavItem } from "./admin-nav";
 import "../admin.css";
 
-const NAV_ITEMS = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/propostas", label: "Propostas" },
-  { href: "/admin/noticias", label: "Notícias" },
-  { href: "/admin/agenda", label: "Agenda" },
-  { href: "/admin/mensagens", label: "Mensagens" },
-  { href: "/admin/config", label: "Config" },
+const NAV_ITEMS: AdminNavItem[] = [
+  { href: "/admin", label: "Dashboard", icon: "▪" },
+  { href: "/admin/propostas", label: "Propostas", icon: "◆" },
+  { href: "/admin/noticias", label: "Notícias", icon: "❖" },
+  { href: "/admin/agenda", label: "Agenda", icon: "▤" },
+  { href: "/admin/midia", label: "Mídia", icon: "▷" },
+  { href: "/admin/mensagens", label: "Mensagens", icon: "✉" },
+  { href: "/admin/config", label: "Config", icon: "⚙" },
 ];
 
 export default async function AdminAppLayout({
@@ -55,11 +57,11 @@ export default async function AdminAppLayout({
   // sem passar por este shell, então a checagem forte de existência já fecha o
   // acesso via UI. Em erro de I/O do banco tratamos como não autenticado
   // (fail-closed): numa área sensível, preferimos negar a exibir o painel.
-  let user: { id: string } | null = null;
+  let user: { id: string; email: string } | null = null;
   try {
     user = await prisma.user.findUnique({
       where: { id: session.sub },
-      select: { id: true },
+      select: { id: true, email: true },
     });
   } catch {
     user = null;
@@ -81,27 +83,29 @@ export default async function AdminAppLayout({
   return (
     <div className="admin-scope admin-shell">
       <aside className="admin-sidebar">
-        <div className="admin-sidebar__brand">
+        <Link href="/admin" className="admin-sidebar__brand" aria-label="Painel Casarin — início">
           <span className="admin-sidebar__brand-eyebrow">Painel</span>
-          <div className="admin-sidebar__brand-title">Casarin</div>
+          <span className="admin-sidebar__brand-title">Casarin</span>
+        </Link>
+
+        <AdminNav items={NAV_ITEMS} />
+
+        <div className="admin-sidebar__footer">
+          <div className="admin-user" title={user.email}>
+            <span className="admin-user__label">Sessão</span>
+            <span className="admin-user__email">{user.email}</span>
+          </div>
+          <form action={logout}>
+            <button type="submit" className="admin-logout">
+              Sair
+            </button>
+          </form>
         </div>
-
-        <nav className="admin-nav" aria-label="Navegação do painel">
-          {NAV_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className="admin-nav__link">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <form action={logout}>
-          <button type="submit" className="admin-logout">
-            Sair
-          </button>
-        </form>
       </aside>
 
-      <section className="admin-main">{children}</section>
+      <section className="admin-main">
+        <div className="admin-main__inner">{children}</div>
+      </section>
     </div>
   );
 }
