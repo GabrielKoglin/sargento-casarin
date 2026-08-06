@@ -30,6 +30,8 @@ async function main() {
         sources: summary.sources,
         fetched: summary.fetched,
         inserted: summary.inserted,
+        // Descartadas pelo filtro de relevância (não citam o candidato).
+        filtered: summary.filtered,
         skipped: summary.skipped,
         errors: summary.errors,
       },
