@@ -138,7 +138,7 @@ export default async function Home() {
             </div>
 
             <div className="why-right" id="whyRight">
-              <div className="why-photo" style={{ backgroundImage: 'url(/DSCF3339.JPG.jpeg)' }}></div>
+              <div className="why-photo" style={{ backgroundImage: 'url(/casarin-retrato.jpeg)' }}></div>
               <div className="why-scan"></div>
               <div className="tgt t1"><span className="lead"></span><span className="rec"></span><span className="lbl">Quem conhece a rua, não só o gabinete</span></div>
               <div className="tgt t2"><span className="lead"></span><span className="rec"></span><span className="lbl">15 anos de farda na linha de frente</span></div>

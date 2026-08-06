@@ -53,10 +53,10 @@ export default function SobrePage() {
             <div className="bio-sticky">
               <div className="bio-photo fi">
                 <Image
-                  src="/DSCF3339.JPG.jpeg"
+                  src="/casarin-retrato.jpeg"
                   alt="Sargento Dickson Casarin"
-                  width={6240}
-                  height={4160}
+                  width={1067}
+                  height={1600}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   preload
                 />

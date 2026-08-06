@@ -12,7 +12,7 @@ export default function ManifestoPage() {
     <section className="manifesto-hero">
       <div
         className="manifesto-bg"
-        style={{ backgroundImage: "url(/DSCF3339.JPG.jpeg)" }}
+        style={{ backgroundImage: "url(/casarin-retrato.jpeg)" }}
       ></div>
       <div className="container">
         <div className="manifesto-content">
