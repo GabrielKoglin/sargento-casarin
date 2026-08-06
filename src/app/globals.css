@@ -1,9 +1,9 @@
 /* ============================================
-   DELEGADO FRED MURTA â Design System v3
-   TÃ¡tico Â· Texturizado Â· CinematogrÃ¡fico
+   SARGENTO CASARIN — Design System
+   Tático · Texturizado · Cinematográfico
 ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Rajdhani:wght@500;600;700&family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Rajdhani:wght@500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -28,7 +28,9 @@
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior:smooth; }
+}
 
 /* SeleÃ§Ã£o de texto na identidade da marca (sem azul padrÃ£o) */
 ::selection { background:var(--G); color:var(--CR); }
@@ -97,11 +99,6 @@ body::after {
   border-bottom:1px solid rgba(196,168,130,.12);
 }
 
-/* Linhas topogrÃ¡ficas (contorno) p/ fundos escuros */
-.topo {
-  position:absolute; pointer-events:none; z-index:0; opacity:.5;
-}
-
 /* Camada de mapa militar â textura topogrÃ¡fica que cobre a seÃ§Ã£o */
 .topo-bg {
   position:absolute; inset:0; z-index:0; pointer-events:none;
@@ -114,13 +111,6 @@ body::after {
 .topo-bg.topo-strong { opacity:.85; }
 .topo-bg.topo-soft   { opacity:.3; }
 
-/* Linhas de varredura â TV / night vision */
-.scanlines {
-  position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.5;
-  background-image:repeating-linear-gradient(to bottom, rgba(0,0,0,.22) 0 1px, transparent 1px 3px);
-  mix-blend-mode:multiply;
-}
-
 /* ============================================
    LAYOUT
 ============================================ */
@@ -130,13 +120,12 @@ body::after {
 /* ============================================
    TIPOGRAFIA
 ============================================ */
-.d-xl { font-family:var(--fc); font-weight:900; font-size:clamp(5rem,13vw,12rem); line-height:.84; text-transform:uppercase; letter-spacing:-.02em; }
 .d-lg { font-family:var(--fc); font-weight:900; font-size:clamp(3.5rem,9vw,8rem); line-height:.86; text-transform:uppercase; }
 .d-md { font-family:var(--fc); font-weight:900; font-size:clamp(2.5rem,6vw,5.5rem); line-height:.88; text-transform:uppercase; }
 
 .eyebrow {
   display:inline-flex; align-items:center; gap:.6rem;
-  font-size:.6rem; font-weight:700; letter-spacing:.28em;
+  font-size:.7rem; font-weight:700; letter-spacing:.28em;
   text-transform:uppercase; color:var(--B);
 }
 .eyebrow::before { content:''; display:inline-block; width:1.8rem; height:1px; background:var(--B); }
@@ -158,8 +147,6 @@ body::after {
   backdrop-filter:blur(8px);
 }
 .navbar .container { display:flex; align-items:center; justify-content:space-between; }
-.nav-logo img { height:110px; transition:height .3s; }
-.navbar.scrolled .nav-logo img { height:80px; }
 
 .nav-links { display:flex; align-items:center; }
 .nav-links a {
@@ -229,12 +216,8 @@ body::after {
 }
 .btn-ghost { color:var(--W); border:1px solid rgba(255,255,255,.3); }
 .btn-ghost:hover { border-color:var(--W); }
-.btn-green-solid { background:var(--G); color:var(--W); }
-.btn-green-solid:hover { background:var(--GD); box-shadow:0 10px 30px rgba(58,82,64,.4); }
 .btn-outline { background:transparent; color:var(--G); border:2px solid var(--G); }
 .btn-outline:hover { background:var(--G); color:var(--W); }
-.btn-outline-w { background:transparent; color:var(--W); border:2px solid rgba(255,255,255,.3); }
-.btn-outline-w:hover { border-color:var(--W); }
 
 /* ============================================
    HERO â CARTAZ TÃTICO
@@ -252,7 +235,7 @@ body::after {
     linear-gradient(160deg, #131C16 0%, #0C120E 48%, #060906 100%);
 }
 
-/* Foto do Fred â lado direito, fundida no fundo */
+/* Foto do candidato — lado direito, fundida no fundo */
 .hero-bg {
   position:absolute; top:0; right:0; bottom:0; width:62%;
   /* recorte (fundo transparente) — altura cheia, "de pé" na base, puxado p/ perto do nome */
@@ -371,20 +354,6 @@ body::after {
   0%,100% { filter:drop-shadow(0 0 0 rgba(245,223,0,0)); }
   50% { filter:drop-shadow(0 1px 7px rgba(245,223,0,.35)); }
 }
-/* wordmark: o "A" (3 chevrons = insÃ­gnia de sargento) alinhado Ã  baseline como as demais letras.
-   Especificidade (0,2,1) vence o `.hero-name > em{display:block}` acima, restaurando o
-   `flex items-center` pretendido no JSX; overflow visÃ­vel para o "A" nÃ£o ser cortado. */
-.hero-name em.flex { display:flex; align-items:baseline; overflow:visible; }
-/* gradiente aplicado por letra â em camada prÃ³pria o clip nÃ£o quebra */
-.hero-name > em .ltr {
-  background:linear-gradient(180deg, var(--BL) 10%, var(--BD) 90%);
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-/* letras animadas (JS divide em .ltr) */
-.hero-name .ltr { display:inline-block; opacity:0; transform:translateY(72%); }
-.hero-name .ltr.on { animation:ltrUp .65s var(--ease) forwards; }
-@keyframes ltrUp { to { opacity:1; transform:none; } }
 
 .hero-sub {
   font-size:.7rem; font-weight:600; letter-spacing:.42em; text-transform:uppercase;
@@ -463,7 +432,7 @@ body::after {
 .why-photo {
   position:absolute; inset:0 20% 0 0;
   /* foto limpa e inteira; faixa de 20% Ã  direita fica livre p/ os chips */
-  background:url('/retrato.jpeg') center top / cover no-repeat;
+  background:url('/casarin-retrato.jpeg') center top / cover no-repeat;
 }
 .why-photo::before {
   content:''; position:absolute; inset:0; z-index:1;
@@ -568,24 +537,9 @@ body::after {
 .why-right.scanning .tgt.t5 .rec::after { transition-delay:2.35s; }
 
 /* ============================================
-   STATS BAR
-============================================ */
-.stats-bar { background:var(--GD); border-top:1px solid rgba(196,168,130,.08); border-bottom:1px solid rgba(196,168,130,.08); position:relative; overflow:hidden; }
-.stats-bar::before {
-  content:''; position:absolute; inset:0; opacity:.05;
-  background-image:repeating-linear-gradient(-45deg, var(--B) 0 1px, transparent 1px 14px);
-}
-.stats-inner { display:grid; grid-template-columns:repeat(2,1fr); position:relative; z-index:2; }
-.stat { padding:2.5rem 1.5rem; text-align:center; border-right:1px solid rgba(255,255,255,.05); }
-.stat:last-child { border-right:none; }
-.stat-n { font-family:var(--fc); font-size:clamp(2.5rem,5vw,4rem); font-weight:900; color:var(--B); line-height:1; display:block; }
-.stat-l { font-size:.63rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.62); margin-top:.5rem; display:block; }
-
-/* ============================================
    PROPOSTAS
 ============================================ */
 .propostas { background:var(--CR); position:relative; overflow:hidden; }
-.propostas .topo { right:-120px; top:-80px; }
 /* No fundo claro, as linhas topográficas viram traços escuros bem sutis. */
 .propostas .topo-bg { filter:brightness(0); opacity:.05; }
 .propostas-head { margin-bottom:3.5rem; position:relative; z-index:2; }
@@ -593,7 +547,7 @@ body::after {
 .propostas-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(14,20,15,.1); position:relative; z-index:2; border:1px solid rgba(14,20,15,.08); border-radius:6px; overflow:hidden; }
 .prop-card {
   background:var(--W); padding:2.5rem 1.75rem;
-  position:relative; overflow:hidden; transition:background .3s, transform .3s var(--ease); cursor:pointer;
+  position:relative; overflow:hidden; transition:background .3s, transform .3s var(--ease);
 }
 .prop-card::before {
   content:''; position:absolute; bottom:0; left:0; right:0;
@@ -613,32 +567,6 @@ body::after {
 .prop-card p { font-size:.82rem; color:rgba(26,26,26,.68); line-height:1.75; }
 .prop-link { display:inline-flex; align-items:center; gap:.4rem; margin-top:1.5rem; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--B); transition:gap .25s; }
 .prop-card:hover .prop-link { gap:.7rem; }
-
-/* ============================================
-   PROPÃSITO â full bleed
-============================================ */
-.proposito { position:relative; overflow:hidden; min-height:90vh; display:flex; align-items:flex-end; }
-.proposito-bg {
-  position:absolute; inset:-8% 0;
-  background:url('/operacao-1.jpeg') center 30% / cover no-repeat;
-  filter:contrast(1.1) saturate(.65);
-  will-change:transform;
-}
-.proposito-bg::after {
-  content:''; position:absolute; inset:0;
-  background:
-    linear-gradient(to right, rgba(17,26,21,.98) 0%, rgba(17,26,21,.7) 45%, rgba(17,26,21,.15) 80%),
-    linear-gradient(to top, rgba(17,26,21,1) 0%, transparent 40%);
-}
-.proposito .ht { bottom:-60px; right:-60px; width:380px; height:380px; z-index:2; }
-.proposito-body { position:relative; z-index:3; padding:8rem 0 6rem; }
-.proposito-title {
-  font-family:var(--fc); font-size:clamp(4rem,11vw,11rem); font-weight:900;
-  text-transform:uppercase; color:var(--W); line-height:.84; letter-spacing:-.02em; margin-bottom:2rem;
-}
-.proposito-title em { font-style:normal; color:var(--B); }
-.proposito-lead { max-width:500px; color:rgba(255,255,255,.6); line-height:1.82; margin-bottom:2.5rem; font-size:.95rem; }
-.proposito-lead strong { color:var(--W); }
 
 /* ============================================
    MARQUEE
@@ -850,13 +778,10 @@ body::after {
 .news-card:hover .news-card-img img { transform:scale(1.05); }
 .news-ph { width:100%; height:100%; background:rgba(58,82,64,.22); display:flex; align-items:center; justify-content:center; font-size:2rem; }
 .news-body { padding:1.75rem; }
-.news-tag { display:inline-block; font-size:.58rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--B); border:1px solid rgba(196,168,130,.22); padding:.2rem .5rem; margin-bottom:.7rem; }
+.news-tag { display:inline-block; font-size:.68rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--B); border:1px solid rgba(196,168,130,.22); padding:.2rem .5rem; margin-bottom:.7rem; }
 .news-card h3 { color:var(--W); font-size:.92rem; line-height:1.4; margin-bottom:.5rem; }
 .news-card p { font-size:.82rem; color:rgba(255,255,255,.58); line-height:1.65; }
 .news-date { font-size:.7rem; color:rgba(255,255,255,.6); margin-top:1rem; font-weight:600; letter-spacing:.1em; }
-.filter-row { display:flex; gap:.5rem; flex-wrap:wrap; }
-.filter-btn { padding:.4rem 1rem; font-size:.63rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border:1px solid rgba(196,168,130,.18); color:rgba(255,255,255,.35); cursor:pointer; background:transparent; font-family:var(--f); transition:all .25s; }
-.filter-btn.active, .filter-btn:hover { background:var(--B); color:var(--GXX); border-color:var(--B); }
 
 /* ============================================
    GALERIA
@@ -872,48 +797,6 @@ body::after {
 .lightbox img { max-width:90vw; max-height:90vh; object-fit:contain; }
 .lb-close { position:absolute; top:1.5rem; right:1.5rem; color:var(--W); font-size:2rem; cursor:pointer; opacity:.5; transition:opacity .2s; background:none; border:none; }
 .lb-close:hover { opacity:1; }
-
-/* ============================================
-   VÃDEOS â repositÃ³rio YouTube
-============================================ */
-.videos-section { background:var(--GAB); position:relative; overflow:hidden; }
-.videos-section .topo-bg { opacity:.18; }
-.videos-head { margin-bottom:2.5rem; position:relative; z-index:2; }
-.videos-head .eyebrow { display:flex; margin-bottom:.75rem; }
-.video-grid {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:1rem;
-  position:relative; z-index:2;
-}
-.video-card { display:block; }
-.video-thumb {
-  position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:3px;
-  background:linear-gradient(135deg, var(--GX), var(--GXX));
-  border:1px solid rgba(196,168,130,.12);
-}
-.video-thumb img { width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease), filter .3s; filter:saturate(.85) brightness(.85); }
-.video-card:hover .video-thumb img { transform:scale(1.06); filter:saturate(1) brightness(1); }
-.video-thumb::after { content:''; position:absolute; inset:0; background:rgba(8,12,9,.25); transition:background .3s; }
-.video-card:hover .video-thumb::after { background:rgba(8,12,9,0); }
-/* botÃ£o play vermelho */
-.video-play {
-  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-  width:58px; height:40px; border-radius:9px;
-  background:rgba(220,30,30,.92);
-  display:flex; align-items:center; justify-content:center;
-  z-index:2; transition:transform .25s var(--ease), background .25s;
-  box-shadow:0 6px 22px rgba(0,0,0,.4);
-}
-.video-play::before { content:''; border-style:solid; border-width:8px 0 8px 14px; border-color:transparent transparent transparent #fff; margin-left:3px; }
-.video-card:hover .video-play { transform:translate(-50%,-50%) scale(1.12); background:#e62117; }
-.video-title {
-  margin-top:.85rem; font-size:.84rem; font-weight:600; line-height:1.4;
-  color:rgba(255,255,255,.82); transition:color .25s;
-}
-.video-card:hover .video-title { color:var(--B); }
-.video-channel { margin-top:.3rem; font-size:.66rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.32); display:flex; align-items:center; gap:.35rem; }
-/* placeholder enquanto nÃ£o hÃ¡ vÃ­deo definido */
-.video-thumb.placeholder { display:flex; align-items:center; justify-content:center; }
-.video-thumb.placeholder span { position:relative; z-index:3; font-size:.7rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:rgba(196,168,130,.5); }
 
 /* ============================================
    TROPA
@@ -953,8 +836,6 @@ body::after {
 .tropa-res-ok .res-title { font-family:var(--fc); text-transform:uppercase; color:var(--B); font-size:clamp(1.3rem,3vw,1.8rem); line-height:1.15; margin-bottom:.45rem; }
 .tropa-res-ok .res-sub { color:rgba(255,255,255,.5); font-size:.86rem; line-height:1.6; margin-bottom:1.25rem; }
 .tropa-res-ok .grupos-list { margin-top:.25rem; }
-.tropa-res-again { display:inline-block; margin-top:1.1rem; background:none; border:none; color:rgba(255,255,255,.45); font-size:.78rem; text-decoration:underline; cursor:pointer; }
-.tropa-res-again:hover { color:var(--B); }
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
 .fg { display:flex; flex-direction:column; gap:.4rem; }
 .fg.full { grid-column:1/-1; }
@@ -1013,9 +894,8 @@ footer {
   border-top:1px solid rgba(0,184,75,.18);
 }
 .foot-grid { display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:3rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,.04); margin-bottom:2rem; }
-.foot-logo img { height:46px; margin-bottom:1.25rem; opacity:.8; }
 .foot-logo p { font-size:.82rem; line-height:1.7; max-width:240px; color:rgba(255,255,255,.6); }
-.foot-col h2 { color:var(--B); font-size:.62rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1rem; }
+.foot-col h2 { color:var(--B); font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1rem; }
 .foot-col li { margin-bottom:.5rem; }
 .foot-col a { font-size:.83rem; color:rgba(255,255,255,.6); transition:color .2s; }
 .foot-col a:hover { color:var(--W); }
@@ -1029,101 +909,6 @@ footer {
 .foot-bottom__left { display:flex; flex-direction:column; gap:.3rem; }
 .foot-bottom__left .foot-credit { font-size:.72rem; color:rgba(255,255,255,.4); }
 .foot-bottom__left .foot-credit span { color:var(--B); font-weight:600; }
-
-/* ============================================
-   WHATSAPP FLUTUANTE
-============================================ */
-.wa-float {
-  position:fixed; right:1.5rem; bottom:1.5rem; z-index:9990;
-  width:60px; height:60px; border-radius:50%;
-  background:#25D366;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 8px 26px rgba(37,211,102,.45);
-  transition:transform .25s var(--ease), box-shadow .25s;
-}
-.wa-float::before {
-  content:''; position:absolute; inset:0; border-radius:50%;
-  background:#25D366; z-index:-1;
-  animation:waRing 2.4s ease-out infinite;
-}
-@keyframes waRing { 0%{transform:scale(1);opacity:.55;} 100%{transform:scale(1.9);opacity:0;} }
-.wa-float:hover { transform:scale(1.08); box-shadow:0 12px 34px rgba(37,211,102,.6); }
-.wa-float svg { width:33px; height:33px; fill:#fff; }
-.wa-tip {
-  position:absolute; right:74px; top:50%; transform:translateY(-50%) translateX(8px);
-  background:var(--GXX); color:#fff; font-size:.72rem; font-weight:600; white-space:nowrap;
-  padding:.5rem .85rem; border-radius:5px;
-  border:1px solid rgba(196,168,130,.2); box-shadow:0 6px 20px rgba(0,0,0,.35);
-  opacity:0; pointer-events:none; transition:opacity .25s, transform .25s;
-}
-.wa-tip::after {
-  content:''; position:absolute; right:-5px; top:50%; transform:translateY(-50%) rotate(45deg);
-  width:9px; height:9px; background:var(--GXX); border-right:1px solid rgba(196,168,130,.2); border-top:1px solid rgba(196,168,130,.2);
-}
-.wa-float:hover .wa-tip { opacity:1; transform:translateY(-50%) translateX(0); }
-.wa-float.active::before { animation:none; }
-
-/* Popup de grupos por regiÃ£o */
-.wa-pop {
-  position:fixed; right:1.5rem; bottom:6.6rem; z-index:9991;
-  width:320px; max-width:calc(100vw - 2rem);
-  background:var(--GXX); border:1px solid rgba(196,168,130,.18);
-  border-radius:12px; overflow:hidden;
-  box-shadow:0 20px 55px rgba(0,0,0,.55);
-  opacity:0; transform:translateY(14px) scale(.96); transform-origin:bottom right;
-  pointer-events:none; transition:opacity .25s var(--ease), transform .25s var(--ease);
-}
-.wa-pop.open { opacity:1; transform:none; pointer-events:auto; }
-.wa-pop-head { background:#25D366; padding:1rem 1.15rem; position:relative; }
-.wa-pop-head strong { display:block; color:#fff; font-size:.95rem; font-weight:700; }
-.wa-pop-head span { display:block; color:rgba(255,255,255,.9); font-size:.74rem; margin-top:.15rem; }
-.wa-pop-close { position:absolute; top:.7rem; right:.85rem; background:none; border:none; color:#fff; font-size:1.05rem; opacity:.85; cursor:pointer; line-height:1; }
-.wa-pop-close:hover { opacity:1; }
-.wa-pop-body { padding:.5rem; max-height:46vh; overflow-y:auto; }
-.wa-pop-item {
-  display:flex; align-items:center; gap:.65rem; padding:.72rem .8rem;
-  border-radius:7px; color:rgba(255,255,255,.78); font-size:.85rem; font-weight:500;
-  transition:background .2s, color .2s; cursor:pointer;
-}
-.wa-pop-item:hover { background:rgba(37,211,102,.14); color:#fff; }
-.wa-pop-item .reg-ico { color:#25D366; font-size:.7rem; flex-shrink:0; }
-.wa-pop-note { padding:.5rem 1rem 1rem; font-size:.72rem; color:rgba(255,255,255,.4); text-align:center; line-height:1.5; }
-.wa-pop-note a { color:var(--B); font-weight:600; }
-
-/* Popup simples â "Junte-se ao grupo" */
-.wa-pop-simple { padding:1.75rem 1.5rem 1.5rem; text-align:center; }
-.wa-pop-simple .wa-pop-close { color:rgba(255,255,255,.55); }
-.wa-pop-simple .wa-pop-close:hover { color:#fff; }
-.wa-pop-icon {
-  width:72px; height:72px; margin:0 auto .9rem;
-  background:rgba(37,211,102,.12);
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  animation:waPopIcon 2.2s ease-in-out infinite;
-}
-.wa-pop-icon svg { width:44px; height:44px; }
-@keyframes waPopIcon {
-  0%,100% { box-shadow:0 0 0 0 rgba(37,211,102,.5); }
-  50%     { box-shadow:0 0 0 14px rgba(37,211,102,0); }
-}
-.wa-pop-title {
-  display:block; color:#fff; font-size:1.15rem; font-weight:800;
-  letter-spacing:.01em; margin-bottom:.45rem;
-}
-.wa-pop-sub {
-  display:block; color:rgba(255,255,255,.65); font-size:.82rem;
-  line-height:1.5; margin-bottom:1.3rem;
-}
-.wa-pop-cta {
-  display:block; background:#25D366; color:#fff;
-  padding:.85rem 1.25rem; border-radius:8px;
-  font-size:.92rem; font-weight:700; letter-spacing:.02em;
-  text-decoration:none; transition:background .2s, transform .2s, box-shadow .2s;
-  box-shadow:0 8px 22px rgba(37,211,102,.35);
-}
-.wa-pop-cta:hover {
-  background:#1eb555; transform:translateY(-2px);
-  box-shadow:0 12px 30px rgba(37,211,102,.55);
-}
 
 /* ============================================
    ANIMAÃÃES DE ENTRADA
@@ -1182,9 +967,7 @@ footer {
   .bio-grid { grid-template-columns:1fr; }
   .bio-sticky { position:static; }
   .bio-photo img { height:360px; }
-  .stats-inner { grid-template-columns:repeat(2,1fr); }
   .propostas-grid { grid-template-columns:repeat(2,1fr); }
-  .video-grid { grid-template-columns:repeat(2,1fr); }
   .cred-strip-inner { grid-template-columns:1fr; }
   /* HUD tático some já em <=1024px: entre 769-1024 renderizava sobre o texto do hero */
   .hud, .corner, .hud-cross { display:none; }
@@ -1193,7 +976,7 @@ footer {
   /* drawer fechado: fora da tela E fora do tab order (visibility:hidden).
      visibility com delay = .3s no fechamento p/ não cortar a animação de saída;
      imediata (0s) na abertura p/ o slide-in aparecer. */
-  .nav-links { position:fixed; top:0; right:-100%; height:100vh; width:min(290px,82vw); background:var(--GXX); flex-direction:column; align-items:flex-start; padding:5rem 2rem 2rem; visibility:hidden; transition:right .3s, visibility 0s linear .3s; border-left:1px solid rgba(196,168,130,.07); }
+  .nav-links { position:fixed; top:0; right:-100%; height:100vh; height:100dvh; width:min(290px,82vw); background:var(--GXX); flex-direction:column; align-items:flex-start; padding:5rem 2rem 2rem; visibility:hidden; transition:right .3s, visibility 0s linear .3s; border-left:1px solid rgba(196,168,130,.07); }
   .nav-links.open { right:0; visibility:visible; transition:right .3s, visibility 0s linear 0s; }
   .nav-links a { font-size:.88rem; padding:.85rem 0; width:100%; border-bottom:1px solid rgba(255,255,255,.05); }
   .btn-tropa-nav { margin-top:1rem; width:100%; text-align:center; justify-content:center; }
@@ -1202,16 +985,11 @@ footer {
   .hero-actions .btn { width:100%; justify-content:center; }
   .propostas-grid { grid-template-columns:1fr; }
   .foot-grid { grid-template-columns:1fr; gap:2rem; }
-  .video-grid { grid-template-columns:1fr 1fr; gap:.6rem; }
-  .video-title { font-size:.75rem; }
   .foot-bottom { flex-direction:column; text-align:center; }
   .eixo-card { grid-template-columns:1fr; }
   .form-grid { grid-template-columns:1fr; }
 
-  .wa-float { width:52px; height:52px; right:1rem; bottom:1rem; }
-  .wa-float svg { width:28px; height:28px; }
-  .wa-tip { display:none; }
-  /* reserva espaço sob o FAB do WhatsApp p/ não cobrir links legais do rodapé */
+  /* reserva espaço sob o FAB do assistente p/ não cobrir links legais do rodapé */
   footer { padding-bottom:5rem; }
 
   /* ALVOS no mobile: vira lista de "scan readout" abaixo do retrato */
@@ -1235,9 +1013,7 @@ footer {
 }
 @media(max-width:480px) {
   .section { padding:4.5rem 0; }
-  .stats-inner { grid-template-columns:1fr 1fr; }
   .hero-name { font-size:clamp(4rem,18vw,6rem); }
-  .proposito-title { font-size:clamp(3.5rem,18vw,6rem); }
   .form-box { padding:2rem 1.25rem; }
   .ribbon { font-size:clamp(1.1rem,6vw,1.5rem); }
   /* reduz o padding lateral (causa raiz de vários cortes em telas estreitas) */
@@ -1251,7 +1027,6 @@ footer {
   /* telas muito estreitas: reduz o mÃ­nimo do clamp p/ o nome nÃ£o aparar
      (mantÃ©m nowrap; overflow-x:hidden do body evita scroll horizontal) */
   .hero-name { font-size:clamp(2.5rem,14vw,4rem); }
-  .proposito-title { font-size:clamp(2.5rem,14vw,4rem); }
 }
 
 /* ============================================
@@ -1293,18 +1068,18 @@ footer {
    para nunca cobri-lo. Bloco só ADICIONA regras.
 ============================================================ */
 [vw] {
-  position:fixed; left:1rem; right:auto; bottom:1rem; top:auto; z-index:9995;
+  position:fixed; left:1rem; right:auto; bottom:1rem; top:auto; z-index:9996;
 }
 [vw-access-button],
 [vw] [vw-access-button],
 .vw-access-button {
   left:1rem !important; right:auto !important; bottom:1rem !important; top:auto !important;
-  z-index:9995 !important;
+  z-index:9996 !important;
 }
 /* Painel do avatar acompanha o botão (abre pela esquerda). */
 [vw-plugin-wrapper],
 .vw-plugin-wrapper {
-  left:1rem !important; right:auto !important; z-index:9995 !important;
+  left:1rem !important; right:auto !important; z-index:9996 !important;
 }
 
 /* ============================================================

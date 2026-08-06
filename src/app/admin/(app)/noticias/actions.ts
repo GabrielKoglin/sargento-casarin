@@ -95,6 +95,14 @@ type ParsedNews = {
   publishedAt: Date;
 };
 
+// `image`/`url` vão direto para <img src>/<a href> em páginas PÚBLICAS. Aceita
+// só string vazia (→ null) ou URL http(s); qualquer outro esquema (javascript:,
+// data:, etc.) é recusado. Retorna `false` = inválido (erro claro ao usuário).
+function safeUrl(value: string): string | null | false {
+  if (!value) return null;
+  return /^https?:\/\//i.test(value) ? value : false;
+}
+
 // Lê + valida os campos do FormData. Retorna `{ error }` (mensagem clara) ou
 // `{ data }` já pronto para o Prisma.
 function parseNewsForm(
@@ -121,14 +129,24 @@ function parseNewsForm(
     };
   }
 
+  // Só persiste image/url se vazio ou http(s) — evita URLs perigosas no público.
+  const imageValue = safeUrl(image);
+  if (imageValue === false) {
+    return { error: "A imagem deve ser uma URL http(s) válida (ou ficar vazia)." };
+  }
+  const urlValue = safeUrl(url);
+  if (urlValue === false) {
+    return { error: "O link da notícia deve ser uma URL http(s) válida (ou ficar vazio)." };
+  }
+
   return {
     data: {
       title,
       slug,
       source,
       summary,
-      image: image || null,
-      url: url || null,
+      image: imageValue,
+      url: urlValue,
       publishedAt: parsePublishedAt(publishedAtRaw),
     },
   };

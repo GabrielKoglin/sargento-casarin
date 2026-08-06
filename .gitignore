@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# uploads de mídia (não versionar; manter só o placeholder do diretório)
+public/uploads/*
+!public/uploads/.gitkeep
+
 # banco local (SQLite)
 *.db
 *.db-journal

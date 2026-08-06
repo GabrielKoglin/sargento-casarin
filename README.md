@@ -1,6 +1,6 @@
-# Sargento Casarin — Site de Pré-Campanha
+# Sargento Casarin — Site de Campanha
 
-Site institucional do Sargento Dickson Casarin, pré-candidato a Deputado Estadual por Mato Grosso (Eleições 2026).
+Site institucional do Sargento Dickson Casarin, candidato a Deputado Estadual por Mato Grosso (Eleições 2026).
 
 ## Stack
 

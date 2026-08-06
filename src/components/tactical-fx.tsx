@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 // Reproduz o comportamento do main.js do template estático: revela os
 // elementos .fi/.sl/.sr/.ribbon ao entrarem na viewport, dispara a varredura
-// da seção "por que", anima os contadores e o HUD de digitação do hero.
+// da seção "por que" e o HUD de digitação do hero.
 export function TacticalFx() {
   const pathname = usePathname();
 
@@ -56,28 +56,6 @@ export function TacticalFx() {
       scan.observe(whyRight);
     }
 
-    const counters = document.querySelectorAll<HTMLElement>(".stat-n[data-target]");
-    const count = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const el = entry.target as HTMLElement;
-          count.unobserve(el);
-          const target = Number(el.dataset.target ?? 0);
-          const start = performance.now();
-          const duration = 1400;
-          const tick = (now: number) => {
-            const p = Math.min(1, (now - start) / duration);
-            el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
-            if (p < 1) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        }
-      },
-      { threshold: 0.4 },
-    );
-    counters.forEach((el) => count.observe(el));
-
     const hud = document.getElementById("hudType");
     let hudTimer: ReturnType<typeof setInterval> | undefined;
     if (hud) {
@@ -93,7 +71,6 @@ export function TacticalFx() {
     return () => {
       reveal.disconnect();
       scan?.disconnect();
-      count.disconnect();
       clearTimeout(revealFallback);
       if (hudTimer) clearInterval(hudTimer);
     };

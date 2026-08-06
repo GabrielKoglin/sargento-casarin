@@ -7,6 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      // Painel administrativo e rotas de API não devem ser indexados.
+      disallow: ["/admin", "/api"],
     },
     sitemap: `${base}/sitemap.xml`,
     host: base,

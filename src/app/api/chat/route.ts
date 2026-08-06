@@ -20,6 +20,64 @@ const MAX_MESSAGES = 16; // histórico máximo aceito (anti-abuso)
 const MAX_CHARS = 1500; // tamanho máximo de cada mensagem
 
 // ---------------------------------------------------------------------------
+// Rate-limit best-effort POR IP (espelha src/app/actions.ts): endpoint público
+// e, COM ANTHROPIC_API_KEY, cada requisição pode custar créditos. Map em memória
+// com janela deslizante; só limita quando há um IP real (x-forwarded-for ->
+// x-real-ip) — sem IP confiável preferimos permitir a bloquear todo mundo num
+// balde único. Store por instância (não compartilhado): mitigação, não muralha.
+// ---------------------------------------------------------------------------
+const CHAT_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minuto
+const CHAT_RATE_LIMIT_MAX = 20; // ~20 req/min por IP
+const CHAT_RATE_LIMIT_PRUNE_THRESHOLD = 1000;
+const chatAttempts = new Map<string, number[]>();
+
+// Varredura leve: descarta tentativas fora da janela e remove IPs ociosos. Só é
+// chamada quando o Map cresce, para não pagar a limpeza em toda requisição.
+function pruneExpiredChatAttempts(windowStart: number): void {
+  for (const [key, attempts] of chatAttempts) {
+    const recent = attempts.filter((attempt) => attempt > windowStart);
+    if (recent.length === 0) {
+      chatAttempts.delete(key);
+    } else if (recent.length !== attempts.length) {
+      chatAttempts.set(key, recent);
+    }
+  }
+}
+
+function isChatRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const windowStart = now - CHAT_RATE_LIMIT_WINDOW_MS;
+
+  if (chatAttempts.size > CHAT_RATE_LIMIT_PRUNE_THRESHOLD) {
+    pruneExpiredChatAttempts(windowStart);
+  }
+
+  const attempts = (chatAttempts.get(ip) ?? []).filter(
+    (attempt) => attempt > windowStart,
+  );
+
+  if (attempts.length >= CHAT_RATE_LIMIT_MAX) {
+    chatAttempts.set(ip, attempts);
+    return true;
+  }
+
+  attempts.push(now);
+  chatAttempts.set(ip, attempts);
+  return false;
+}
+
+// IP em cadeia: primeiro salto de x-forwarded-for, senão x-real-ip. Sem um IP
+// real devolvemos null (não usamos uma string literal como chave — viraria um
+// balde único compartilhado por todos os visitantes).
+function resolveChatIp(req: Request): string | null {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip")?.trim() ||
+    null
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Fatos oficiais — ÚNICA fonte de verdade do assistente (curado + LLM).
 // Editar aqui para atualizar o que a IA "sabe". NÃO inventar nada além disto.
 // ---------------------------------------------------------------------------
@@ -157,6 +215,13 @@ function streamText(text: string): Response {
 // Handler
 // ---------------------------------------------------------------------------
 export async function POST(req: Request): Promise<Response> {
+  // Rate-limit por IP (best-effort). Ao exceder, responde uma mensagem amigável
+  // como stream de texto — o widget consome igual a qualquer resposta.
+  const ip = resolveChatIp(req);
+  if (ip && isChatRateLimited(ip)) {
+    return streamText("Muitas mensagens em pouco tempo, aguarde um instante.");
+  }
+
   let messages: Msg[] = [];
   try {
     const body = (await req.json()) as { messages?: unknown };

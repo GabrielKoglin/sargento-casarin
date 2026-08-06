@@ -33,6 +33,8 @@ Defina `CRON_SECRET` no ambiente **Production** do projeto Vercel. A Vercel envi
 
 O projeto usa SQLite local com `better-sqlite3`. Um arquivo SQLite não é persistente em funções serverless da Vercel; portanto, esse modo não é adequado para produção real na Vercel. Antes de publicar de verdade, migre o banco para PostgreSQL (por exemplo, Prisma Postgres, Neon ou Supabase) ou adote Turso/libSQL e ajuste Prisma/adapter; esta documentação não executa essa migração.
 
+Pelo mesmo motivo, os **uploads de mídia** (a guia Mídia grava arquivos em `public/uploads` via `sharp`/`writeFile`) **também não persistem** em ambiente serverless: o filesystem é efêmero e read-only fora de `/tmp`, então as imagens somem entre deploys/instâncias. Para produção real, use um storage externo (por exemplo, **Vercel Blob** ou **S3**) e grave a URL pública no banco, em vez do disco local.
+
 ## Placeholders para trocar antes de publicar
 
 - Domínio: substitua `https://sargentocasarin.com.br` pelo domínio definitivo em `src/app/layout.tsx` (`metadataBase` e Open Graph URL), `src/app/sitemap.ts` e `src/app/robots.ts`.

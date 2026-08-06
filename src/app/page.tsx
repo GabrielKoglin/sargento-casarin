@@ -187,8 +187,9 @@ export default async function Home() {
 
       <div className="tact-divider"></div>
 
-      {/* MARQUEE */}
-      <div className="marquee-strip">
+      {/* MARQUEE (decorativo: os itens são duplicados p/ o loop infinito, então
+          aria-hidden evita o leitor de tela repetir tudo 2x) */}
+      <div className="marquee-strip" aria-hidden="true">
         <div className="marquee-track">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
             <div className="marquee-item" key={i}>

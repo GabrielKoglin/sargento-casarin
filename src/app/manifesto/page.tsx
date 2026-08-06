@@ -54,7 +54,7 @@ export default function ManifestoPage() {
               <span>Anos de farda</span>
             </div>
             <div className="m-stat fi d1">
-              <strong>141</strong>
+              <strong>142</strong>
               <span>Municípios em MT</span>
             </div>
             <div className="m-stat fi d2">

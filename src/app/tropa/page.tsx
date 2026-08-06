@@ -78,20 +78,56 @@ export default function TropaPage() {
               Mato Grosso e junte-se ao grupo oficial da Tropa mais próximo de você.
             </p>
             <div className="wpp-grid">
-              {GRUPOS_WHATSAPP.map((grupo) => (
-                <a
-                  key={grupo.regiao}
-                  className="wpp-card"
-                  href={grupo.href}
-                  aria-label={`Entrar no grupo de WhatsApp da Tropa em ${grupo.regiao}`}
-                  {...(grupo.href === "#"
-                    ? {}
-                    : { target: "_blank", rel: "noopener noreferrer" })}
-                >
-                  <WhatsAppIcon />
-                  <span>{grupo.regiao}</span>
-                </a>
-              ))}
+              {GRUPOS_WHATSAPP.map((grupo) => {
+                // Enquanto o link é o placeholder "#", NÃO renderizamos um <a>:
+                // um href="#" vira um link que só rola ao topo (armadilha para
+                // teclado/leitor de tela). Mostramos um card inerte
+                // (aria-disabled) com o selo "em breve". Só quando houver um
+                // convite real (chat.whatsapp.com) o card volta a ser um link.
+                if (grupo.href === "#") {
+                  return (
+                    <div
+                      key={grupo.regiao}
+                      className="wpp-card"
+                      aria-disabled="true"
+                      aria-label={`Grupo da Tropa em ${grupo.regiao} — em breve`}
+                      style={{ opacity: 0.55, cursor: "default" }}
+                    >
+                      <WhatsAppIcon />
+                      <span>{grupo.regiao}</span>
+                      <span
+                        style={{
+                          marginLeft: "auto",
+                          fontSize: "0.6rem",
+                          fontWeight: 700,
+                          letterSpacing: "0.08em",
+                          textTransform: "uppercase",
+                          padding: "0.1rem 0.45rem",
+                          borderRadius: "999px",
+                          border: "1px solid currentColor",
+                          opacity: 0.85,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Em breve
+                      </span>
+                    </div>
+                  );
+                }
+                return (
+                  <a
+                    key={grupo.regiao}
+                    className="wpp-card"
+                    href={grupo.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Entrar no grupo de WhatsApp da Tropa em ${grupo.regiao}`}
+                  >
+                    <WhatsAppIcon />
+                    <span>{grupo.regiao}</span>
+                  </a>
+                );
+              })}
             </div>
           </section>
         </div>

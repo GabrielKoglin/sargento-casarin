@@ -12,10 +12,13 @@ import { NewsForm, type NewsFormValues } from "../../news-form";
 
 export const dynamic = "force-dynamic";
 
-// Date -> "YYYY-MM-DD" para o <input type="date"> (mesmo referencial UTC usado
-// no parse do actions.ts, então o round-trip é estável).
+// Date -> "YYYY-MM-DD" para o <input type="date"> usando os componentes LOCAIS
+// (getFullYear/getMonth/getDate), casando com o parsePublishedAt do actions.ts,
+// que interpreta "YYYY-MM-DD" como MEIO-DIA local. Usar toISOString() (UTC)
+// deslocava +1 dia ao abrir/salvar à noite em fusos como GMT-4 (MT).
 function toDateInputValue(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 export default async function EditNoticiaPage({
