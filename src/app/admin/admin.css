@@ -679,3 +679,206 @@ a.admin-card:hover .admin-card__icon {
     padding: 1.5rem 1.25rem 2.5rem;
   }
 }
+
+/* ============================================================================
+   NOTIFICAÇÕES + EQUIPE (aba /admin/equipe e badges de mensagens não lidas)
+   ============================================================================ */
+
+/* Badge de não lidas na navegação lateral (aba Mensagens). */
+.admin-nav__badge {
+  margin-left: auto;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  padding: 0 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #04140a;
+  background: var(--a-green-bright);
+  border-radius: 999px;
+}
+
+/* Badge ao lado do título "Mensagens" e selo "Nova" em cada mensagem. */
+.admin-title-badge,
+.admin-new-pill {
+  display: inline-block;
+  vertical-align: middle;
+  font-family: var(--a-font);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #04140a;
+  background: var(--a-green-bright);
+  border-radius: 999px;
+}
+.admin-title-badge {
+  margin-left: 0.75rem;
+  font-size: 0.7rem;
+  padding: 0.22rem 0.6rem;
+}
+.admin-new-pill {
+  margin-left: 0.5rem;
+  font-size: 0.6rem;
+  padding: 0.12rem 0.45rem;
+}
+
+/* Cartão de mensagem NÃO lida — realce sutil + linha verde no topo. */
+.admin-card--unread {
+  border-color: rgba(0, 184, 75, 0.45);
+  background: linear-gradient(180deg, rgba(0, 184, 75, 0.08), var(--a-panel));
+}
+.admin-card--unread::before {
+  opacity: 1;
+}
+
+/* Título de seção reutilizável nas páginas do painel. */
+.admin-section-title {
+  margin: 0 0 0.9rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--a-text);
+}
+
+/* Grade do formulário "Adicionar membro". */
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.1rem;
+}
+@media (max-width: 640px) {
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Selo do papel (Titular / Editor). */
+.admin-role-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.admin-role-pill.is-owner {
+  color: var(--a-green-bright);
+  background: var(--a-green-dim);
+  border: 1px solid rgba(0, 184, 75, 0.4);
+}
+.admin-role-pill.is-editor {
+  color: var(--a-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--a-line-soft);
+}
+
+/* Cartão de membro da equipe. */
+.admin-member {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.admin-member__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.admin-member__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--a-text);
+}
+.admin-member__you {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--a-green-bright);
+  border: 1px solid var(--a-line);
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+}
+.admin-member__email {
+  font-size: 0.85rem;
+  color: var(--a-muted);
+  margin-top: 0.15rem;
+}
+.admin-member__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+.admin-member__date {
+  font-size: 0.72rem;
+  color: var(--a-faint);
+}
+.admin-member__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--a-line-soft);
+}
+.admin-member__role {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.admin-member__buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+.admin-member__reset {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-basis: 100%;
+}
+.admin-member__reset input {
+  flex: 1 1 200px;
+}
+
+/* Botão-texto (redefinir senha / excluir) dentro do cartão de membro. */
+.admin-linkbtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--a-green-bright);
+}
+.admin-linkbtn:hover {
+  text-decoration: underline;
+}
+.admin-linkbtn--danger {
+  color: var(--a-danger);
+}
+
+/* Variantes compactas de botão e input (ações inline). */
+.admin-btn--sm {
+  height: 2.25rem;
+  padding: 0 0.9rem;
+  font-size: 0.68rem;
+}
+.admin-main .admin-field__input--sm {
+  width: auto;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+}

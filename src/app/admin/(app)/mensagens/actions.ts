@@ -25,5 +25,40 @@ export async function deleteContact(formData: FormData): Promise<void> {
     console.error("Falha ao excluir mensagem.");
   }
 
-  revalidatePath("/admin/mensagens");
+  // "layout" também: o badge de não lidas vive na sidebar (layout do painel).
+  revalidatePath("/admin/mensagens", "layout");
+}
+
+/** Marca UMA mensagem como lida (some o selo "Nova" e desconta do badge). */
+export async function markContactRead(formData: FormData): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+
+  try {
+    await prisma.contact.update({ where: { id }, data: { read: true } });
+  } catch {
+    console.error("Falha ao marcar mensagem como lida.");
+  }
+
+  revalidatePath("/admin/mensagens", "layout");
+}
+
+/** Marca TODAS as mensagens como lidas (zera o badge de notificação). */
+export async function markAllContactsRead(): Promise<void> {
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+
+  try {
+    await prisma.contact.updateMany({
+      where: { read: false },
+      data: { read: true },
+    });
+  } catch {
+    console.error("Falha ao marcar todas as mensagens como lidas.");
+  }
+
+  revalidatePath("/admin/mensagens", "layout");
 }

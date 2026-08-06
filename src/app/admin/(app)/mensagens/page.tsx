@@ -11,7 +11,11 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
-import { deleteContact } from "./actions";
+import {
+  deleteContact,
+  markAllContactsRead,
+  markContactRead,
+} from "./actions";
 
 // Lista sempre "ao vivo" — nunca pré-renderizar em build.
 export const dynamic = "force-dynamic";
@@ -38,6 +42,7 @@ export default async function AdminMensagensPage({
   // Contamos primeiro para "clampar" a página ao intervalo válido — assim um
   // ?page absurdo nunca vira um skip gigante contra o banco.
   const total = await prisma.contact.count();
+  const unread = await prisma.contact.count({ where: { read: false } });
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const page = Math.min(Math.max(1, parsePage(sp.page)), totalPages);
 
@@ -54,11 +59,32 @@ export default async function AdminMensagensPage({
     <>
       <header className="admin-page-header">
         <span className="admin-page-header__eyebrow">Contato</span>
-        <h1 className="admin-page-header__title">Mensagens</h1>
+        <h1 className="admin-page-header__title">
+          Mensagens
+          {unread > 0 ? (
+            <span className="admin-title-badge">{unread} nova{unread > 1 ? "s" : ""}</span>
+          ) : null}
+        </h1>
         <p className="admin-page-header__subtitle">
           Mensagens recebidas pelo formulário de contato do site.
         </p>
       </header>
+
+      {unread > 0 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "1rem",
+          }}
+        >
+          <form action={markAllContactsRead}>
+            <button type="submit" className="admin-btn admin-btn--ghost admin-btn--sm">
+              Marcar todas como lidas
+            </button>
+          </form>
+        </div>
+      ) : null}
 
       {total === 0 ? (
         <p className="admin-note">
@@ -68,7 +94,10 @@ export default async function AdminMensagensPage({
       ) : (
         <div className="flex flex-col gap-3">
           {mensagens.map((msg) => (
-            <article key={msg.id} className="admin-card">
+            <article
+              key={msg.id}
+              className={`admin-card${msg.read ? "" : " admin-card--unread"}`}
+            >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <div>
                   <div
@@ -76,6 +105,9 @@ export default async function AdminMensagensPage({
                     style={{ color: "var(--a-text)" }}
                   >
                     {msg.name}
+                    {!msg.read ? (
+                      <span className="admin-new-pill">Nova</span>
+                    ) : null}
                   </div>
                   <div
                     className="text-xs uppercase tracking-wider"
@@ -120,7 +152,19 @@ export default async function AdminMensagensPage({
                 {msg.message}
               </p>
 
-              <div className="mt-3 flex justify-end">
+              <div className="mt-3 flex justify-end gap-4">
+                {!msg.read ? (
+                  <form action={markContactRead}>
+                    <input type="hidden" name="id" value={msg.id} />
+                    <button
+                      type="submit"
+                      className="cursor-pointer bg-transparent text-xs font-semibold uppercase tracking-wider"
+                      style={{ color: "var(--a-green-bright)" }}
+                    >
+                      Marcar como lida
+                    </button>
+                  </form>
+                ) : null}
                 <form action={deleteContact}>
                   <input type="hidden" name="id" value={msg.id} />
                   <button

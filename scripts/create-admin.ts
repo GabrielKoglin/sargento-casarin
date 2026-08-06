@@ -31,10 +31,12 @@ async function main() {
   const usingDefaultPassword = password === DEFAULT_PASSWORD;
   const hashed = await hashPassword(password);
 
+  // A conta principal é sempre "owner" (titular): gerencia a equipe em
+  // /admin/equipe. Membros criados pelo painel nascem "editor".
   const user = await prisma.user.upsert({
     where: { email },
-    update: { name, password: hashed },
-    create: { email, name, password: hashed },
+    update: { name, password: hashed, role: "owner" },
+    create: { email, name, password: hashed, role: "owner" },
   });
 
   console.log(`\n✅ Admin pronto: ${user.email} (${user.name})`);

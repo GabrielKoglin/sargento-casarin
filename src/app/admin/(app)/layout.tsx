@@ -29,6 +29,7 @@ const NAV_ITEMS: AdminNavItem[] = [
   { href: "/admin/agenda", label: "Agenda", icon: "▤" },
   { href: "/admin/midia", label: "Mídia", icon: "▷" },
   { href: "/admin/mensagens", label: "Mensagens", icon: "✉" },
+  { href: "/admin/equipe", label: "Equipe", icon: "◊" },
   { href: "/admin/config", label: "Config", icon: "⚙" },
 ];
 
@@ -67,6 +68,18 @@ export default async function AdminAppLayout({
     user = null;
   }
 
+  // Notificação: total de mensagens de contato NÃO lidas → badge na aba
+  // "Mensagens". Falha de I/O vira 0 (o painel abre mesmo assim).
+  let unread = 0;
+  try {
+    unread = await prisma.contact.count({ where: { read: false } });
+  } catch {
+    unread = 0;
+  }
+  const navItems: AdminNavItem[] = NAV_ITEMS.map((item) =>
+    item.href === "/admin/mensagens" ? { ...item, badge: unread } : item,
+  );
+
   if (!user) {
     // Cookie órfão: tenta limpá-lo. Em Server Component (fase de render) os
     // cookies são READ-ONLY e `delete` lança (E1180) — por isso o try/catch.
@@ -88,7 +101,7 @@ export default async function AdminAppLayout({
           <span className="admin-sidebar__brand-title">Casarin</span>
         </Link>
 
-        <AdminNav items={NAV_ITEMS} />
+        <AdminNav items={navItems} />
 
         <div className="admin-sidebar__footer">
           <div className="admin-user" title={user.email}>

@@ -6,7 +6,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export type AdminNavItem = { href: string; label: string; icon?: string };
+export type AdminNavItem = {
+  href: string;
+  label: string;
+  icon?: string;
+  /** Contador de notificação (ex.: mensagens não lidas). Só exibe se > 0. */
+  badge?: number;
+};
 
 export function AdminNav({ items }: { items: AdminNavItem[] }) {
   const pathname = usePathname();
@@ -33,6 +39,14 @@ export function AdminNav({ items }: { items: AdminNavItem[] }) {
             </span>
           ) : null}
           <span>{item.label}</span>
+          {item.badge && item.badge > 0 ? (
+            <span
+              className="admin-nav__badge"
+              aria-label={`${item.badge} não lidas`}
+            >
+              {item.badge > 99 ? "99+" : item.badge}
+            </span>
+          ) : null}
         </Link>
       ))}
     </nav>

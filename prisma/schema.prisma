@@ -15,6 +15,10 @@ model User {
   name      String
   email     String   @unique
   password  String
+  // Papel no painel: "owner" (titular — gerencia a equipe) | "editor" (acesso
+  // ao conteúdo, mas não à gestão de usuários). Membros criados pelo painel
+  // nascem "editor"; a conta principal é "owner". Ver /admin/equipe.
+  role      String   @default("editor")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -95,7 +99,14 @@ model Contact {
   phone     String
   city      String
   message   String
+  // Notificação: mensagens nascem NÃO lidas (read=false). O painel mostra o
+  // total de não lidas como badge na navegação e um selo "Nova" em cada uma.
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  // O badge de notificação consulta count({ where: { read: false } }) a cada
+  // render do painel — índice evita full scan conforme as mensagens acumulam.
+  @@index([read])
 }
 
 model Settings {
