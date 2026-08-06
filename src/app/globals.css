@@ -819,7 +819,16 @@ body::after {
    MANIFESTO
 ============================================ */
 .manifesto-hero { min-height:100vh; display:flex; align-items:center; position:relative; overflow:hidden; }
-.manifesto-bg { position:absolute; inset:0; background:url('/operacao-1.jpeg') center/cover; filter:contrast(1.1) saturate(.65); }
+.manifesto-bg {
+  position:absolute; inset:0;
+  /* a imagem vem inline (casarin-retrato.jpeg); aqui só enquadramento.
+     center TOP evita cortar a cabeça do retrato no fundo full-bleed. */
+  background-color:#0c130f;
+  background-repeat:no-repeat;
+  background-position:center top;
+  background-size:cover;
+  filter:contrast(1.1) saturate(.65);
+}
 .manifesto-bg::after { content:''; position:absolute; inset:0; background:rgba(12,19,15,.9); }
 .manifesto-content { position:relative; z-index:2; max-width:820px; padding:9rem 0; }
 .manifesto-content h1 { font-family:var(--fc); color:var(--W); font-size:clamp(4rem,11vw,10rem); line-height:.84; text-transform:uppercase; margin-bottom:2rem; }
