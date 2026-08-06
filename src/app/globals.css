@@ -1282,3 +1282,122 @@ footer {
 /* divisa dourada no lugar do "A" de CASARIN no logo */
 .nav-badge { display:inline-block; width:.66em; height:.66em; vertical-align:-.04em; margin:0 .01em; }
 .nav-badge svg { display:block; width:100%; height:100%; overflow:visible; }
+
+/* ============================================================
+   VLibras — acesso no canto inferior ESQUERDO
+   ------------------------------------------------------------
+   O plugin oficial (vlibras.gov.br) traz o próprio CSS e ancora
+   o botão à DIREITA, onde fica o FAB do assistente de IA. Aqui
+   forçamos o acesso para a ESQUERDA (!important vence o CSS do
+   plugin) e mantemos o z-index ABAIXO do assistente (10000/10001)
+   para nunca cobri-lo. Bloco só ADICIONA regras.
+============================================================ */
+[vw] {
+  position:fixed; left:1rem; right:auto; bottom:1rem; top:auto; z-index:9995;
+}
+[vw-access-button],
+[vw] [vw-access-button],
+.vw-access-button {
+  left:1rem !important; right:auto !important; bottom:1rem !important; top:auto !important;
+  z-index:9995 !important;
+}
+/* Painel do avatar acompanha o botão (abre pela esquerda). */
+[vw-plugin-wrapper],
+.vw-plugin-wrapper {
+  left:1rem !important; right:auto !important; z-index:9995 !important;
+}
+
+/* ============================================================
+   MODO ALTO CONTRASTE — html.a11y-contrast
+   ------------------------------------------------------------
+   A classe é ligada/desligada pelo assistente (outro componente);
+   aqui SÓ estilizamos. Objetivo: leitura de alto contraste
+   pragmática — sobe os textos apagados (os muitos
+   rgba(255,255,255,.4–.65) e rgba(26,26,26,.6)) para praticamente
+   opacos, reforça foco/bordas e sublinha links de conteúdo. NÃO
+   redesenha o layout.
+   Estratégia: padrão = fundo ESCURO → texto BRANCO; contextos
+   claros (seções creme .why/.cta-tropa/.bio-section e os cards
+   brancos .prop-card/.eixo-card) → texto quase PRETO, sobrescrevendo
+   por maior especificidade. A seção .propostas do site tem fundo
+   escuro (topo-bg) com cards brancos, então NÃO é tratada como creme.
+============================================================ */
+
+/* 1) Padrão (fundo escuro): corpo + textos apagados viram branco puro. */
+html.a11y-contrast body { color:#ffffff; }
+html.a11y-contrast p,
+html.a11y-contrast li,
+html.a11y-contrast .page-hero p,
+html.a11y-contrast .proposito-lead,
+html.a11y-contrast .mt-bloco p,
+html.a11y-contrast .m-stat span,
+html.a11y-contrast .news-date,
+html.a11y-contrast .form-box > p,
+html.a11y-contrast .grupo-txt span,
+html.a11y-contrast .tropa-res-ok .res-sub,
+html.a11y-contrast .tropa-res-again,
+html.a11y-contrast .wpp-card span,
+html.a11y-contrast .legal-alert p,
+html.a11y-contrast .contact-card p,
+html.a11y-contrast .contact-card a,
+html.a11y-contrast .priv-body,
+html.a11y-contrast .cred-txt span,
+html.a11y-contrast .foot-logo p,
+html.a11y-contrast .foot-col a,
+html.a11y-contrast .foot-bottom p,
+html.a11y-contrast .foot-bottom a,
+html.a11y-contrast .foot-bottom__left .foot-credit,
+html.a11y-contrast .wa-pop-note,
+html.a11y-contrast .soc-btn {
+  color:#ffffff !important;
+}
+
+/* 2) Contextos CLAROS (creme / cards brancos): texto quase preto.
+      Vence o item 1 por especificidade maior (classe extra). */
+html.a11y-contrast .why,
+html.a11y-contrast .cta-tropa,
+html.a11y-contrast .bio-section {
+  color:#0a0a0a !important;
+}
+html.a11y-contrast .why p,
+html.a11y-contrast .why li,
+html.a11y-contrast .cta-tropa p,
+html.a11y-contrast .cta-tropa .cta-lead,
+html.a11y-contrast .bio-section p,
+html.a11y-contrast .bio-section li,
+html.a11y-contrast .prop-card p,
+html.a11y-contrast .prop-card li,
+html.a11y-contrast .eixo-card p,
+html.a11y-contrast .eixo-card li {
+  color:#0a0a0a !important;
+}
+
+/* 3) Foco bem visível (amarelo forte) em todo elemento focável. */
+html.a11y-contrast :focus-visible {
+  outline:3px solid #ffdf00 !important;
+  outline-offset:2px !important;
+}
+
+/* 4) Bordas sutis reforçadas (box-sizing:border-box → sem shift de layout). */
+html.a11y-contrast input,
+html.a11y-contrast textarea,
+html.a11y-contrast select,
+html.a11y-contrast .btn-outline,
+html.a11y-contrast .btn-ghost {
+  border-color:#ffffff !important; border-width:2px !important;
+}
+html.a11y-contrast .prop-card,
+html.a11y-contrast .eixo-card {
+  border-color:#0a0a0a !important;
+}
+
+/* 5) Links de conteúdo sublinhados e mais fortes (não afeta os .btn). */
+html.a11y-contrast main p a,
+html.a11y-contrast .priv-body a,
+html.a11y-contrast .legal-alert a,
+html.a11y-contrast .contact-card a,
+html.a11y-contrast .mt-bloco a,
+html.a11y-contrast .foot-col a,
+html.a11y-contrast .foot-bottom a {
+  text-decoration:underline !important; font-weight:600 !important;
+}

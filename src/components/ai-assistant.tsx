@@ -18,12 +18,14 @@
 // lugar que toca window), decidimos exibir. Estilos 100% inline. O anel de foco
 // visível vem do :focus-visible global (amarelo da marca) — nada é só por cor.
 
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
   useRef,
   useState,
   type CSSProperties,
+  type ReactNode,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 
@@ -64,11 +66,35 @@ type SRConstructor = new () => SpeechRecognitionLike;
 const WELCOME =
   "Olá! 👋 Sou o assistente virtual do Sargento Casarin. Posso falar sobre as propostas, a trajetória dele, a agenda e como participar. Como posso ajudar?";
 
-const SUGGESTIONS = [
+// Pool de sugestões que reaparece DEPOIS de cada resposta (a conversa não morre).
+const SUGGESTION_POOL = [
   "O que o Casarin defende?",
   "Como faço parte?",
+  "Como posso ajudar?",
   "Qual é a agenda?",
+  "Quem é o Casarin?",
+  "Quais as redes sociais?",
+  "Como falo com a equipe?",
+  "Sobre segurança pública",
 ];
+
+// Atalhos fixos para as páginas do site (faixa de ações rápidas, sempre visível).
+const QUICK_ACTIONS: { label: string; href: string; icon: string }[] = [
+  { label: "Nossos Grupos", href: "/tropa", icon: "👥" },
+  { label: "Quero Ajudar", href: "/ajudar", icon: "🤝" },
+  { label: "Quem é o Casarin", href: "/sobre", icon: "🎖️" },
+  { label: "Propostas", href: "/propostas", icon: "📋" },
+  { label: "Redes sociais", href: "/midias", icon: "📱" },
+  { label: "Agenda", href: "/agenda", icon: "🗓️" },
+  { label: "Contato", href: "/contato", icon: "✉️" },
+];
+
+// Escala de fonte (%) — persistida em localStorage["a11y-fontscale"].
+const FONT_MIN = 87.5;
+const FONT_MAX = 150;
+const FONT_STEP = 12.5;
+const clampScale = (n: number) =>
+  Math.min(FONT_MAX, Math.max(FONT_MIN, Math.round(n / FONT_STEP) * FONT_STEP));
 
 const ERROR_MSG =
   "Ops! Não consegui responder agora. Tente de novo em instantes ou fale com a equipe pela página de contato.";
@@ -79,6 +105,72 @@ function toPayload(history: Msg[]): Msg[] {
   const copy = [...history];
   while (copy.length && copy[0].role === "assistant") copy.shift();
   return copy;
+}
+
+// --- Linkificação das respostas ---------------------------------------------
+// Reconhece rotas internas (/tropa, /ajudar, …), a plataforma de doação
+// (apoiar.me/…) e o @ das redes (@sargentocasarin → /midias) no texto puro do
+// assistente e as transforma em links clicáveis, preservando o resto do texto.
+const ROUTES =
+  "tropa|ajudar|propostas|sobre|agenda|contato|midias|noticias|manifesto|galeria|privacidade|termos|cookies|lgpd|regras";
+const RICH_TOKEN = new RegExp(
+  `(\\/(?:${ROUTES})(?:\\/[a-z0-9-]+)*|apoiar\\.me\\/[A-Za-z0-9_/-]+|@sargentocasarin)`,
+  "g",
+);
+const INTERNAL_RE = new RegExp(`^\\/(?:${ROUTES})(?:\\/[a-z0-9-]+)*$`);
+const APOIAR_RE = /^apoiar\.me\/[A-Za-z0-9_/-]+$/;
+
+const richLinkStyle: CSSProperties = {
+  color: "#8ff0b6",
+  textDecoration: "underline",
+  fontWeight: 600,
+};
+
+function renderRich(text: string): ReactNode[] {
+  return text.split(RICH_TOKEN).map((part, i) => {
+    if (!part) return null;
+    if (part === "@sargentocasarin") {
+      return (
+        <Link key={i} href="/midias" style={richLinkStyle}>
+          {part}
+        </Link>
+      );
+    }
+    if (APOIAR_RE.test(part)) {
+      return (
+        <a
+          key={i}
+          href={`https://${part}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={richLinkStyle}
+        >
+          {part}
+        </a>
+      );
+    }
+    if (INTERNAL_RE.test(part)) {
+      return (
+        <Link key={i} href={part} style={richLinkStyle}>
+          {part}
+        </Link>
+      );
+    }
+    return part;
+  });
+}
+
+// Escolhe até 4 sugestões variadas (rotação por turno), pulando a última pergunta.
+function pickSuggestions(lastQuestion: string, offset: number): string[] {
+  const norm = (s: string) =>
+    s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  const lq = norm(lastQuestion);
+  const pool = SUGGESTION_POOL.filter((p) => norm(p) !== lq);
+  const out: string[] = [];
+  for (let i = 0; i < pool.length && out.length < 4; i += 1) {
+    out.push(pool[(offset + i) % pool.length]);
+  }
+  return out;
 }
 
 export function AiAssistant() {
@@ -96,6 +188,8 @@ export function AiAssistant() {
   const [streaming, setStreaming] = useState(false);
   const [listening, setListening] = useState(false);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
+  const [fontScale, setFontScale] = useState(100);
+  const [highContrast, setHighContrast] = useState(false);
 
   const panelRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
@@ -137,6 +231,31 @@ export function AiAssistant() {
         // best-effort
       }
     };
+  }, []);
+
+  // Preferências de acessibilidade persistidas (fonte + alto contraste). Lê e
+  // reaplica no mount; os setState moram em função nomeada (lint-safe). window/
+  // document/localStorage só aqui (SSR-safe).
+  useEffect(() => {
+    const applyA11y = () => {
+      let scale = 100;
+      let contrast = false;
+      try {
+        const savedScale = window.localStorage.getItem("a11y-fontscale");
+        if (savedScale) {
+          const n = parseFloat(savedScale);
+          if (!Number.isNaN(n)) scale = clampScale(n);
+        }
+        contrast = window.localStorage.getItem("a11y-contrast") === "on";
+      } catch {
+        // localStorage indisponível (modo privado): mantém padrões.
+      }
+      if (scale !== 100) document.documentElement.style.fontSize = `${scale}%`;
+      document.documentElement.classList.toggle("a11y-contrast", contrast);
+      setFontScale(scale);
+      setHighContrast(contrast);
+    };
+    applyA11y();
   }, []);
 
   // Fecha o painel: para voz/leitura, cancela a requisição em curso e devolve o
@@ -329,6 +448,29 @@ export function AiAssistant() {
       e.preventDefault();
       void send(input);
     }
+  };
+
+  // ---- Acessibilidade: tamanho de fonte + alto contraste (persistidos) -------
+  const changeFont = (dir: -1 | 0 | 1) => {
+    const next = dir === 0 ? 100 : clampScale(fontScale + dir * FONT_STEP);
+    document.documentElement.style.fontSize = `${next}%`;
+    try {
+      window.localStorage.setItem("a11y-fontscale", String(next));
+    } catch {
+      // best-effort
+    }
+    setFontScale(next);
+  };
+
+  const toggleContrast = () => {
+    const next = !highContrast;
+    document.documentElement.classList.toggle("a11y-contrast", next);
+    try {
+      window.localStorage.setItem("a11y-contrast", next ? "on" : "off");
+    } catch {
+      // best-effort
+    }
+    setHighContrast(next);
   };
 
   // Sem flash no SSR: nada até montar no cliente.
@@ -543,7 +685,73 @@ export function AiAssistant() {
     animation: reduceMotion ? "none" : `aiTypingBlink 1s ${delay} infinite ease-in-out`,
   });
 
-  const showChips = messages.length <= 1;
+  const quickWrap: CSSProperties = {
+    flexShrink: 0,
+    display: "flex",
+    gap: "0.4rem",
+    padding: "0.5rem 0.75rem",
+    overflowX: "auto",
+    background: "#04111f",
+    borderBottom: "1px solid rgba(0,184,75,.14)",
+  };
+
+  const quickChip: CSSProperties = {
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "0.35rem",
+    padding: "0.5rem 0.8rem",
+    minHeight: 40,
+    boxSizing: "border-box",
+    borderRadius: 999,
+    border: "1px solid rgba(0,184,75,.45)",
+    background: "rgba(0,184,75,.12)",
+    color: "#d7f5e3",
+    fontSize: "0.78rem",
+    fontWeight: 600,
+    textDecoration: "none",
+  };
+
+  const a11yBarStyle: CSSProperties = {
+    flexShrink: 0,
+    display: "flex",
+    alignItems: "center",
+    gap: "0.4rem",
+    flexWrap: "wrap",
+    padding: "0.5rem 0.75rem",
+    background: "#061826",
+    borderBottom: "1px solid rgba(0,184,75,.18)",
+  };
+
+  const a11yBtn = (active: boolean, disabled: boolean): CSSProperties => ({
+    minWidth: 40,
+    height: 40,
+    padding: "0 0.6rem",
+    borderRadius: 8,
+    border: active ? "1px solid #00b84b" : "1px solid rgba(255,255,255,.22)",
+    background: active ? "rgba(0,184,75,.2)" : "transparent",
+    color: active ? "#00b84b" : "#e6edf3",
+    fontSize: "0.82rem",
+    fontWeight: 700,
+    cursor: disabled ? "not-allowed" : "pointer",
+    opacity: disabled ? 0.4 : 1,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.2rem",
+    flexShrink: 0,
+  });
+
+  // Sugestões DEPOIS de cada resposta: só quando o assistente terminou de falar
+  // e a última mensagem é dele (inclui a saudação inicial). Varia por turno.
+  const lastMsg = messages[lastIndex];
+  const canSuggest =
+    !streaming && lastMsg?.role === "assistant" && lastMsg.content.trim() !== "";
+  const lastUserQuestion =
+    [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  const userTurns = messages.filter((m) => m.role === "user").length;
+  const suggestions = pickSuggestions(lastUserQuestion, userTurns);
 
   return (
     <>
@@ -653,6 +861,58 @@ export function AiAssistant() {
             </button>
           </div>
 
+          {/* Barra de acessibilidade: tamanho de fonte + alto contraste (persistidos) */}
+          <div role="group" aria-label="Acessibilidade" style={a11yBarStyle}>
+            <button
+              type="button"
+              onClick={() => changeFont(-1)}
+              disabled={fontScale <= FONT_MIN}
+              aria-label="Diminuir o tamanho da fonte do site"
+              style={a11yBtn(false, fontScale <= FONT_MIN)}
+            >
+              A<span aria-hidden="true" style={{ fontSize: "0.7em" }}>−</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => changeFont(0)}
+              aria-label="Restaurar o tamanho padrão da fonte"
+              style={a11yBtn(false, false)}
+            >
+              A
+            </button>
+            <button
+              type="button"
+              onClick={() => changeFont(1)}
+              disabled={fontScale >= FONT_MAX}
+              aria-label="Aumentar o tamanho da fonte do site"
+              style={a11yBtn(false, fontScale >= FONT_MAX)}
+            >
+              A<span aria-hidden="true" style={{ fontSize: "1.2em" }}>+</span>
+            </button>
+            <button
+              type="button"
+              onClick={toggleContrast}
+              aria-pressed={highContrast}
+              aria-label="Alternar modo de alto contraste"
+              style={{ ...a11yBtn(highContrast, false), minWidth: 0, padding: "0 0.7rem" }}
+            >
+              <span aria-hidden="true">◐</span> Alto contraste
+            </button>
+            <span role="status" aria-live="polite" style={srOnly}>
+              {`Tamanho da fonte: ${fontScale}%`}
+            </span>
+          </div>
+
+          {/* Atalhos rápidos para as páginas (o usuário pediu acesso direto) */}
+          <div role="group" aria-label="Atalhos" style={quickWrap}>
+            {QUICK_ACTIONS.map((a) => (
+              <Link key={a.href} href={a.href} onClick={close} style={quickChip}>
+                <span aria-hidden="true">{a.icon}</span>
+                {a.label}
+              </Link>
+            ))}
+          </div>
+
           {/* Conversa */}
           <div
             ref={logRef}
@@ -668,16 +928,21 @@ export function AiAssistant() {
               return (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: isBot ? "flex-start" : "flex-end" }}>
                   <div style={isBot ? botBubble : userBubble}>
-                    {m.content ||
-                      (isStreamingThis ? (
-                        <span style={{ display: "inline-flex", gap: 4, padding: "2px 0" }} aria-hidden="true">
-                          <span style={dotStyle("0s")} />
-                          <span style={dotStyle(".15s")} />
-                          <span style={dotStyle(".3s")} />
-                        </span>
+                    {isBot ? (
+                      isStreamingThis ? (
+                        m.content || (
+                          <span style={{ display: "inline-flex", gap: 4, padding: "2px 0" }} aria-hidden="true">
+                            <span style={dotStyle("0s")} />
+                            <span style={dotStyle(".15s")} />
+                            <span style={dotStyle(".3s")} />
+                          </span>
+                        )
                       ) : (
-                        ""
-                      ))}
+                        renderRich(m.content)
+                      )
+                    ) : (
+                      m.content
+                    )}
                   </div>
                   {canSpeak &&
                     (speakingIdx === i ? (
@@ -698,10 +963,10 @@ export function AiAssistant() {
               );
             })}
 
-            {/* Chips de sugestão (só no início da conversa) */}
-            {showChips && (
-              <div style={chipsWrap} aria-label="Sugestões de perguntas" role="group">
-                {SUGGESTIONS.map((s) => (
+            {/* Sugestões DEPOIS de cada resposta — a conversa não morre. */}
+            {canSuggest && (
+              <div style={chipsWrap} role="group" aria-label="Perguntas sugeridas">
+                {suggestions.map((s) => (
                   <button
                     key={s}
                     type="button"

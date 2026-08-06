@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { TacticalFx } from "@/components/tactical-fx";
 import { CookieConsent } from "@/components/cookie-consent";
 import { AiAssistant } from "@/components/ai-assistant";
+import { VLibras } from "@/components/vlibras";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,6 +49,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <AiAssistant />
+        <VLibras />
         <TacticalFx />
         <CookieConsent />
       </body>
