@@ -47,6 +47,23 @@ async function requireOwner(): Promise<
   }
 }
 
+// Um titular NÃO gerencia OUTRO titular — senão um titular poderia tomar a conta
+// de outro (resetar senha/2FA, rebaixar, excluir). Retorna true se o alvo é um
+// titular DIFERENTE do que está agindo → a ação é RECUSADA. A própria conta e os
+// editores seguem gerenciáveis. Fail-closed: erro de leitura também recusa.
+async function isPeerOwner(id: string, selfId: string): Promise<boolean> {
+  if (id === selfId) return false;
+  try {
+    const target = await prisma.user.findUnique({
+      where: { id },
+      select: { role: true },
+    });
+    return target?.role === "owner";
+  } catch {
+    return true;
+  }
+}
+
 // ---------------------------------------------------------------- criar membro
 export async function createMember(
   _prev: MemberFormState,
@@ -98,20 +115,11 @@ export async function deleteMember(formData: FormData): Promise<void> {
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
-  // Não deixa o titular excluir a própria conta (evita lockout imediato).
+  // Não exclui a própria conta (lockout) nem a de OUTRO titular (só editores).
   if (id === guard.ownerId) return;
+  if (await isPeerOwner(id, guard.ownerId)) return;
 
   try {
-    const target = await prisma.user.findUnique({
-      where: { id },
-      select: { role: true },
-    });
-    if (!target) return;
-    // Nunca remover o ÚLTIMO owner.
-    if (target.role === "owner") {
-      const owners = await prisma.user.count({ where: { role: "owner" } });
-      if (owners <= 1) return;
-    }
     await prisma.user.delete({ where: { id } });
   } catch (error) {
     console.error("Falha ao excluir membro da equipe.", error);
@@ -128,6 +136,8 @@ export async function resetMemberPassword(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   if (!id || password.length < 8) return;
+  // Não redefine a senha de OUTRO titular (só a própria e a de editores).
+  if (await isPeerOwner(id, guard.ownerId)) return;
 
   try {
     const hashed = await hashPassword(password);
@@ -147,9 +157,11 @@ export async function setMemberRole(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "").trim();
   const roleRaw = String(formData.get("role") ?? "").trim();
   if (!id || !ROLES.has(roleRaw)) return;
+  // Não altera o papel de OUTRO titular (nem rebaixa/ataca um par).
+  if (await isPeerOwner(id, guard.ownerId)) return;
 
   try {
-    // Rebaixar um owner: só se NÃO for o último. Impede a equipe ficar sem dono.
+    // Auto-rebaixamento só se NÃO for o último titular (não deixar sem dono).
     if (roleRaw !== "owner") {
       const target = await prisma.user.findUnique({
         where: { id },
@@ -179,6 +191,8 @@ export async function resetMemberMfa(formData: FormData): Promise<void> {
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id || id === guard.ownerId) return;
+  // Não reseta o 2FA de OUTRO titular (só de editores) — evita takeover.
+  if (await isPeerOwner(id, guard.ownerId)) return;
 
   try {
     await prisma.user.update({

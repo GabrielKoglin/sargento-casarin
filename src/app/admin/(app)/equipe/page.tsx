@@ -130,7 +130,10 @@ export default async function AdminEquipePage() {
                     </div>
                   </div>
 
-                  {canManage ? (
+                  {/* Titular gerencia só EDITORES (e a PRÓPRIA conta). O card de
+                      OUTRO titular fica só-leitura — ninguém mexe na conta de um
+                      par (o servidor também recusa, ver actions.ts). */}
+                  {canManage && (isSelf || m.role !== "owner") ? (
                     <MemberActions
                       id={m.id}
                       role={m.role}
