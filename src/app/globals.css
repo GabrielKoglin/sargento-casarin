@@ -735,6 +735,29 @@ body::after {
 .tl-body h3 { color:var(--G); font-size:.88rem; margin-bottom:.35rem; }
 .tl-body p { font-size:.88rem; color:rgba(28,40,24,.72); line-height:1.65; }
 
+/* /sobre — Comenda (premiação em destaque) + Formação & Reconhecimentos */
+.honor-card {
+  display:flex; gap:1.25rem; align-items:flex-start;
+  margin:2.75rem 0 0; padding:1.5rem 1.75rem;
+  background:var(--W); border:1px solid rgba(13,59,102,.14);
+  border-left:4px solid var(--B); border-radius:8px;
+  box-shadow:0 14px 40px rgba(13,59,102,.1);
+}
+.honor-medal { flex-shrink:0; width:3rem; height:3rem; }
+.honor-medal svg { width:100%; height:100%; display:block; }
+.honor-eyebrow { display:inline-block; font-size:.66rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--B); margin-bottom:.4rem; }
+.honor-title { font-family:var(--fc); text-transform:uppercase; color:var(--G); font-size:1.55rem; line-height:1.05; margin:0 0 .5rem; }
+.honor-desc { color:rgba(28,40,24,.7); font-size:.9rem; line-height:1.6; margin:0 0 .6rem; }
+.honor-meta { display:block; font-size:.72rem; font-weight:600; letter-spacing:.03em; color:rgba(13,59,102,.55); }
+
+.creds { margin-top:2.5rem; padding-top:2rem; border-top:1px solid rgba(13,59,102,.14); }
+.creds-title { font-family:var(--fc); text-transform:uppercase; color:var(--G); font-size:1.4rem; line-height:1; margin:0 0 1.25rem; }
+.creds-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:1.5rem 2rem; }
+.creds-col h4 { font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--B); margin:0 0 .7rem; }
+.creds-col ul { list-style:none; margin:0; padding:0; }
+.creds-col li { position:relative; padding-left:1rem; margin-bottom:.55rem; font-size:.85rem; line-height:1.45; color:rgba(28,40,24,.75); }
+.creds-col li::before { content:''; position:absolute; left:0; top:.5em; width:5px; height:5px; border-radius:50%; background:var(--B); }
+
 /* ============================================
    PROPOSTAS (pÃ¡gina)
 ============================================ */
@@ -1110,6 +1133,9 @@ footer {
   /* ===== /sobre (bio) — timeline PERMANECE à esquerda ===== */
   .bio-text { text-align:center; }
   .bio-text .timeline, .bio-text .tl-body { text-align:left; }
+  /* Comenda + credenciais ficam alinhadas à ESQUERDA no mobile (legibilidade) */
+  .bio-text .honor-body, .bio-text .creds { text-align:left; }
+  .creds-grid { grid-template-columns:1fr; }
   .bio-text .btn { width:100%; justify-content:center; }
 
   /* ===== /propostas — cartões de eixo centralizados ===== */

@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Quem é o Casarin",
   description:
-    "Conheça a trajetória do Sargento Dickson Casarin: 15 anos na linha de frente da segurança pública de Mato Grosso.",
+    "Conheça a trajetória do Sargento Dickson Casarin: 15 anos na linha de frente da segurança pública de Mato Grosso, condecorado com a Comenda Marechal Cândido Rondon pela Assembleia Legislativa de MT.",
 };
 
 const timeline = [
@@ -74,6 +74,12 @@ export default function SobrePage() {
                 serviço dedicados à segurança da população. Da ronda nas ruas às operações da
                 ROTAM, construiu sua trajetória onde o problema acontece: na linha de frente.
               </p>
+              <p className="fi d2">
+                Filho de Sinop, fez da rua o seu posto no 26º Batalhão de Polícia Militar, em
+                Nova Mutum: enfrentou o crime de frente, desarticulou quadrilhas, tirou armas de
+                circulação e combateu o tráfico. Convicto de que protege melhor quem mais se
+                prepara, uniu a experiência das ruas ao estudo.
+              </p>
               <div className="bio-quote fi d3">
                 <p>
                   “Quem passou a vida enfrentando o crime de perto sabe exatamente o que
@@ -98,6 +104,60 @@ export default function SobrePage() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Comenda Marechal Cândido Rondon — destaque da premiação */}
+              <div className="honor-card fi">
+                <span className="honor-medal" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" fill="none">
+                    <path d="M16 3 L22 19" stroke="#0d3b66" strokeWidth="3.5" strokeLinecap="round" />
+                    <path d="M32 3 L26 19" stroke="#00b84b" strokeWidth="3.5" strokeLinecap="round" />
+                    <circle cx="24" cy="31" r="13" fill="#ffd500" stroke="#0d3b66" strokeWidth="2" />
+                    <text x="24" y="36.5" textAnchor="middle" fontSize="16" fontWeight="700" fill="#0d3b66">★</text>
+                  </svg>
+                </span>
+                <div className="honor-body">
+                  <span className="honor-eyebrow">Honraria · 2026</span>
+                  <h3 className="honor-title">Comenda Marechal Cândido Rondon</h3>
+                  <p className="honor-desc">
+                    A mais alta honraria da Assembleia Legislativa de Mato Grosso a quem presta
+                    relevantes serviços ao Estado. Concedida ao Sargento Casarin pela sua
+                    trajetória de dedicação à segurança pública mato-grossense.
+                  </p>
+                  <span className="honor-meta">
+                    Assembleia Legislativa de MT · Projeto de Resolução nº 435/2026
+                  </span>
+                </div>
+              </div>
+
+              {/* Formação, especializações e honrarias */}
+              <div className="creds fi">
+                <h3 className="creds-title">Formação &amp; Reconhecimentos</h3>
+                <div className="creds-grid">
+                  <div className="creds-col">
+                    <h4>Formação</h4>
+                    <ul>
+                      <li>Bacharel em Direito · Faculdade Fasip (2020)</li>
+                      <li>Tecnólogo em Gestão Pública · Anhanguera (2018)</li>
+                      <li>Curso de Formação de Soldados · PMMT (2011)</li>
+                    </ul>
+                  </div>
+                  <div className="creds-col">
+                    <h4>Especializações</h4>
+                    <ul>
+                      <li>Curso de Capacitação da ROTAM (2014)</li>
+                      <li>Inteligência de Segurança Pública (2017)</li>
+                      <li>Atendimento Pré-hospitalar (2015)</li>
+                    </ul>
+                  </div>
+                  <div className="creds-col">
+                    <h4>Honrarias</h4>
+                    <ul>
+                      <li>Comenda Marechal Cândido Rondon · ALMT (2026)</li>
+                      <li>Moção de Aplausos · Câmara de Lucas do Rio Verde (2013)</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <Link href="/propostas" className="btn btn-outline fi" style={{ marginTop: "1.5rem" }}>
