@@ -206,6 +206,87 @@ body:has(.admin-login) {
   color: var(--a-green-bright);
 }
 
+/* ------------------------------------------------- MODAL DE CONFIRMAÇÃO */
+/* Substitui o window.confirm() do navegador (feio) por um modal do tema. */
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(2, 11, 20, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: adminModalFade 0.15s ease;
+}
+.admin-modal__card {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(180deg, var(--a-panel-2), var(--a-panel));
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius);
+  box-shadow: var(--a-shadow);
+  padding: 1.75rem 1.75rem 1.4rem;
+  text-align: center;
+  animation: adminModalPop 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.admin-modal__icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: var(--a-font-cond);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--a-green-bright);
+  background: var(--a-green-dim);
+  border: 1px solid rgba(0, 184, 75, 0.4);
+}
+.admin-modal__icon.is-danger {
+  color: #ff9a9a;
+  background: rgba(255, 90, 90, 0.12);
+  border-color: rgba(255, 90, 90, 0.45);
+}
+.admin-modal__title {
+  font-family: var(--a-font-cond);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+.admin-modal__msg {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--a-muted);
+  margin: 0 0 1.5rem;
+}
+.admin-modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+}
+.admin-modal__actions .admin-btn {
+  min-width: 7rem;
+}
+@keyframes adminModalFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes adminModalPop {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-modal, .admin-modal__card { animation: none; }
+}
+
 /* ------------------------------------------------------------------ BUTTON */
 .admin-btn {
   display: inline-flex;

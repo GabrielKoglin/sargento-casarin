@@ -7,6 +7,7 @@
 // As Server Actions são vinculadas ao id no client via .bind (suportado).
 // ============================================================================
 import { deleteMedia, togglePublished, moveMedia } from "./actions";
+import { ConfirmSubmit } from "../confirm-submit";
 
 const rowActionBtn: React.CSSProperties = {
   background: "transparent",
@@ -81,21 +82,15 @@ export function MediaItemActions({
       </form>
 
       <form action={deleteMedia.bind(null, id)} style={{ margin: 0 }}>
-        <button
-          type="submit"
-          onClick={(e) => {
-            if (
-              !window.confirm(
-                `Excluir ${alvo}? Esta ação não pode ser desfeita.`,
-              )
-            ) {
-              e.preventDefault();
-            }
-          }}
+        <ConfirmSubmit
           style={{ ...rowActionBtn, color: "var(--a-danger)" }}
+          title="Excluir mídia"
+          message={`Excluir ${alvo}? Esta ação não pode ser desfeita.`}
+          confirmLabel="Excluir"
+          danger
         >
           Excluir
-        </button>
+        </ConfirmSubmit>
       </form>
     </div>
   );

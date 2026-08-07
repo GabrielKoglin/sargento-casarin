@@ -6,6 +6,7 @@
 // chamam Server Actions (FormData) definidas em ./actions.
 import { useRef, useState } from "react";
 import { deleteMember, resetMemberPassword, setMemberRole } from "./actions";
+import { ConfirmSubmit } from "../confirm-submit";
 
 export function MemberActions({
   id,
@@ -54,18 +55,17 @@ export function MemberActions({
         </button>
 
         {canDelete ? (
-          <form
-            action={deleteMember}
-            onSubmit={(e) => {
-              if (!confirm("Excluir este membro? Ele perderá o acesso ao painel.")) {
-                e.preventDefault();
-              }
-            }}
-          >
+          <form action={deleteMember}>
             <input type="hidden" name="id" value={id} />
-            <button type="submit" className="admin-linkbtn admin-linkbtn--danger">
+            <ConfirmSubmit
+              className="admin-linkbtn admin-linkbtn--danger"
+              title="Excluir membro"
+              message="Excluir este membro? Ele perderá o acesso ao painel."
+              confirmLabel="Excluir"
+              danger
+            >
               Excluir
-            </button>
+            </ConfirmSubmit>
           </form>
         ) : null}
       </div>

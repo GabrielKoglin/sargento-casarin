@@ -25,6 +25,7 @@ import {
   rejectAllPending,
   deleteRejected,
 } from "./actions";
+import { ConfirmSubmit } from "../confirm-submit";
 
 // Contrato compartilhado com page.tsx: o id do form e o seletor dos checkboxes.
 const BULK_FORM_ID = "bulk-form";
@@ -107,7 +108,7 @@ export function SelectAllCheckbox() {
 }
 
 // ------------------------------------------------------------------- botões ---
-// Botão de submit que confirma via window.confirm antes de deixar o form seguir.
+// Botão que confirma num MODAL do painel antes de submeter o <form> ancestral.
 function ConfirmButton({
   message,
   className,
@@ -117,16 +118,17 @@ function ConfirmButton({
   className: string;
   children: React.ReactNode;
 }) {
+  const danger = className.includes("danger");
   return (
-    <button
-      type="submit"
-      onClick={(event) => {
-        if (!window.confirm(message)) event.preventDefault();
-      }}
+    <ConfirmSubmit
       className={className}
+      message={message}
+      title={danger ? "Confirmar exclusão" : "Confirmar ação"}
+      confirmLabel={danger ? "Excluir" : "Confirmar"}
+      danger={danger}
     >
       {children}
-    </button>
+    </ConfirmSubmit>
   );
 }
 

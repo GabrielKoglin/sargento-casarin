@@ -8,6 +8,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import type { NewsFormState } from "./actions";
+import { ConfirmSubmit } from "../confirm-submit";
 
 /** Valores dos campos do formulário (tudo string, prontos para <input>). */
 export type NewsFormValues = {
@@ -271,22 +272,16 @@ export function NewsForm({
 // Botão de excluir da lista: fica dentro de um <form action={deleteNews.bind}>
 // (Server Component). É client só para confirmar antes de submeter.
 export function DeleteButton({ label }: { label?: string }) {
+  const alvo = label ? `"${label}"` : "esta notícia";
   return (
-    <button
-      type="submit"
-      onClick={(e) => {
-        const alvo = label ? `"${label}"` : "esta notícia";
-        if (
-          !window.confirm(
-            `Excluir ${alvo}? Esta ação não pode ser desfeita.`,
-          )
-        ) {
-          e.preventDefault();
-        }
-      }}
+    <ConfirmSubmit
       className="admin-btn admin-btn--danger admin-btn--sm"
+      title="Excluir notícia"
+      message={`Excluir ${alvo}? Esta ação não pode ser desfeita.`}
+      confirmLabel="Excluir"
+      danger
     >
       Excluir
-    </button>
+    </ConfirmSubmit>
   );
 }
