@@ -175,6 +175,37 @@ body:has(.admin-login) {
   line-height: 1.5;
 }
 
+/* Campo de senha com botão "olhinho" (mostrar/ocultar) */
+.admin-pw-wrap {
+  position: relative;
+}
+.admin-field__input--pw {
+  padding-right: 3rem;
+}
+.admin-pw-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 2.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--a-muted);
+  transition: color 0.15s ease;
+}
+.admin-pw-toggle:hover {
+  color: var(--a-text);
+}
+.admin-pw-toggle:focus-visible {
+  outline: none;
+  color: var(--a-green-bright);
+}
+
 /* ------------------------------------------------------------------ BUTTON */
 .admin-btn {
   display: inline-flex;
