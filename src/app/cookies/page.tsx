@@ -94,8 +94,8 @@ export default function CookiesPage() {
             <h2>8. Contato</h2>
             <p>
               Em caso de dúvidas sobre esta política, escreva para{" "}
-              <a href="mailto:contato@sargentocasarin.com.br">
-                contato@sargentocasarin.com.br
+              <a href="mailto:atendimento@sargentocasarinmt.com.br">
+                atendimento@sargentocasarinmt.com.br
               </a>
               .
             </p>

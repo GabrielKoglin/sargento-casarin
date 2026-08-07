@@ -76,8 +76,8 @@ export default function PrivacidadePage() {
             </ul>
             <p>
               Para exercer qualquer um desses direitos, escreva para{" "}
-              <a href="mailto:contato@sargentocasarin.com.br">
-                contato@sargentocasarin.com.br
+              <a href="mailto:atendimento@sargentocasarinmt.com.br">
+                atendimento@sargentocasarinmt.com.br
               </a>
               .
             </p>

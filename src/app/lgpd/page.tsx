@@ -59,8 +59,8 @@ export default function LgpdPage() {
             <h2>3. Como exercer os seus direitos</h2>
             <p>
               Para exercer qualquer um desses direitos, envie a sua solicitação para{" "}
-              <a href="mailto:contato@sargentocasarin.com.br">
-                contato@sargentocasarin.com.br
+              <a href="mailto:atendimento@sargentocasarinmt.com.br">
+                atendimento@sargentocasarinmt.com.br
               </a>
               . Poderemos solicitar informações adicionais para confirmar a sua identidade e
               atenderemos ao pedido nos prazos previstos em lei.
@@ -70,8 +70,8 @@ export default function LgpdPage() {
             <p>
               O atendimento às questões relacionadas à proteção de dados e ao encarregado
               pelo tratamento de dados pessoais (DPO) é realizado pelo mesmo canal:{" "}
-              <a href="mailto:contato@sargentocasarin.com.br">
-                contato@sargentocasarin.com.br
+              <a href="mailto:atendimento@sargentocasarinmt.com.br">
+                atendimento@sargentocasarinmt.com.br
               </a>
               . Por esse endereço você pode encaminhar dúvidas, solicitações e comunicações
               sobre o tratamento dos seus dados.

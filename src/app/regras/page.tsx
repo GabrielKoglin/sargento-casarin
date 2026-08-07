@@ -102,8 +102,8 @@ export default function RegrasPage() {
             <p>
               Em caso de dúvidas sobre estas regras ou para relatar condutas inadequadas nos
               canais oficiais, fale com a nossa equipe pelo e-mail{" "}
-              <a href="mailto:contato@sargentocasarin.com.br">
-                contato@sargentocasarin.com.br
+              <a href="mailto:atendimento@sargentocasarinmt.com.br">
+                atendimento@sargentocasarinmt.com.br
               </a>
               . Estas regras podem ser atualizadas a qualquer momento; a versão vigente estará
               sempre disponível nesta página. Última atualização: agosto de 2026.
