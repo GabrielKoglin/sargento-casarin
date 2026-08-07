@@ -24,26 +24,27 @@ export function MemberActions({
 
   return (
     <div className="admin-member__actions">
-      {/* Papel — auto-submete ao mudar. Bloqueado para a própria conta (não dá
-          para se rebaixar e ficar sem gestão). */}
-      <form ref={roleFormRef} action={setMemberRole} className="admin-member__role">
-        <input type="hidden" name="id" value={id} />
-        <label className="admin-field__label" htmlFor={`role-${id}`}>
-          Papel
-        </label>
-        <select
-          id={`role-${id}`}
-          name="role"
-          defaultValue={role}
-          disabled={isSelf}
-          className="admin-field__input admin-field__input--sm"
-          onChange={() => roleFormRef.current?.requestSubmit()}
-          title={isSelf ? "Você não pode alterar o próprio papel" : undefined}
-        >
-          <option value="editor">Editor</option>
-          <option value="owner">Titular</option>
-        </select>
-      </form>
+      {/* Papel — auto-submete ao mudar. NÃO aparece na PRÓPRIA conta: você não
+          pode se rebaixar (trava anti-lockout) e o papel já está no selo acima —
+          um dropdown travado só confundiria. Aparece/funciona para os demais. */}
+      {!isSelf ? (
+        <form ref={roleFormRef} action={setMemberRole} className="admin-member__role">
+          <input type="hidden" name="id" value={id} />
+          <label className="admin-field__label" htmlFor={`role-${id}`}>
+            Papel
+          </label>
+          <select
+            id={`role-${id}`}
+            name="role"
+            defaultValue={role}
+            className="admin-field__input admin-field__input--sm"
+            onChange={() => roleFormRef.current?.requestSubmit()}
+          >
+            <option value="editor">Editor</option>
+            <option value="owner">Titular</option>
+          </select>
+        </form>
+      ) : null}
 
       <div className="admin-member__buttons">
         <button
