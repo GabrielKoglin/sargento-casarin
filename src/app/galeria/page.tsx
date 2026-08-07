@@ -11,15 +11,10 @@ export const metadata: Metadata = {
   description: "Fotos do Sargento Dickson Casarin e da campanha em Mato Grosso.",
 };
 
-// Fallback estático: a galeria NUNCA fica vazia. Usado quando ainda não há
-// fotos cadastradas no banco (ou se a leitura falhar).
-const FALLBACK_PHOTOS: GalleryPhoto[] = [
-  { src: "/DSCF3339.JPG.jpeg", alt: "Sargento Dickson Casarin" },
-  { src: "/sargento-recortado.png", alt: "Sargento Dickson Casarin fardado" },
-];
-
-// Busca fotos e vídeos publicados. Uma falha de I/O não pode derrubar a página
-// pública: cai no fallback de fotos e em nenhuma seção de vídeos.
+// Busca fotos e vídeos publicados. O ADMIN é a única fonte de verdade: se não há
+// fotos cadastradas (ou o titular apagou todas), a galeria mostra o estado vazio
+// — NÃO usamos mais fallback estático (senão fotos apagadas "voltavam" ao ficar
+// o banco vazio). Falha de I/O também vira galeria vazia (não derruba a página).
 async function loadGallery(): Promise<{
   photos: GalleryPhoto[];
   videos: VideoItem[];
@@ -36,13 +31,10 @@ async function loadGallery(): Promise<{
       }),
     ]);
 
-    const photos: GalleryPhoto[] =
-      photoRows.length > 0
-        ? photoRows.map((row) => ({
-            src: row.src,
-            alt: row.title ?? "Sargento Dickson Casarin",
-          }))
-        : FALLBACK_PHOTOS;
+    const photos: GalleryPhoto[] = photoRows.map((row) => ({
+      src: row.src,
+      alt: row.title ?? "Sargento Dickson Casarin",
+    }));
 
     const videos: VideoItem[] = videoRows.map((row) => ({
       src: row.src,
@@ -53,7 +45,7 @@ async function loadGallery(): Promise<{
     return { photos, videos };
   } catch (error) {
     console.error("Falha ao carregar a galeria.", error);
-    return { photos: FALLBACK_PHOTOS, videos: [] };
+    return { photos: [], videos: [] };
   }
 }
 
@@ -77,7 +69,13 @@ export default async function GaleriaPage() {
 
       <section className="section">
         <div className="container">
-          <GalleryGrid photos={photos} />
+          {photos.length > 0 ? (
+            <GalleryGrid photos={photos} />
+          ) : (
+            <p className="gallery-empty">
+              As fotos da campanha serão publicadas em breve.
+            </p>
+          )}
         </div>
       </section>
 

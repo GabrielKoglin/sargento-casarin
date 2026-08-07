@@ -845,6 +845,8 @@ body::after {
 .lb-close:hover { opacity:1; }
 /* Legenda/título do vídeo (abaixo do embed 16:9) — usada na /galeria. */
 .video-cap { margin:.6rem 0 0; font-size:.95rem; font-weight:600; color:rgba(255,255,255,.85); }
+/* Estado vazio da galeria (sem fotos cadastradas / todas removidas no admin) */
+.gallery-empty { text-align:center; color:rgba(255,255,255,.5); font-size:1rem; padding:3rem 1rem; }
 /* Título "VÍDEOS" da /galeria: sem regra de cor, o h2 herdava texto escuro sobre
    o navy (ilegível). Força branco + tratamento de título de seção. */
 .videos-head { color:var(--W); font-family:var(--fc); text-transform:uppercase; font-size:clamp(1.6rem,4vw,2.4rem); line-height:1; letter-spacing:.01em; }
