@@ -121,6 +121,27 @@ export default async function Home() {
         </div>
       </div>
 
+      {/* COMENDA — faixa de destaque da condecoração */}
+      <aside className="comenda-band" aria-label="Condecoração">
+        <div className="container comenda-band-inner">
+          <span className="comenda-medal" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+              <path d="M16 3 L22 19" stroke="#0d3b66" strokeWidth="3.5" strokeLinecap="round" />
+              <path d="M32 3 L26 19" stroke="#00b84b" strokeWidth="3.5" strokeLinecap="round" />
+              <circle cx="24" cy="31" r="13" fill="#ffd500" stroke="#0d3b66" strokeWidth="2" />
+              <text x="24" y="36.5" textAnchor="middle" fontSize="16" fontWeight="700" fill="#0d3b66">★</text>
+            </svg>
+          </span>
+          <div className="comenda-band-text">
+            <span className="comenda-band-eyebrow">Condecorado</span>
+            <p className="comenda-band-title">Comenda Marechal Cândido Rondon</p>
+            <span className="comenda-band-meta">
+              Assembleia Legislativa de Mato Grosso · 2026
+            </span>
+          </div>
+        </div>
+      </aside>
+
       {/* POR QUE ENTRAR PARA A POLÍTICA */}
       <section className="why section">
         <div className="ht ht-dark"></div>
