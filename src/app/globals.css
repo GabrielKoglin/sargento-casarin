@@ -961,6 +961,31 @@ footer {
 .foot-bottom__left .foot-credit { font-size:.72rem; color:rgba(255,255,255,.4); }
 .foot-bottom__left .foot-credit span { color:var(--B); font-weight:600; }
 
+/* E-mail de atendimento no rodapé */
+.foot-email {
+  display:inline-block; margin-top:.9rem; font-size:.8rem;
+  color:rgba(255,255,255,.72); letter-spacing:.01em; transition:color .2s;
+}
+.foot-email:hover { color:var(--B); }
+
+/* Crédito do dev: nome "Gabriel Koglin" com brilho animado (gradiente que varre) */
+.foot-dev { text-decoration:none; }
+.foot-bottom__left .foot-credit .foot-dev span {
+  background:linear-gradient(90deg, var(--B) 0%, var(--AU) 25%, var(--B) 50%, var(--AU) 75%, var(--B) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:transparent;
+  font-weight:700;
+  animation:devShine 4.5s linear infinite;
+}
+.foot-dev:hover span { animation-duration:1.4s; }
+@keyframes devShine { to { background-position:-200% center; } }
+@media (prefers-reduced-motion: reduce) {
+  .foot-bottom__left .foot-credit .foot-dev span {
+    animation:none; color:var(--B); -webkit-text-fill-color:var(--B);
+  }
+}
+
 /* ============================================
    ANIMAÃÃES DE ENTRADA
 ============================================ */

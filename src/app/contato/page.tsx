@@ -33,8 +33,7 @@ export default function ContatoPage() {
             <div className="contact-card fi d1">
               <div className="contact-icon" aria-hidden="true">✉️</div>
               <h2>E-mail</h2>
-              {/* Placeholder — trocar pelo e-mail oficial */}
-              <a href="mailto:contato@sargentocasarin.com.br">contato@sargentocasarin.com.br</a>
+              <a href="mailto:atendimento@sargentocasarinmt.com.br">atendimento@sargentocasarinmt.com.br</a>
             </div>
             <div className="contact-card fi d2">
               <div className="contact-icon" aria-hidden="true">💬</div>

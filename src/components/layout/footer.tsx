@@ -56,6 +56,9 @@ export function Footer() {
               Sargento Dickson Casarin, candidato a Deputado Estadual por Mato Grosso.
               Eleições 2026.
             </p>
+            <a className="foot-email" href="mailto:atendimento@sargentocasarinmt.com.br">
+              atendimento@sargentocasarinmt.com.br
+            </a>
             <div className="foot-social">
               {socialLinks.map((item) => (
                 <a
@@ -105,6 +108,7 @@ export function Footer() {
             <p className="foot-credit">
               Desenvolvido por{" "}
               <a
+                className="foot-dev"
                 href="https://www.devgabrielkoglin.com.br"
                 target="_blank"
                 rel="noopener noreferrer"
