@@ -167,3 +167,27 @@ export async function setMemberRole(formData: FormData): Promise<void> {
 
   revalidatePath("/admin/equipe");
 }
+
+// ------------------------------------------------------- resetar MFA (2FA)
+// Recuperação v1: membro perdeu o celular → o TITULAR zera o MFA dele, e o
+// membro volta a entrar só com a senha (e reativa em /admin/seguranca). A
+// PRÓPRIA conta fica de fora: exigir o código atual em /admin/seguranca é o que
+// impede uma sessão sequestrada de remover o MFA sem ter o app.
+export async function resetMemberMfa(formData: FormData): Promise<void> {
+  const guard = await requireOwner();
+  if ("error" in guard) return;
+
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id || id === guard.ownerId) return;
+
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { mfaEnabled: false, totpSecret: null },
+    });
+  } catch (error) {
+    console.error("Falha ao resetar o MFA do membro.", error);
+  }
+
+  revalidatePath("/admin/equipe");
+}

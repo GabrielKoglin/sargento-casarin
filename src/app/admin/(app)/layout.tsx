@@ -30,6 +30,7 @@ const NAV_ITEMS: AdminNavItem[] = [
   { href: "/admin/midia", label: "Mídia", icon: "▷" },
   { href: "/admin/mensagens", label: "Mensagens", icon: "✉" },
   { href: "/admin/equipe", label: "Equipe", icon: "◊" },
+  { href: "/admin/seguranca", label: "Segurança", icon: "▣" },
   { href: "/admin/config", label: "Config", icon: "⚙" },
 ];
 

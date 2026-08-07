@@ -67,6 +67,11 @@ export async function verifySessionToken(
     if (typeof payload.sub !== "string" || typeof payload.email !== "string") {
       return null;
     }
+    // Tokens PENDENTES de MFA são assinados com a MESMA chave e carregam a claim
+    // `scope`. Sem esta rejeição, copiar o valor de admin_mfa_pending para o
+    // cookie admin_session pularia a etapa do código. Sessões antigas não têm
+    // `scope` — continuam válidas.
+    if (payload.scope !== undefined) return null;
     return { sub: payload.sub, email: payload.email };
   } catch {
     return null;
@@ -101,4 +106,67 @@ export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   return verifySessionToken(token);
+}
+
+// ---------------------------------------------------------------------------
+// Estado "pendente de MFA": após a senha bater, se o usuário tem MFA ligado,
+// gravamos ESTE cookie curto em vez do admin_session. O Proxy segue exigindo
+// admin_session — o usuário fica barrado até completar o OTP. A claim `scope`
+// impede que este token seja aceito como sessão (ver verifySessionToken).
+// Edge-safe: só usa jose + next/headers, igual aos helpers acima.
+export const MFA_PENDING_COOKIE_NAME = "admin_mfa_pending";
+const MFA_PENDING_MAX_AGE_SECONDS = 60 * 5; // 5 min para digitar o código
+const MFA_PENDING_SCOPE = "mfa-pending";
+
+/** Assina o token de "senha OK, falta o OTP" (expira em 5 min). */
+export async function signMfaPending(payload: SessionPayload): Promise<string> {
+  return new SignJWT({ email: payload.email, scope: MFA_PENDING_SCOPE })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject(payload.sub)
+    .setIssuedAt()
+    .setExpirationTime("5m")
+    .sign(getEncodedKey());
+}
+
+/** Verifica o token pendente. Exige a claim `scope` correta. */
+export async function verifyMfaPendingToken(
+  token: string | undefined | null,
+): Promise<SessionPayload | null> {
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, getEncodedKey(), {
+      algorithms: ["HS256"],
+    });
+    if (payload.scope !== MFA_PENDING_SCOPE) return null;
+    if (typeof payload.sub !== "string" || typeof payload.email !== "string") {
+      return null;
+    }
+    return { sub: payload.sub, email: payload.email };
+  } catch {
+    return null;
+  }
+}
+
+/** Grava o cookie pendente (usar em Server Action). */
+export async function setMfaPendingCookie(token: string): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set(MFA_PENDING_COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: MFA_PENDING_MAX_AGE_SECONDS,
+  });
+}
+
+/** Remove o cookie pendente (após OTP ok, ou em erro terminal). */
+export async function clearMfaPendingCookie(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(MFA_PENDING_COOKIE_NAME);
+}
+
+/** Lê e verifica o estado pendente a partir dos cookies (contexto de servidor). */
+export async function getMfaPending(): Promise<SessionPayload | null> {
+  const cookieStore = await cookies();
+  return verifyMfaPendingToken(cookieStore.get(MFA_PENDING_COOKIE_NAME)?.value);
 }

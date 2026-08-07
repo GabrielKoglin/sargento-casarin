@@ -5,7 +5,12 @@
 // campo de nova senha sob demanda, (c) auto-submeter a troca de papel. As três
 // chamam Server Actions (FormData) definidas em ./actions.
 import { useRef, useState } from "react";
-import { deleteMember, resetMemberPassword, setMemberRole } from "./actions";
+import {
+  deleteMember,
+  resetMemberMfa,
+  resetMemberPassword,
+  setMemberRole,
+} from "./actions";
 import { ConfirmSubmit } from "../confirm-submit";
 
 export function MemberActions({
@@ -13,11 +18,13 @@ export function MemberActions({
   role,
   isSelf,
   canDelete,
+  hasMfa,
 }: {
   id: string;
   role: string;
   isSelf: boolean;
   canDelete: boolean;
+  hasMfa: boolean;
 }) {
   const [resetting, setResetting] = useState(false);
   const roleFormRef = useRef<HTMLFormElement>(null);
@@ -54,6 +61,20 @@ export function MemberActions({
         >
           {resetting ? "Cancelar" : "Redefinir senha"}
         </button>
+
+        {hasMfa && !isSelf ? (
+          <form action={resetMemberMfa}>
+            <input type="hidden" name="id" value={id} />
+            <ConfirmSubmit
+              className="admin-linkbtn"
+              title="Resetar 2FA"
+              message="Resetar a verificação em duas etapas deste membro? Ele voltará a entrar só com a senha."
+              confirmLabel="Resetar"
+            >
+              Resetar 2FA
+            </ConfirmSubmit>
+          </form>
+        ) : null}
 
         {canDelete ? (
           <form action={deleteMember}>

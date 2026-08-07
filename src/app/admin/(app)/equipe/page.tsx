@@ -22,6 +22,7 @@ type Member = {
   name: string;
   email: string;
   role: string;
+  mfaEnabled: boolean;
   createdAt: Date;
 };
 
@@ -33,7 +34,7 @@ export default async function AdminEquipePage() {
   try {
     members = await prisma.user.findMany({
       orderBy: [{ role: "asc" }, { createdAt: "asc" }],
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, mfaEnabled: true, createdAt: true },
     });
     ownersCount = members.filter((m) => m.role === "owner").length;
   } catch {
@@ -109,7 +110,17 @@ export default async function AdminEquipePage() {
                       <div className="admin-member__email">{m.email}</div>
                     </div>
                     <div className="admin-member__meta">
-                      <RolePill role={m.role} />
+                      <span style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                        {m.mfaEnabled ? (
+                          <span
+                            className="admin-role-pill is-editor"
+                            title="Verificação em duas etapas ativa"
+                          >
+                            2FA
+                          </span>
+                        ) : null}
+                        <RolePill role={m.role} />
+                      </span>
                       <time
                         className="admin-member__date"
                         dateTime={m.createdAt.toISOString()}
@@ -125,6 +136,7 @@ export default async function AdminEquipePage() {
                       role={m.role}
                       isSelf={isSelf}
                       canDelete={canDelete}
+                      hasMfa={m.mfaEnabled}
                     />
                   ) : null}
                 </article>

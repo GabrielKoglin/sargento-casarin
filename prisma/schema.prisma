@@ -19,6 +19,12 @@ model User {
   // ao conteúdo, mas não à gestão de usuários). Membros criados pelo painel
   // nascem "editor"; a conta principal é "owner". Ver /admin/equipe.
   role      String   @default("editor")
+  // MFA (TOTP): opt-in por usuário. `totpSecret` (Base32) é gravado no início da
+  // ativação (mfaEnabled=false) e só passa a valer quando `mfaEnabled` vira true
+  // (após o usuário confirmar um código do app). Login exige OTP apenas quando
+  // mfaEnabled=true — default false: nada muda para quem não ativou.
+  totpSecret String?
+  mfaEnabled Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
