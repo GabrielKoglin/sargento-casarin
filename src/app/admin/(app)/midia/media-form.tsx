@@ -10,6 +10,41 @@ import { createMedia, type MediaFormState } from "./actions";
 
 const INITIAL_STATE: MediaFormState = { error: null };
 
+// A Vercel corta requisições acima de ~4,5 MB — foto de celular estoura isso e o
+// upload falha ANTES de chegar na otimização do servidor. Solução: reduzir a
+// imagem NO NAVEGADOR (canvas → JPEG) antes de enviar. Acima de ~3,5 MB, encolhe
+// para no máx. `maxDim` px. Best-effort: se algo falhar, mantém o arquivo original.
+const RESIZE_THRESHOLD_BYTES = 3_500_000;
+
+function resizeImageInBrowser(
+  file: File,
+  maxDim = 2200,
+  quality = 0.82,
+): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return resolve(null);
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", quality);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
+
 const hintStyle: React.CSSProperties = {
   fontSize: "0.72rem",
   color: "var(--a-muted)",
@@ -19,6 +54,29 @@ const hintStyle: React.CSSProperties = {
 export function MediaForm() {
   const [state, formAction, pending] = useActionState(createMedia, INITIAL_STATE);
   const [type, setType] = useState<"photo" | "video">("photo");
+  const [resizing, setResizing] = useState(false);
+
+  // Ao escolher um arquivo grande, reduz no navegador e substitui o arquivo do
+  // input pela versão menor (via DataTransfer), garantindo o envio sob o limite.
+  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file || !file.type.startsWith("image/") || file.size <= RESIZE_THRESHOLD_BYTES) {
+      return;
+    }
+    setResizing(true);
+    try {
+      const blob = await resizeImageInBrowser(file);
+      if (blob && blob.size < file.size) {
+        const base = file.name.replace(/\.[^.]+$/, "") || "foto";
+        const dt = new DataTransfer();
+        dt.items.add(new File([blob], `${base}.jpg`, { type: "image/jpeg" }));
+        input.files = dt.files;
+      }
+    } finally {
+      setResizing(false);
+    }
+  }
 
   return (
     <form
@@ -96,10 +154,17 @@ export function MediaForm() {
               accept="image/jpeg,image/png,image/webp,image/avif"
               className="admin-field__input"
               style={{ height: "auto", padding: "0.55rem 0.6rem" }}
+              onChange={handleFileChange}
             />
             <span style={hintStyle}>
-              JPG, PNG, WebP ou AVIF — até 12&nbsp;MB. A imagem é otimizada
-              automaticamente (girada pelo EXIF, reduzida e convertida em WebP).
+              JPG, PNG, WebP ou AVIF. Fotos grandes (de celular) são reduzidas
+              automaticamente no navegador antes do envio, e depois otimizadas no
+              servidor (giradas pelo EXIF e convertidas em WebP).
+              {resizing ? (
+                <strong style={{ color: "var(--a-green-bright)" }}>
+                  {" "}Reduzindo a imagem…
+                </strong>
+              ) : null}
             </span>
           </div>
           <div className="admin-field">
@@ -154,8 +219,8 @@ export function MediaForm() {
       )}
 
       <div style={{ marginTop: "0.35rem" }}>
-        <button type="submit" className="admin-btn" disabled={pending}>
-          {pending ? "Enviando…" : "Adicionar mídia"}
+        <button type="submit" className="admin-btn" disabled={pending || resizing}>
+          {resizing ? "Reduzindo imagem…" : pending ? "Enviando…" : "Adicionar mídia"}
         </button>
       </div>
     </form>
