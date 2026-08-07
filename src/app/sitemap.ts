@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
-const base = "https://sargentocasarin.com.br"; // Placeholder
+const base = "https://www.sargentocasarinmt.com.br";
 
 export const dynamic = "force-dynamic";
 

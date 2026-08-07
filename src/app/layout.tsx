@@ -8,7 +8,7 @@ import { AiAssistant } from "@/components/ai-assistant";
 import { VLibras } from "@/components/vlibras";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sargentocasarin.com.br"), // Placeholder
+  metadataBase: new URL("https://www.sargentocasarinmt.com.br"),
   title: {
     template: "%s | Sargento Dickson Casarin",
     default: "Sargento Dickson Casarin - Candidato",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "Sargento Dickson Casarin",
     description:
       "Site Institucional Oficial do Sargento Dickson Casarin, focado em segurança, desenvolvimento e compromisso com o Mato Grosso.",
-    url: "https://sargentocasarin.com.br", // Placeholder
+    url: "https://www.sargentocasarinmt.com.br",
     siteName: "Sargento Dickson Casarin",
     locale: "pt_BR",
     type: "website",

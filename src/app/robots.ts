@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const base = "https://sargentocasarin.com.br"; // Placeholder — mesma metadataBase de layout.tsx
+const base = "https://www.sargentocasarinmt.com.br"; // mesma metadataBase de layout.tsx
 
 export default function robots(): MetadataRoute.Robots {
   return {
