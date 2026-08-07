@@ -58,7 +58,7 @@ export default function ManifestoPage() {
               <span>Municípios em MT</span>
             </div>
             <div className="m-stat fi d2">
-              <strong>2026</strong>
+              <strong>2027</strong>
               <span>A missão continua</span>
             </div>
           </div>
