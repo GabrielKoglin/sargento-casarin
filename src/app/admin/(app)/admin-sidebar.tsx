@@ -144,6 +144,18 @@ export function AdminSidebar({
               Sair
             </button>
           </form>
+
+          <p className="admin-credit">
+            Desenvolvido por{" "}
+            <a
+              className="admin-dev"
+              href="https://www.devgabrielkoglin.com.br"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>Gabriel Koglin</span>
+            </a>
+          </p>
         </div>
       </aside>
     </>

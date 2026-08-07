@@ -58,8 +58,10 @@ body:has(.admin-login) {
 .admin-login {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1.4rem;
   padding: 2rem 1.25rem;
   background:
     radial-gradient(120% 80% at 50% -10%, rgba(0, 184, 75, 0.14), transparent 60%),
@@ -557,6 +559,55 @@ body:has(.admin-login) {
 .admin-logout:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(0, 184, 75, 0.3);
+}
+
+/* Assinatura do desenvolvedor — "Gabriel Koglin" com brilho animado (o gradiente
+   varre entre o verde do painel e o dourado do brasão). Aparece no rodapé da
+   sidebar/drawer (todas as páginas + app instalado) e abaixo do card de login. */
+.admin-credit {
+  margin: 0.15rem 0 0;
+  padding: 0 0.35rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  color: var(--a-faint);
+}
+.admin-login .admin-credit {
+  text-align: center;
+}
+.admin-dev {
+  text-decoration: none;
+}
+.admin-dev span {
+  background: linear-gradient(
+    90deg,
+    var(--a-green-bright) 0%,
+    #f5df00 25%,
+    var(--a-green-bright) 50%,
+    #f5df00 75%,
+    var(--a-green-bright) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 800;
+  animation: adminDevShine 4.5s linear infinite;
+}
+.admin-dev:hover span {
+  animation-duration: 1.4s;
+}
+@keyframes adminDevShine {
+  to {
+    background-position: -200% center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-dev span {
+    animation: none;
+    color: var(--a-green-bright);
+    -webkit-text-fill-color: var(--a-green-bright);
+  }
 }
 
 /* ------------------------------------------------------------------- MAIN */
