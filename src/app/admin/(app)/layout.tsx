@@ -14,12 +14,11 @@
 // deve checar a sessão por conta própria (o Proxy não cobre chamadas de ação
 // em rotas fora do matcher).
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { clearSessionCookie, getSession } from "@/lib/session";
-import { logout } from "../actions";
-import { AdminNav, type AdminNavItem } from "./admin-nav";
+import { type AdminNavItem } from "./admin-nav";
+import { AdminSidebar } from "./admin-sidebar";
 import "../admin.css";
 
 const NAV_ITEMS: AdminNavItem[] = [
@@ -96,26 +95,7 @@ export default async function AdminAppLayout({
 
   return (
     <div className="admin-scope admin-shell">
-      <aside className="admin-sidebar">
-        <Link href="/admin" className="admin-sidebar__brand" aria-label="Painel Casarin — início">
-          <span className="admin-sidebar__brand-eyebrow">Painel</span>
-          <span className="admin-sidebar__brand-title">Casarin</span>
-        </Link>
-
-        <AdminNav items={navItems} />
-
-        <div className="admin-sidebar__footer">
-          <div className="admin-user" title={user.email}>
-            <span className="admin-user__label">Sessão</span>
-            <span className="admin-user__email">{user.email}</span>
-          </div>
-          <form action={logout}>
-            <button type="submit" className="admin-logout">
-              Sair
-            </button>
-          </form>
-        </div>
-      </aside>
+      <AdminSidebar items={navItems} email={user.email} />
 
       <section className="admin-main">
         <div className="admin-main__inner">{children}</div>
