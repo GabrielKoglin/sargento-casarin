@@ -65,7 +65,7 @@ export default async function AdminMensagensPage({
           ) : null}
         </h1>
         <p className="admin-page-header__subtitle">
-          Mensagens recebidas pelo formulário de contato do site.
+          Mensagens de contato e cadastros de apoiadores recebidos pelo site.
         </p>
       </header>
 
@@ -86,7 +86,9 @@ export default async function AdminMensagensPage({
         </p>
       ) : (
         <div className="flex flex-col gap-3">
-          {mensagens.map((msg) => (
+          {mensagens.map((msg) => {
+            const parsed = parseOrigin(msg.message);
+            return (
             <article
               key={msg.id}
               className={`admin-card${msg.read ? "" : " admin-card--unread"}`}
@@ -104,9 +106,16 @@ export default async function AdminMensagensPage({
                   </div>
                   <div
                     className="text-xs uppercase tracking-wider"
-                    style={{ color: "var(--a-muted)" }}
+                    style={{
+                      color: "var(--a-muted)",
+                      display: "flex",
+                      gap: "0.5rem",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                    }}
                   >
-                    {msg.city}
+                    <OriginBadge origin={parsed.origin} />
+                    <span>{msg.city}</span>
                   </div>
                 </div>
                 <time
@@ -123,7 +132,16 @@ export default async function AdminMensagensPage({
                 <a href={`tel:${msg.phone}`}>{msg.phone}</a>
               </div>
 
-              <p className="admin-msg__body">{msg.message}</p>
+              {parsed.body ? (
+                <p className="admin-msg__body">{parsed.body}</p>
+              ) : (
+                <p
+                  className="admin-msg__body"
+                  style={{ color: "var(--a-faint)", fontStyle: "italic" }}
+                >
+                  Cadastro de apoiador — sem mensagem.
+                </p>
+              )}
 
               <div className="admin-msg__footer">
                 {!msg.read ? (
@@ -145,7 +163,8 @@ export default async function AdminMensagensPage({
                 </form>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -186,4 +205,26 @@ function PagerLink({ href, label }: { href: string | null; label: string }) {
       {label}
     </Link>
   );
+}
+
+// A origem do envio ("tropa" = cadastro de apoiador; "contato" = mensagem de
+// contato) é gravada como prefixo [origem] no início da mensagem pela saveContact.
+// Aqui separamos o selo do corpo real (que pode ser vazio nos cadastros de apoiador).
+function parseOrigin(message: string): {
+  origin: "tropa" | "contato" | null;
+  body: string;
+} {
+  const m = message.match(/^\[(tropa|contato)\]\s*([\s\S]*)$/);
+  if (m) return { origin: m[1] as "tropa" | "contato", body: m[2].trim() };
+  return { origin: null, body: message };
+}
+
+function OriginBadge({ origin }: { origin: "tropa" | "contato" | null }) {
+  if (origin === "tropa") {
+    return <span className="admin-role-pill is-owner">Apoiador</span>;
+  }
+  if (origin === "contato") {
+    return <span className="admin-role-pill is-editor">Contato</span>;
+  }
+  return null;
 }
