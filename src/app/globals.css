@@ -168,6 +168,7 @@ body::after {
   background:var(--B) !important; color:var(--GXX) !important;
   font-weight:800 !important; padding:.55rem 1.3rem !important;
   margin-left:.5rem; letter-spacing:.1em !important;
+  white-space:nowrap; flex-shrink:0;
 }
 .btn-tropa-nav::after { display:none !important; }
 .btn-tropa-nav:hover { background:var(--AU) !important; }
@@ -1052,7 +1053,11 @@ footer {
   /* HUD tático some já em <=1024px: entre 769-1024 renderizava sobre o texto do hero */
   .hud, .corner, .hud-cross { display:none; }
 }
-@media(max-width:768px) {
+/* O menu vira hambúrguer já em <=1200px (mesmo breakpoint das adaptações de
+   conteúdo p/ tablet): entre ~769-1200px os 8 itens + botão não cabem numa linha
+   (o botão e "Quem é o Casarin" quebrariam). O RESTANTE do layout mobile (hero
+   empilhado etc.) segue no <=768px, logo abaixo. */
+@media(max-width:1200px) {
   /* drawer fechado: fora da tela E fora do tab order (visibility:hidden).
      visibility com delay = .3s no fechamento p/ não cortar a animação de saída;
      imediata (0s) na abertura p/ o slide-in aparecer. */
@@ -1094,6 +1099,9 @@ footer {
   .nav-links.open li:nth-child(5){transition-delay:.21s} .nav-links.open li:nth-child(6){transition-delay:.25s}
   .nav-links.open li:nth-child(7){transition-delay:.29s} .nav-links.open li:nth-child(8){transition-delay:.33s}
   .nav-links.open li:nth-child(9){transition-delay:.37s}
+}
+
+@media(max-width:768px) {
   .hero-actions { flex-direction:column; }
   .hero-actions .btn { width:100%; justify-content:center; }
   .propostas-grid { grid-template-columns:1fr; }
