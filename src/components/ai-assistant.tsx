@@ -80,7 +80,8 @@ const SUGGESTION_POOL = [
 
 // Atalhos fixos para as páginas do site (faixa de ações rápidas, sempre visível).
 const QUICK_ACTIONS: { label: string; href: string; icon: string }[] = [
-  { label: "Nossos Grupos", href: "/tropa", icon: "👥" },
+  { label: "Nossos Grupos", href: "https://wpgrupos.spx.ia.br/entrar", icon: "👥" },
+  { label: "Seja um Apoiador", href: "/tropa", icon: "🙋" },
   { label: "Quero Ajudar", href: "/ajudar", icon: "🤝" },
   { label: "Quem é o Casarin", href: "/sobre", icon: "🎖️" },
   { label: "Propostas", href: "/propostas", icon: "📋" },
@@ -114,11 +115,12 @@ function toPayload(history: Msg[]): Msg[] {
 const ROUTES =
   "tropa|ajudar|propostas|sobre|agenda|contato|midias|noticias|manifesto|galeria|privacidade|termos|cookies|lgpd|regras";
 const RICH_TOKEN = new RegExp(
-  `(\\/(?:${ROUTES})(?:\\/[a-z0-9-]+)*|apoiar\\.me\\/[A-Za-z0-9_/-]+|@sargentocasarin)`,
+  `(\\/(?:${ROUTES})(?:\\/[a-z0-9-]+)*|apoiar\\.me\\/[A-Za-z0-9_/-]+|wpgrupos\\.spx\\.ia\\.br\\/[A-Za-z0-9_/-]*|@sargentocasarin)`,
   "g",
 );
 const INTERNAL_RE = new RegExp(`^\\/(?:${ROUTES})(?:\\/[a-z0-9-]+)*$`);
-const APOIAR_RE = /^apoiar\.me\/[A-Za-z0-9_/-]+$/;
+// Domínios externos citados pelo assistente (doação + portal de grupos).
+const EXTERNAL_RE = /^(?:apoiar\.me|wpgrupos\.spx\.ia\.br)\/[A-Za-z0-9_/-]*$/;
 
 const richLinkStyle: CSSProperties = {
   color: "#8ff0b6",
@@ -136,7 +138,7 @@ function renderRich(text: string): ReactNode[] {
         </Link>
       );
     }
-    if (APOIAR_RE.test(part)) {
+    if (EXTERNAL_RE.test(part)) {
       return (
         <a
           key={i}
@@ -905,12 +907,26 @@ export function AiAssistant() {
 
           {/* Atalhos rápidos para as páginas (o usuário pediu acesso direto) */}
           <div role="group" aria-label="Atalhos" style={quickWrap}>
-            {QUICK_ACTIONS.map((a) => (
-              <Link key={a.href} href={a.href} onClick={close} style={quickChip}>
-                <span aria-hidden="true">{a.icon}</span>
-                {a.label}
-              </Link>
-            ))}
+            {QUICK_ACTIONS.map((a) =>
+              a.href.startsWith("http") ? (
+                <a
+                  key={a.href}
+                  href={a.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={close}
+                  style={quickChip}
+                >
+                  <span aria-hidden="true">{a.icon}</span>
+                  {a.label}
+                </a>
+              ) : (
+                <Link key={a.href} href={a.href} onClick={close} style={quickChip}>
+                  <span aria-hidden="true">{a.icon}</span>
+                  {a.label}
+                </Link>
+              ),
+            )}
           </div>
 
           {/* Conversa */}

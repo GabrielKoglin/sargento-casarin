@@ -21,8 +21,8 @@ const timeline = [
   },
   {
     label: "03",
-    title: "ROTAM — Tropa de Elite",
-    text: "Formação tática e atuação nas missões mais complexas da Polícia Militar, com disciplina, técnica e coragem.",
+    title: "ROTAM — Batalhão Especializado de Patrulhamento Tático",
+    text: "Formado em um dos melhores batalhões de Patrulhamento Tático do Brasil, atuando em ocorrências complexas de alto risco.",
   },
   {
     label: "04",

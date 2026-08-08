@@ -13,6 +13,7 @@ const navLinks = [
   { name: "Notícias", href: "/noticias" },
   { name: "Agenda", href: "/agenda" },
   { name: "Galeria", href: "/galeria" },
+  { name: "Seja um Apoiador", href: "/tropa" },
   { name: "Contato", href: "/contato" },
 ];
 
@@ -96,9 +97,15 @@ export function Header() {
             </li>
           ))}
           <li>
-            <Link href="/tropa" className="btn-tropa-nav" onClick={closeMenu}>
+            <a
+              href="https://wpgrupos.spx.ia.br/entrar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-tropa-nav"
+              onClick={closeMenu}
+            >
               Nossos Grupos
-            </Link>
+            </a>
           </li>
         </ul>
       </div>

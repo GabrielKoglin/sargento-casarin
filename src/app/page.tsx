@@ -80,7 +80,7 @@ export default async function Home() {
             </p>
             <div className="hero-actions sl d4">
               <a href="https://apoiar.me/sargentocasarin" target="_blank" rel="noopener noreferrer" className="btn btn-help"><span aria-hidden="true">💪</span> Quero ajudar</a>
-              <Link href="/tropa" className="btn btn-gold">Nossos Grupos <span aria-hidden="true">➔</span></Link>
+              <a href="https://wpgrupos.spx.ia.br/entrar" target="_blank" rel="noopener noreferrer" className="btn btn-gold">Nossos Grupos <span aria-hidden="true">➔</span></a>
               <Link href="/sobre" className="btn btn-ghost">Quem é o Casarin</Link>
             </div>
             <div className="ribbons">
@@ -107,8 +107,8 @@ export default async function Home() {
           <div className="cred-item fi d1">
             <span className="cred-num">ROTAM</span>
             <div className="cred-txt">
-              <strong>Tropa de Elite</strong>
-              <span>Formação tática e linha de frente em missões complexas.</span>
+              <strong>Batalhão Especializado de Patrulhamento Tático</strong>
+              <span>Formado em um dos melhores batalhões de Patrulhamento Tático do Brasil, atuando em ocorrências complexas de alto risco.</span>
             </div>
           </div>
           <div className="cred-item fi d2">
@@ -158,7 +158,7 @@ export default async function Home() {
                 PARA A<br />POLÍTICA?
               </h2>
               <p className="why-lead fi d2">
-                São <strong>15 anos na linha de frente da segurança pública de Mato Grosso</strong>, incluindo a ROTAM, tropa de elite da Polícia Militar. Nesse tempo, o Sargento Casarin aprendeu uma lição dura: a coragem prende o criminoso, mas <strong>é a lei que decide se ele fica preso.</strong>
+                São <strong>15 anos na linha de frente da segurança pública de Mato Grosso</strong>, incluindo a ROTAM, Batalhão Especializado de Patrulhamento Tático da Polícia Militar. Nesse tempo, o Sargento Casarin aprendeu uma lição dura: a coragem prende o criminoso, mas <strong>é a lei que decide se ele fica preso.</strong>
               </p>
               <p className="why-lead fi d3">
                 As decisões que definem a segurança das famílias mato-grossenses são tomadas longe das ruas — na Assembleia Legislativa, nas leis e no orçamento. E, na maioria das vezes, por quem nunca vestiu uma farda.
@@ -176,7 +176,7 @@ export default async function Home() {
               <div className="tgt t2"><span className="lead"></span><span className="rec"></span><span className="lbl">15 anos de farda na linha de frente</span></div>
               <div className="tgt t3"><span className="lead"></span><span className="rec"></span><span className="lbl">Defesa das famílias mato-grossenses</span></div>
               <div className="tgt t4"><span className="lead"></span><span className="rec"></span><span className="lbl">Respeito a quem veste a farda</span></div>
-              <div className="tgt t5"><span className="lead"></span><span className="rec"></span><span className="lbl">Disciplina de tropa de elite na Assembleia</span></div>
+              <div className="tgt t5"><span className="lead"></span><span className="rec"></span><span className="lbl">Disciplina de tropa especializada na Assembleia</span></div>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default async function Home() {
           <div className="eyebrow fi" style={{ justifyContent: 'center', display: 'flex', marginBottom: '1.25rem' }}>Comunidade</div>
           <h2 className="d-lg fi d1">FAÇA PARTE<br />DA <em>TROPA</em></h2>
           <p className="cta-lead fi d2">Receba conteúdos exclusivos, participe das mobilizações e ajude a levar essa mensagem por todo o Mato Grosso.</p>
-          <Link href="/tropa" className="btn btn-gold fi d3">Nossos Grupos <span aria-hidden="true">➔</span></Link>
+          <a href="https://wpgrupos.spx.ia.br/entrar" target="_blank" rel="noopener noreferrer" className="btn btn-gold fi d3">Nossos Grupos <span aria-hidden="true">➔</span></a>
         </div>
       </section>
     </>

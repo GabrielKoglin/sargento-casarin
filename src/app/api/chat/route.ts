@@ -109,7 +109,7 @@ function isCrossSiteRequest(req: Request): boolean {
 const CANDIDATE_CONTEXT = `
 Sobre o candidato:
 - Dickson "Sargento" Casarin, candidato a Deputado Estadual por Mato Grosso (eleições 2026).
-- Sargento da Polícia Militar de MT, 15 anos na linha de frente da segurança pública, incluindo a ROTAM (tropa de elite).
+- Sargento da Polícia Militar de MT, 15 anos na linha de frente da segurança pública, incluindo a ROTAM (Batalhão Especializado de Patrulhamento Tático).
 - Bordão/tom: linha de frente, disciplina, respeito às famílias mato-grossenses. "Ninguém aguenta mais" (manifesto).
 
 Eixos de atuação (propostas):
@@ -119,7 +119,8 @@ Eixos de atuação (propostas):
 - Mato Grosso forte e desenvolvido: defender quem vive, trabalha e produz no estado.
 
 Como participar / ajudar:
-- Grupos oficiais no WhatsApp por região (Cuiabá, Várzea Grande, Rondonópolis, Sinop e outras): página /tropa ("Nossos Grupos").
+- Grupos oficiais no WhatsApp (por região): portal de grupos em wpgrupos.spx.ia.br/entrar (botão "Nossos Grupos" no site).
+- Seja um apoiador: cadastro na rede de apoiadores em /tropa.
 - Apoiar: divulgar as propostas, ser voluntário, enviar ideias — página /ajudar. Doações seguem a legislação eleitoral, pela plataforma oficial apoiar.me/sargentocasarin.
 - Redes sociais oficiais: @sargentocasarin (Instagram, Facebook, Threads, TikTok).
 - Contato com a equipe: página /contato. Agenda de eventos: /agenda. Notícias: /noticias. Trajetória: /sobre.
@@ -128,11 +129,11 @@ Como participar / ajudar:
 const SYSTEM_PROMPT = `Você é o ASSISTENTE VIRTUAL do site oficial de campanha do Sargento Dickson Casarin. Fale em português do Brasil, de forma calorosa, breve e clara (2 a 5 frases). Você NÃO é o candidato — nunca se passe por ele; fale sempre na terceira pessoa ("o Sargento Casarin defende...").
 
 REGRAS (obrigatórias):
-- Responda SOMENTE com base nas informações oficiais abaixo. Se não souber ou não estiver na lista, diga com sinceridade que não tem essa informação e direcione para os canais oficiais (/contato, ou os grupos em /tropa).
+- Responda SOMENTE com base nas informações oficiais abaixo. Se não souber ou não estiver na lista, diga com sinceridade que não tem essa informação e direcione para os canais oficiais (/contato, ou os grupos em wpgrupos.spx.ia.br/entrar).
 - NUNCA invente propostas, números, datas, promessas ou posições que não estejam no contexto. Não prometa nada em nome do candidato.
 - NÃO opine sobre outros candidatos, partidos, ou temas polêmicos fora da campanha. Se provocado, redirecione com cordialidade para as propostas do Casarin.
 - Sobre doações: apenas informe que seguem a legislação eleitoral, pela plataforma oficial apoiar.me/sargentocasarin. Não incentive de forma agressiva.
-- Incentive, quando fizer sentido, a pessoa a entrar nos grupos (/tropa) ou conhecer as propostas (/propostas).
+- Incentive, quando fizer sentido, a pessoa a entrar nos grupos (wpgrupos.spx.ia.br/entrar), se cadastrar como apoiador (/tropa) ou conhecer as propostas (/propostas).
 - Acessibilidade: seja simples e direto; evite jargões.
 
 INFORMAÇÕES OFICIAIS:
@@ -168,7 +169,7 @@ const CURATED: { keys: string[]; answer: string }[] = [
   {
     keys: ["ajudar", "apoiar", "voluntario", "colaborar", "participar", "contribuir", "engajar"],
     answer:
-      "Que ótimo! 💪 Você pode divulgar as propostas, ser voluntário e enviar ideias — tudo em /ajudar. E o principal: entrar nos grupos oficiais por região em /tropa.",
+      "Que ótimo! 💪 Você pode divulgar as propostas, ser voluntário e enviar ideias — tudo em /ajudar. Cadastre-se como apoiador em /tropa e entre nos grupos oficiais em wpgrupos.spx.ia.br/entrar.",
   },
   {
     keys: ["doar", "doacao", "dinheiro", "contribuicao financeira", "apoiar.me", "pix"],
@@ -178,7 +179,7 @@ const CURATED: { keys: string[]; answer: string }[] = [
   {
     keys: ["grupo", "whatsapp", "tropa", "zap", "entrar", "regiao", "cidade"],
     answer:
-      "A mobilização acontece no WhatsApp! Escolha a sua cidade ou região e entre no grupo oficial em /tropa (Cuiabá, Várzea Grande, Rondonópolis, Sinop e outras).",
+      "A mobilização acontece no WhatsApp! Entre no portal de grupos oficiais em wpgrupos.spx.ia.br/entrar e escolha a sua cidade ou região.",
   },
   {
     keys: ["agenda", "evento", "quando", "onde vai estar", "comicio", "mobilizacao"],
@@ -198,7 +199,7 @@ const CURATED: { keys: string[]; answer: string }[] = [
   {
     keys: ["contato", "falar", "email", "e-mail", "equipe", "telefone", "atendimento"],
     answer:
-      "Para falar com a equipe, use a página /contato. Se preferir, entre num dos grupos oficiais em /tropa — a mobilização é por lá.",
+      "Para falar com a equipe, use a página /contato. Se preferir, entre num dos grupos oficiais em wpgrupos.spx.ia.br/entrar — a mobilização é por lá.",
   },
   {
     keys: ["obrigado", "valeu", "vlw", "agradeco", "gratidao"],
@@ -208,7 +209,7 @@ const CURATED: { keys: string[]; answer: string }[] = [
 ];
 
 const CURATED_FALLBACK =
-  "Boa pergunta! Não tenho essa informação específica por aqui. O melhor caminho é falar com a equipe em /contato ou entrar num dos grupos oficiais em /tropa. Posso te ajudar com as propostas, a trajetória do Casarin, a agenda ou como participar. 😊";
+  "Boa pergunta! Não tenho essa informação específica por aqui. O melhor caminho é falar com a equipe em /contato ou entrar num dos grupos oficiais em wpgrupos.spx.ia.br/entrar. Posso te ajudar com as propostas, a trajetória do Casarin, a agenda ou como participar. 😊";
 
 function curatedAnswer(question: string): string {
   const q = normalize(question);
