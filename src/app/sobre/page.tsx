@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getSiteContent, renderRich } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Quem é o Casarin",
@@ -8,30 +9,12 @@ export const metadata: Metadata = {
     "Conheça a trajetória do Sargento Dickson Casarin: 15 anos na linha de frente da segurança pública de Mato Grosso, condecorado com a Comenda Marechal Cândido Rondon pela Assembleia Legislativa de MT.",
 };
 
-const timeline = [
-  {
-    label: "01",
-    title: "Ingresso na Polícia Militar de Mato Grosso",
-    text: "Escolheu servir. Desde o primeiro dia de farda, o compromisso foi com a proteção das famílias mato-grossenses.",
-  },
-  {
-    label: "02",
-    title: "Linha de frente",
-    text: "Anos de policiamento ostensivo nas ruas, vivendo de perto a realidade da segurança pública — a que não aparece nos gabinetes.",
-  },
-  {
-    label: "03",
-    title: "ROTAM — Batalhão Especializado de Patrulhamento Tático",
-    text: "Formado em um dos melhores batalhões de Patrulhamento Tático do Brasil, atuando em ocorrências complexas de alto risco.",
-  },
-  {
-    label: "04",
-    title: "Candidatura 2026",
-    text: "A nova missão: levar a experiência da linha de frente para onde as decisões são tomadas, como Deputado Estadual por Mato Grosso.",
-  },
-];
+// Reflete imediatamente as edições feitas em /admin/conteudo.
+export const dynamic = "force-dynamic";
 
-export default function SobrePage() {
+export default async function SobrePage() {
+  const { bio, trajetoria, comenda, creds } = await getSiteContent();
+
   return (
     <>
       <section className="page-hero page-hero--map">
@@ -67,36 +50,21 @@ export default function SobrePage() {
               </div>
             </div>
             <div className="bio-text">
-              <div className="eyebrow eyebrow-dark fi">Sargento Dickson Casarin</div>
-              <h2 className="fi d1">Uma vida dedicada a proteger Mato Grosso</h2>
-              <p className="fi d2">
-                Dickson Casarin é Sargento da Polícia Militar de Mato Grosso, com 15 anos de
-                serviço dedicados à segurança da população. Da ronda nas ruas às operações da
-                ROTAM, construiu sua trajetória onde o problema acontece: na linha de frente.
-              </p>
-              <p className="fi d2">
-                Filho de Sinop, fez da rua o seu posto no 26º Batalhão de Polícia Militar, em
-                Nova Mutum: enfrentou o crime de frente, desarticulou quadrilhas, tirou armas de
-                circulação e combateu o tráfico. Convicto de que protege melhor quem mais se
-                prepara, uniu a experiência das ruas ao estudo.
-              </p>
-              <div className="bio-quote fi d3">
-                <p>
-                  “Quem passou a vida enfrentando o crime de perto sabe exatamente o que
-                  precisa mudar nas leis e no orçamento para proteger as famílias.”
+              <div className="eyebrow eyebrow-dark fi">{bio.eyebrow}</div>
+              <h2 className="fi d1">{bio.title}</h2>
+              {bio.paragraphs.map((p, i) => (
+                <p className="fi d2" key={i}>
+                  {renderRich(p)}
                 </p>
+              ))}
+              <div className="bio-quote fi d3">
+                <p>“{bio.quote}”</p>
               </div>
-              <p className="fi d3">
-                Depois de anos vendo boas operações esbarrarem em falta de estrutura, leis
-                frouxas e decisões tomadas longe da realidade, o Sargento Casarin decidiu dar
-                o próximo passo: representar os mato-grossenses na Assembleia Legislativa,
-                com a firmeza de quem conhece o problema e a responsabilidade de quem sempre
-                serviu.
-              </p>
+              <p className="fi d3">{renderRich(bio.closing)}</p>
 
               <div className="timeline">
-                {timeline.map((item) => (
-                  <div className="tl-item fi" key={item.label}>
+                {trajetoria.steps.map((item, i) => (
+                  <div className="tl-item fi" key={i}>
                     <div className="tl-dot">{item.label}</div>
                     <div className="tl-body">
                       <h3>{item.title}</h3>
@@ -117,16 +85,10 @@ export default function SobrePage() {
                   </svg>
                 </span>
                 <div className="honor-body">
-                  <span className="honor-eyebrow">Honraria · 2026</span>
-                  <h3 className="honor-title">Comenda Marechal Cândido Rondon</h3>
-                  <p className="honor-desc">
-                    A mais alta honraria da Assembleia Legislativa de Mato Grosso a quem presta
-                    relevantes serviços ao Estado. Concedida ao Sargento Casarin pela sua
-                    trajetória de dedicação à segurança pública mato-grossense.
-                  </p>
-                  <span className="honor-meta">
-                    Assembleia Legislativa de MT · Projeto de Resolução nº 435/2026
-                  </span>
+                  <span className="honor-eyebrow">{comenda.eyebrow}</span>
+                  <h3 className="honor-title">{comenda.title}</h3>
+                  <p className="honor-desc">{comenda.desc}</p>
+                  <span className="honor-meta">{comenda.meta}</span>
                 </div>
               </div>
 
@@ -137,24 +99,25 @@ export default function SobrePage() {
                   <div className="creds-col">
                     <h4>Formação</h4>
                     <ul>
-                      <li>Bacharel em Direito · Faculdade Fasip (2020)</li>
-                      <li>Tecnólogo em Gestão Pública · Anhanguera (2018)</li>
-                      <li>Curso de Formação de Soldados · PMMT (2011)</li>
+                      {creds.formacao.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="creds-col">
                     <h4>Especializações</h4>
                     <ul>
-                      <li>Curso de Capacitação da ROTAM (2014)</li>
-                      <li>Inteligência de Segurança Pública (2017)</li>
-                      <li>Atendimento Pré-hospitalar (2015)</li>
+                      {creds.especializacoes.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="creds-col">
                     <h4>Honrarias</h4>
                     <ul>
-                      <li>Comenda Marechal Cândido Rondon · ALMT (2026)</li>
-                      <li>Moção de Aplausos · Câmara de Lucas do Rio Verde (2013)</li>
+                      {creds.honrarias.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
                     </ul>
                   </div>
                 </div>

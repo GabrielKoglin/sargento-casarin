@@ -115,6 +115,16 @@ model Contact {
   @@index([read])
 }
 
+// Conteúdo editável do site (seção "Por que", bio, trajetória, comenda e listas
+// de formação/reconhecimentos). Registro ÚNICO (id fixo "main") com um documento
+// JSON — o admin edita pela aba "Conteúdo" e as páginas leem daqui, caindo nos
+// valores padrão (DEFAULT_CONTENT em @/lib/site-content) quando a linha não existe.
+model SiteContent {
+  id        String   @id @default("main")
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
 model Settings {
   id        String   @id @default(cuid())
   key       String   @unique
