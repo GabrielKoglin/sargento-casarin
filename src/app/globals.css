@@ -242,7 +242,7 @@ body::after {
 /* Foto do candidato — lado esquerdo, fundida no fundo */
 .hero-bg {
   position:absolute; inset:0; width:100%;
-  background:url('/casarin-hero.webp') left center / cover no-repeat;
+  background:url('/casarin-hero-flag.jpg') left center / cover no-repeat;
 }
 .hero-bg::after {
   content:''; position:absolute; inset:0; pointer-events:none;
@@ -264,16 +264,8 @@ body::after {
   pointer-events:none;
 }
 
-/* Bandeira de MT — marca-d'água sutil no lado esquerdo, ATRÁS do candidato (z abaixo do .hero-bg).
-   O campo azul da bandeira quase some no navy do hero; sobra o losango+disco+estrela. */
 .hero-flag {
-  position:absolute; left:0; right:auto; top:0; bottom:0; width:72%;
-  /* bandeira de MT em "pano" (dobras + iluminação) preenchendo o fundo atrás dele;
-     esmaece para a direita p/ o texto continuar legível */
-  background:url('/bandeira-mt-fabric.webp') center / cover no-repeat;
-  opacity:.9; z-index:0; pointer-events:none;
-  -webkit-mask-image:linear-gradient(to right, #000 0%, #000 55%, transparent 92%);
-          mask-image:linear-gradient(to right, #000 0%, #000 55%, transparent 92%);
+  display:none; /* Oculto, pois a nova foto do hero já inclui a bandeira */
 }
 /* Em telas médias o campo do texto é mais estreito — segura a foto num tamanho
    que não deixa o cano do rifle invadir o texto (telas largas ganham a foto maior). */
