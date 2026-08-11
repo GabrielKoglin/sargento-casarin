@@ -15,7 +15,7 @@ const participeFooter = [
   { name: "Seja um Apoiador", href: "/tropa" },
   { name: "Quero Ajudar", href: "/ajudar" },
   { name: "Nossas Mídias", href: "/midias" },
-  { name: "Contato", href: "/contato" },
+  { name: "Quero Apoiar", href: "/contato" },
 ];
 
 // Links legais/compliance — agrupados na barra inferior do rodapé.

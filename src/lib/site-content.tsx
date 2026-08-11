@@ -214,7 +214,7 @@ export const DEFAULT_CONTENT: SiteContentData = {
     heroName: "Casarin",
     heroSubtitle: "Candidato a Deputado Estadual\npor Mato Grosso",
     heroLead:
-      "15 anos na linha de frente da segurança pública. Agora, a missão é levar essa experiência para onde as decisões são tomadas.",
+      "Mais de 15 anos na linha de frente da segurança pública. Agora, a missão é levar essa experiência para onde as decisões são tomadas.",
     ribbon1: "VAMOS",
     ribbon2: "VENCER!",
     creds: [

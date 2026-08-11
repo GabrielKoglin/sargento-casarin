@@ -72,14 +72,13 @@ export default async function Home() {
               ))}
             </div>
             <p className="hero-lead sl d3">{home.heroLead}</p>
-            <div className="hero-actions sl d4">
-              <a href="https://apoiar.me/sargentocasarin" target="_blank" rel="noopener noreferrer" className="btn btn-help"><span aria-hidden="true">💪</span> Quero ajudar</a>
-              <a href="https://wpgrupos.spx.ia.br/entrar" target="_blank" rel="noopener noreferrer" className="btn btn-gold">Nossos Grupos <span aria-hidden="true">➔</span></a>
-              <Link href="/sobre" className="btn btn-ghost">Quem é o Casarin</Link>
-            </div>
             <div className="ribbons">
               <span className="ribbon ribbon-green">{home.ribbon1}</span>
               <span className="ribbon ribbon-beige">{home.ribbon2}</span>
+            </div>
+            <div className="hero-actions sl d4">
+              <a href="https://apoiar.me/sargentocasarin" target="_blank" rel="noopener noreferrer" className="btn btn-help"><span aria-hidden="true">💲</span> Quero ajudar</a>
+              <a href="https://wpgrupos.spx.ia.br/entrar" target="_blank" rel="noopener noreferrer" className="btn btn-gold"><span aria-hidden="true">💪</span> Quero Apoiar</a>
             </div>
           </div>
         </div>
