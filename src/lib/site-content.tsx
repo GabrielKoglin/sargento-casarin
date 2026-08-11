@@ -288,9 +288,9 @@ export const DEFAULT_CONTENT: SiteContentData = {
   },
   contato: {
     heroEyebrow: "Canal direto",
-    heroTitle: "FALE COM A *EQUIPE*",
+    heroTitle: "SEJA UM *APOIADOR*",
     heroLead:
-      "Dúvidas, sugestões de propostas ou convites para eventos: cada mensagem é lida pela equipe da campanha.",
+      "Sua participação é fundamental. Preencha o formulário abaixo para se tornar um apoiador, enviar sugestões ou conversar com a nossa equipe.",
     baseLabel: "Base",
     baseValue: "Cuiabá, Mato Grosso — Brasil",
     emailLabel: "E-mail",
