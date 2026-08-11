@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getSiteContent, renderHeading, renderRich } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Quero Ajudar",
   description: "Formas de apoiar a campanha do Sargento Dickson Casarin em Mato Grosso.",
 };
 
-export default function AjudarPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AjudarPage() {
+  const { ajudar } = await getSiteContent();
+
   return (
     <>
       <section className="page-hero">
         <div className="container">
-          <div className="eyebrow sl">Apoie a missão</div>
-          <h1 className="sl d1">
-            QUERO <em>AJUDAR</em>
-          </h1>
-          <p className="fi d2">
-            Esta é uma caminhada construída por gente comum, que acredita que Mato Grosso
-            pode ser mais seguro. Todo apoio conta.
-          </p>
+          <div className="eyebrow sl">{ajudar.heroEyebrow}</div>
+          <h1 className="sl d1">{renderHeading(ajudar.heroTitle)}</h1>
+          <p className="fi d2">{ajudar.heroLead}</p>
         </div>
       </section>
 
@@ -26,38 +26,17 @@ export default function AjudarPage() {
         <div className="container">
           <div className="legal-alert fi">
             <span className="legal-alert-icon" aria-hidden="true">⚖️</span>
-            <p>
-              O apoio financeiro é feito exclusivamente pela plataforma oficial
-              (<strong>apoiar.me/sargentocasarin</strong>), sempre de acordo com as regras
-              da legislação eleitoral. Desconfie de qualquer pedido de dinheiro em nome do
-              Sargento Casarin fora desse canal.
-            </p>
+            <p>{renderRich(ajudar.legalAlert)}</p>
           </div>
 
           <div className="contact-grid">
-            <div className="contact-card fi">
-              <div className="contact-icon" aria-hidden="true">📣</div>
-              <h2>Divulgue</h2>
-              <p>
-                Compartilhe as propostas com amigos e familiares. Boca a boca é a arma mais
-                poderosa de uma campanha independente.
-              </p>
-            </div>
-            <div className="contact-card fi d1">
-              <div className="contact-icon" aria-hidden="true">🤝</div>
-              <h2>Seja voluntário</h2>
-              <p>
-                Entre nos nossos grupos e participe das mobilizações na sua cidade ou região.
-              </p>
-            </div>
-            <div className="contact-card fi d2">
-              <div className="contact-icon" aria-hidden="true">💡</div>
-              <h2>Envie ideias</h2>
-              <p>
-                Conte os problemas da sua região e ajude a construir propostas que funcionam
-                na vida real.
-              </p>
-            </div>
+            {ajudar.cards.map((c, i) => (
+              <div className={`contact-card fi${i > 0 ? ` d${i}` : ""}`} key={i}>
+                <div className="contact-icon" aria-hidden="true">{c.icon}</div>
+                <h2>{c.title}</h2>
+                <p>{c.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -66,31 +45,14 @@ export default function AjudarPage() {
         <div className="topo-bg"></div>
         <div className="container">
           <div className="support-inner">
-            <div className="eyebrow fi">Apoio à campanha</div>
-            <h2 className="support-title fi d1">
-              FORTALEÇA
-              <br />
-              ESSA <em>MISSÃO</em>
-            </h2>
-            <p className="support-lead fi d2">
-              Esta é uma caminhada <strong>independente</strong>, sem máquina política,
-              construída por gente comum que acredita que Mato Grosso pode ser mais seguro.
-              Cada reforço, dentro das regras da legislação eleitoral, ajuda a manter essa
-              missão de pé.
-            </p>
+            <div className="eyebrow fi">{ajudar.supportEyebrow}</div>
+            <h2 className="support-title fi d1">{renderHeading(ajudar.supportTitle)}</h2>
+            <p className="support-lead fi d2">{renderRich(ajudar.supportLead)}</p>
             <div className="support-amounts fi d2">
-              <div className="amount-chip">
-                R$ 30 <span>exemplo</span>
-              </div>
-              <div className="amount-chip">
-                R$ 50 <span>exemplo</span>
-              </div>
-              <div className="amount-chip">
-                R$ 100 <span>exemplo</span>
-              </div>
-              <div className="amount-chip">
-                R$ 200 <span>exemplo</span>
-              </div>
+              <div className="amount-chip">R$ 30 <span>exemplo</span></div>
+              <div className="amount-chip">R$ 50 <span>exemplo</span></div>
+              <div className="amount-chip">R$ 100 <span>exemplo</span></div>
+              <div className="amount-chip">R$ 200 <span>exemplo</span></div>
             </div>
             <a
               href="https://apoiar.me/sargentocasarin"
@@ -100,11 +62,7 @@ export default function AjudarPage() {
             >
               Quero apoiar <span aria-hidden="true">➔</span>
             </a>
-            <div className="support-trust fi d3">
-              Valores meramente ilustrativos · O apoio é feito pela{" "}
-              <strong>plataforma oficial apoiar.me/sargentocasarin</strong>, conforme a
-              legislação eleitoral.
-            </div>
+            <div className="support-trust fi d3">{renderRich(ajudar.supportTrust)}</div>
           </div>
         </div>
       </section>
@@ -112,8 +70,8 @@ export default function AjudarPage() {
       <section className="section">
         <div className="container">
           <div className="mt-bloco">
-            <h2>Comece agora</h2>
-            <p>O primeiro passo é entrar para a rede de apoiadores.</p>
+            <h2>{ajudar.comeceTitle}</h2>
+            <p>{ajudar.comeceText}</p>
             <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
               <Link href="/tropa" className="btn btn-gold">
                 Nossos Grupos <span aria-hidden="true">➔</span>

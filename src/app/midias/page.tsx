@@ -1,73 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getSiteContent, renderHeading } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Nossas Mídias",
   description: "Canais oficiais do Sargento Dickson Casarin nas redes sociais.",
 };
 
-// Perfis oficiais. TODO: YouTube e X (Twitter) ainda são placeholder ("em breve").
-const canais = [
-  {
-    icon: "📷",
-    name: "Instagram",
-    handle: "@sargentocasarin",
-    href: "https://www.instagram.com/sargentocasarin",
-  },
-  {
-    icon: "🧵",
-    name: "Threads",
-    handle: "@sargentocasarin",
-    href: "https://www.threads.com/@sargentocasarin",
-  },
-  {
-    icon: "📘",
-    name: "Facebook",
-    handle: "/sargentocasarin",
-    href: "https://www.facebook.com/sargentocasarin",
-  },
-  {
-    icon: "🎵",
-    name: "TikTok",
-    handle: "@sargentocasarin",
-    href: "https://www.tiktok.com/@sargentocasarin",
-  },
-  {
-    icon: "▶️",
-    name: "YouTube",
-    handle: "Canal oficial em breve",
-    href: "https://youtube.com",
-  },
-  {
-    icon: "✖️",
-    name: "X (Twitter)",
-    handle: "Perfil oficial em breve",
-    href: "https://twitter.com",
-  },
-];
+export const dynamic = "force-dynamic";
 
-export default function MidiasPage() {
+export default async function MidiasPage() {
+  const { midias } = await getSiteContent();
+
   return (
     <>
       <section className="page-hero">
         <div className="container">
-          <div className="eyebrow sl">Comunicação</div>
-          <h1 className="sl d1">
-            NOSSOS <em>CANAIS</em>
-          </h1>
-          <p className="fi d2">
-            Siga o Sargento Casarin nas redes e acompanhe a missão de perto. Os perfis
-            oficiais serão listados nesta página.
-          </p>
+          <div className="eyebrow sl">{midias.heroEyebrow}</div>
+          <h1 className="sl d1">{renderHeading(midias.heroTitle)}</h1>
+          <p className="fi d2">{midias.heroLead}</p>
         </div>
       </section>
 
       <section className="section" style={{ paddingTop: "3.5rem" }}>
         <div className="container">
           <div className="contact-grid">
-            {canais.map((canal) => (
+            {midias.canais.map((canal, i) => (
               <a
-                key={canal.name}
+                key={i}
                 href={canal.href}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -81,8 +41,8 @@ export default function MidiasPage() {
           </div>
 
           <div className="mt-bloco" style={{ marginTop: "3rem" }}>
-            <h2>Não perca nenhuma novidade</h2>
-            <p>Entre nos nossos grupos e receba os conteúdos direto no seu WhatsApp.</p>
+            <h2>{midias.ctaTitle}</h2>
+            <p>{midias.ctaText}</p>
             <Link href="/tropa" className="btn btn-gold">
               Nossos Grupos <span aria-hidden="true">➔</span>
             </Link>

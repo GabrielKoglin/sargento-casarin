@@ -149,7 +149,7 @@ body::after {
 /* Menu mobile aberto: eleva o header acima do FAB do assistente (10001),
    VLibras (9996) e banner de cookies (9995) para o popup cobrir tudo. */
 .navbar:has(.nav-links.open) { z-index:10050; }
-.navbar .container { display:flex; align-items:center; justify-content:space-between; }
+.navbar .container { display:flex; align-items:center; justify-content:flex-end; }
 
 .nav-links { display:flex; align-items:center; }
 .nav-links a {
@@ -232,29 +232,32 @@ body::after {
   display:flex;
   align-items:center;
   overflow:hidden;
-  /* fundo militar dark em camadas */
+  /* fundo azul-marinho dark em camadas */
   background:
-    radial-gradient(ellipse at 16% 10%, rgba(166,247,91,.05) 0%, transparent 48%),
-    radial-gradient(ellipse at 85% 92%, rgba(53,81,60,.3) 0%, transparent 55%),
-    linear-gradient(160deg, #131C16 0%, #0C120E 48%, #060906 100%);
+    radial-gradient(ellipse at 16% 10%, rgba(120,150,240,.06) 0%, transparent 48%),
+    radial-gradient(ellipse at 85% 92%, rgba(20,40,110,.42) 0%, transparent 55%),
+    linear-gradient(160deg, #16244e 0%, #0e1a3a 48%, #050c1f 100%);
 }
 
-/* Foto do candidato — lado direito, fundida no fundo */
+/* Foto do candidato — lado esquerdo, fundida no fundo */
 .hero-bg {
-  position:absolute; top:0; right:0; bottom:0; width:62%;
-  /* recorte (fundo transparente) — altura cheia, "de pé" na base, puxado p/ perto do nome */
-  background:url('/casarin-cutout.png') 60% bottom / auto 100% no-repeat;
+  /* top offset = altura da navbar + folga: em telas largas o `contain` fica alto
+     e a cabeça subia atrás do logo; começar abaixo da navbar resolve em toda resolução */
+  position:absolute; top:6.5rem; left:0; bottom:0; width:70%;
+  /* recorte (fundo transparente) — foto de ação (landscape), inteira ancorada na base-esquerda.
+     Largura calibrada p/ o cano do rifle não invadir o campo do texto (que agora fica à direita). */
+  background:url('/casarin-hero.webp') left bottom / contain no-repeat;
 }
 /* grounding sutil só na base do recorte (sombra); sem faixa lateral p/ não
    criar a "emenda" de duas tonalidades sobre o fundo */
 .hero-bg::after {
   content:''; position:absolute; inset:0; pointer-events:none;
-  background:linear-gradient(to top, rgba(6,9,6,.9) 0%, rgba(6,9,6,.15) 16%, transparent 30%);
+  background:linear-gradient(to top, rgba(5,12,31,.92) 0%, rgba(5,12,31,.15) 16%, transparent 30%);
 }
 
 /* Mapa do Brasil â marca d'Ã¡gua atrÃ¡s do nome */
 .hero-map {
-  position:absolute; left:17%; top:47%;
+  position:absolute; left:auto; right:17%; top:47%;
   width:min(700px, 54vw); height:auto;
   transform:translateY(-50%);
   opacity:.45; z-index:0;
@@ -262,6 +265,23 @@ body::after {
   /* mapa colorido (MT em verde) — glow verde suave no território destacado */
   filter:drop-shadow(0 0 24px rgba(0,184,75,.32));
   pointer-events:none;
+}
+
+/* Bandeira de MT — marca-d'água sutil no lado esquerdo, ATRÁS do candidato (z abaixo do .hero-bg).
+   O campo azul da bandeira quase some no navy do hero; sobra o losango+disco+estrela. */
+.hero-flag {
+  position:absolute; left:0; right:auto; top:0; bottom:0; width:72%;
+  /* bandeira de MT em "pano" (dobras + iluminação) preenchendo o fundo atrás dele;
+     esmaece para a direita p/ o texto continuar legível */
+  background:url('/bandeira-mt-fabric.webp') center / cover no-repeat;
+  opacity:.55; z-index:0; pointer-events:none;
+  -webkit-mask-image:linear-gradient(to right, #000 0%, #000 50%, transparent 86%);
+          mask-image:linear-gradient(to right, #000 0%, #000 50%, transparent 86%);
+}
+/* Em telas médias o campo do texto é mais estreito — segura a foto num tamanho
+   que não deixa o cano do rifle invadir o texto (telas largas ganham a foto maior). */
+@media(min-width:1025px) and (max-width:1440px) {
+  .hero-bg { width:58%; }
 }
 
 /* Halftones do hero */
@@ -274,12 +294,6 @@ body::after {
   content:''; position:absolute; inset:0;
   background-image:repeating-linear-gradient(to bottom, rgba(166,247,91,.025) 0 1px, transparent 1px 4px);
 }
-.hero-scan::after {
-  content:''; position:absolute; left:0; right:0; height:160px; top:-25%;
-  background:linear-gradient(to bottom, transparent, rgba(166,247,91,.06) 50%, transparent);
-  animation:sweep 8s linear infinite;
-}
-@keyframes sweep { to { top:125%; } }
 
 /* HUD â coordenadas, mira, cantoneiras (night vision) */
 .hud {
@@ -313,13 +327,14 @@ body::after {
 
 /* ConteÃºdo */
 /* padding lateral vem do .container (evita o texto colar/cortar na borda no mobile) */
-.hero-content { position:relative; z-index:5; width:100%; padding-top:8rem; padding-bottom:7rem; }
-.hero-inner { max-width:640px; }
+.hero-content { position:relative; z-index:5; width:100%; max-width:1600px; padding-top:8rem; padding-bottom:7rem; }
+/* bloco de texto no campo da DIREITA, com o conteúdo CENTRALIZADO */
+.hero-inner { max-width:640px; margin-left:auto; text-align:center; }
 
 .hero-eyebrow {
   display:inline-flex; align-items:center; gap:.7rem;
-  font-size:.72rem; font-weight:700; letter-spacing:.55em; text-transform:uppercase;
-  color:#1e2a6e; -webkit-text-stroke:1px #fff; paint-order:stroke; margin-bottom:1.2rem;
+  font-size:.86rem; font-weight:700; letter-spacing:.55em; text-transform:uppercase;
+  color:#fff; -webkit-text-stroke:0; margin-bottom:1.2rem;
 }
 .hero-eyebrow::before, .hero-eyebrow::after { content:''; width:1.6rem; height:1px; background:rgba(196,168,130,.5); }
 
@@ -342,8 +357,8 @@ body::after {
 /* CASARIN: o destaque — AZUL-MARINHO do logo, com contorno branco p/ ler no fundo escuro */
 .hero-name > em {
   font-style:normal; font-weight:700; overflow:visible; position:relative;
-  color:#1e2a6e;
-  -webkit-text-stroke:2.5px #fff; paint-order:stroke;
+  color:var(--W);
+  -webkit-text-stroke:0; paint-order:stroke;
   animation:hnRise .82s var(--ease) .35s both;
 }
 /* Divisa de sargento no lugar do 1º "A" — dourada; sobe junto com o nome (dentro do <em>) */
@@ -367,14 +382,14 @@ body::after {
 
 .hero-lead {
   font-size:clamp(.88rem,1.2vw,.96rem);
-  color:rgba(255,255,255,.58); max-width:380px;
+  color:rgba(255,255,255,.58); max-width:380px; margin-inline:auto;
   line-height:1.85; margin-bottom:2.2rem;
 }
 
-.hero-actions { display:flex; gap:.75rem; flex-wrap:wrap; margin-bottom:3rem; }
+.hero-actions { display:flex; justify-content:center; gap:.75rem; flex-wrap:wrap; margin-bottom:3rem; }
 
 /* Faixas inclinadas â NINGUÃM / AGUENTA MAIS! */
-.ribbons { display:flex; flex-direction:column; align-items:flex-start; gap:.35rem; transform:rotate(-2.5deg); transform-origin:left bottom; }
+.ribbons { display:flex; flex-direction:column; align-items:center; gap:.35rem; transform:rotate(-2.5deg); transform-origin:center bottom; }
 .ribbon {
   font-family:var(--fc); font-weight:900; text-transform:uppercase;
   font-size:clamp(1.5rem,3.4vw,2.6rem); line-height:1;
@@ -1037,6 +1052,7 @@ footer {
      fundo escuro da hero, sem competir com o recorte) */
   .hero-bg { width:100%; opacity:.16; background-position:center bottom; }
   .hero-map { width:66vw; opacity:.2; }
+  .hero-flag { width:100%; opacity:.12; background-position:center 30%; }
   .why-wrap { grid-template-columns:1fr; }
   .why-right { height:480px; min-height:480px; }
   .why-left { padding:5rem 0; }

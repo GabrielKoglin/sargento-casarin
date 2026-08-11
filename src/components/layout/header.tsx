@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SgtBadge } from "@/components/sgt-badge";
 
 const navLinks = [
   { name: "Início", href: "/" },
@@ -12,7 +11,6 @@ const navLinks = [
   { name: "Manifesto", href: "/manifesto" },
   { name: "Notícias", href: "/noticias" },
   { name: "Agenda", href: "/agenda" },
-  { name: "Galeria", href: "/galeria" },
   { name: "Contato", href: "/contato" },
 ];
 
@@ -65,11 +63,6 @@ export function Header() {
   return (
     <nav className={`navbar ${scrolled || open ? "scrolled" : ""}`} id="navbar" ref={navRef}>
       <div className="container">
-        <Link href="/" className="nav-logo" aria-label="Página inicial" onClick={closeMenu}>
-          <span className="nav-wordmark">
-            Sgt <em>C<SgtBadge className="nav-badge" />SARIN</em>
-          </span>
-        </Link>
         <button
           ref={toggleRef}
           type="button"

@@ -48,9 +48,19 @@ export async function saveSiteContent(
     return { ok: false, error: "Não foi possível salvar agora. Tente novamente." };
   }
 
-  // As páginas leem getSiteContent() em cache — invalida home + sobre + esta aba.
+  // As páginas leem getSiteContent() em cache — invalida home + sobre + manifesto + esta aba.
   revalidatePath("/");
   revalidatePath("/sobre");
+  revalidatePath("/manifesto");
+  revalidatePath("/tropa");
+  revalidatePath("/ajudar");
+  revalidatePath("/midias");
+  revalidatePath("/contato");
+  revalidatePath("/privacidade");
+  revalidatePath("/termos");
+  revalidatePath("/cookies");
+  revalidatePath("/lgpd");
+  revalidatePath("/regras");
   revalidatePath("/admin/conteudo");
   return { ok: true, error: null };
 }

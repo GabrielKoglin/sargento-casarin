@@ -12,7 +12,6 @@ const routes = [
   "/manifesto",
   "/noticias",
   "/agenda",
-  "/galeria",
   "/tropa",
   "/contato",
   "/ajudar",

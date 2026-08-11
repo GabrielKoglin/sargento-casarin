@@ -113,7 +113,7 @@ function toPayload(history: Msg[]): Msg[] {
 // (apoiar.me/…) e o @ das redes (@sargentocasarin → /midias) no texto puro do
 // assistente e as transforma em links clicáveis, preservando o resto do texto.
 const ROUTES =
-  "tropa|ajudar|propostas|sobre|agenda|contato|midias|noticias|manifesto|galeria|privacidade|termos|cookies|lgpd|regras";
+  "tropa|ajudar|propostas|sobre|agenda|contato|midias|noticias|manifesto|privacidade|termos|cookies|lgpd|regras";
 const RICH_TOKEN = new RegExp(
   `(\\/(?:${ROUTES})(?:\\/[a-z0-9-]+)*|apoiar\\.me\\/[A-Za-z0-9_/-]+|wpgrupos\\.spx\\.ia\\.br\\/[A-Za-z0-9_/-]*|@sargentocasarin)`,
   "g",

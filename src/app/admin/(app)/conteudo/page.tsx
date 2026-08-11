@@ -18,9 +18,9 @@ export default async function AdminConteudoPage() {
         <span className="admin-page-header__eyebrow">Site</span>
         <h1 className="admin-page-header__title">Conteúdo</h1>
         <p className="admin-page-header__subtitle">
-          Edite os textos da home (&quot;Por que entrar para a política&quot;) e da
-          página &quot;Quem é o Casarin&quot; — bio, trajetória, comenda e formação.
-          As mudanças aparecem no site logo após salvar.
+          Edite os textos da home (&quot;Por que entrar para a política&quot;), do
+          Manifesto e da página &quot;Quem é o Casarin&quot; — bio, trajetória,
+          comenda e formação. As mudanças aparecem no site logo após salvar.
         </p>
       </header>
 

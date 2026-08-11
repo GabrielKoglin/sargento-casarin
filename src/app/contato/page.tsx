@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact-form";
+import { getSiteContent, renderHeading } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Contato",
   description: "Fale com a equipe do Sargento Dickson Casarin.",
 };
 
-export default function ContatoPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ContatoPage() {
+  const { contato } = await getSiteContent();
+
   return (
     <>
       <section className="page-hero">
         <div className="container">
-          <div className="eyebrow sl">Canal direto</div>
-          <h1 className="sl d1">
-            FALE COM A <em>EQUIPE</em>
-          </h1>
-          <p className="fi d2">
-            Dúvidas, sugestões de propostas ou convites para eventos: cada mensagem é lida
-            pela equipe da campanha.
-          </p>
+          <div className="eyebrow sl">{contato.heroEyebrow}</div>
+          <h1 className="sl d1">{renderHeading(contato.heroTitle)}</h1>
+          <p className="fi d2">{contato.heroLead}</p>
         </div>
       </section>
 
@@ -27,18 +27,18 @@ export default function ContatoPage() {
           <div className="contact-grid">
             <div className="contact-card fi">
               <div className="contact-icon" aria-hidden="true">📍</div>
-              <h2>Base</h2>
-              <p>Cuiabá, Mato Grosso — Brasil</p>
+              <h2>{contato.baseLabel}</h2>
+              <p>{contato.baseValue}</p>
             </div>
             <div className="contact-card fi d1">
               <div className="contact-icon" aria-hidden="true">✉️</div>
-              <h2>E-mail</h2>
-              <a href="mailto:atendimento@sargentocasarinmt.com.br">atendimento@sargentocasarinmt.com.br</a>
+              <h2>{contato.emailLabel}</h2>
+              <a href={`mailto:${contato.emailValue}`}>{contato.emailValue}</a>
             </div>
             <div className="contact-card fi d2">
               <div className="contact-icon" aria-hidden="true">💬</div>
-              <h2>WhatsApp</h2>
-              <p>Em breve — os canais oficiais serão divulgados aqui</p>
+              <h2>{contato.whatsLabel}</h2>
+              <p>{contato.whatsValue}</p>
             </div>
           </div>
         </div>
@@ -47,8 +47,8 @@ export default function ContatoPage() {
       <div className="form-wrap">
         <div className="container">
           <div className="form-box">
-            <h2>Envie sua mensagem</h2>
-            <p>Responderemos pelo e-mail ou WhatsApp informado.</p>
+            <h2>{contato.formTitle}</h2>
+            <p>{contato.formText}</p>
             <ContactForm
               origin="contato"
               withMessage
