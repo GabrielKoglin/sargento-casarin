@@ -56,23 +56,10 @@ export function TacticalFx() {
       scan.observe(whyRight);
     }
 
-    const hud = document.getElementById("hudType");
-    let hudTimer: ReturnType<typeof setInterval> | undefined;
-    if (hud) {
-      const text = "IDENT: SGT CASARIN · MT";
-      let i = 0;
-      hudTimer = setInterval(() => {
-        i += 1;
-        hud.textContent = text.slice(0, i) + (i < text.length ? "▌" : "");
-        if (i >= text.length) clearInterval(hudTimer);
-      }, 55);
-    }
-
     return () => {
       reveal.disconnect();
       scan?.disconnect();
       clearTimeout(revealFallback);
-      if (hudTimer) clearInterval(hudTimer);
     };
   }, [pathname]);
 

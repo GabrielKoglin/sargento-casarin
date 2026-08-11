@@ -52,16 +52,9 @@ export default async function Home() {
         <div className="hero-scan"></div>
 
         {/* HUD tático (decorativo — oculto para leitores de tela) */}
-        <div className="hud hud-tl" aria-hidden="true">MT · BRASIL</div>
-        <div className="hud hud-tr" id="hudType" aria-hidden="true"></div>
-        <div className="hud hud-bl" aria-hidden="true">OP. 2026 – ATIVO</div>
         <span className="hud-cross hc1" aria-hidden="true">+</span>
         <span className="hud-cross hc2" aria-hidden="true">+</span>
         <span className="hud-cross hc3" aria-hidden="true">+</span>
-        <span className="corner corner-tl" aria-hidden="true"></span>
-        <span className="corner corner-tr" aria-hidden="true"></span>
-        <span className="corner corner-bl" aria-hidden="true"></span>
-        <span className="corner corner-br" aria-hidden="true"></span>
 
         {/* Conteúdo */}
         <div className="hero-content container">
@@ -151,7 +144,7 @@ export default async function Home() {
             </div>
 
             <div className="why-right" id="whyRight">
-              <div className="why-photo" style={{ backgroundImage: 'url(/casarin-retrato.jpeg)' }}></div>
+              <div className="why-photo" style={{ backgroundImage: 'url(/casarin-why.jpeg)' }}></div>
               <div className="why-scan"></div>
               {why.targets.slice(0, 5).map((t, i) => (
                 <div key={i} className={`tgt t${i + 1}`}>

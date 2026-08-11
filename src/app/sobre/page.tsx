@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function SobrePage() {
-  const { bio, trajetoria, comenda, creds } = await getSiteContent();
+  const { bio, comenda, creds } = await getSiteContent();
 
   return (
     <>
@@ -40,7 +40,7 @@ export default async function SobrePage() {
             <div className="bio-sticky">
               <div className="bio-photo fi">
                 <Image
-                  src="/casarin-retrato.jpeg"
+                  src="/casarin-why.jpeg"
                   alt="Sargento Dickson Casarin"
                   width={1067}
                   height={1600}
@@ -61,18 +61,6 @@ export default async function SobrePage() {
                 <p>“{bio.quote}”</p>
               </div>
               <p className="fi d3">{renderRich(bio.closing)}</p>
-
-              <div className="timeline">
-                {trajetoria.steps.map((item, i) => (
-                  <div className="tl-item fi" key={i}>
-                    <div className="tl-dot">{item.label}</div>
-                    <div className="tl-body">
-                      <h3>{item.title}</h3>
-                      <p>{item.text}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
 
               {/* Comenda Marechal Cândido Rondon — destaque da premiação */}
               <div className="honor-card fi">
@@ -97,7 +85,7 @@ export default async function SobrePage() {
                 <h3 className="creds-title">Formação &amp; Reconhecimentos</h3>
                 <div className="creds-grid">
                   <div className="creds-col">
-                    <h4>Formação</h4>
+                    <h4>Qualificação Acadêmica</h4>
                     <ul>
                       {creds.formacao.map((item, i) => (
                         <li key={i}>{item}</li>

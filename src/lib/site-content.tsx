@@ -121,9 +121,9 @@ export const DEFAULT_CONTENT: SiteContentData = {
       "Casarin não quer ser mais um político — ele representa quem enfrenta a realidade das ruas todos os dias",
     eyebrow: "Por que entrar para a política?",
     paragraphs: [
-      "São **15 anos na linha de frente da segurança pública de Mato Grosso**, incluindo a ROTAM, Batalhão Especializado de Patrulhamento Tático da Polícia Militar. Nesse tempo, o Sargento Casarin aprendeu uma lição dura: a coragem prende o criminoso, mas **é a lei que decide se ele fica preso.**",
-      "As decisões que definem a segurança das famílias mato-grossenses são tomadas longe das ruas — na Assembleia Legislativa, nas leis e no orçamento. E, na maioria das vezes, por quem nunca vestiu uma farda.",
-      "Por isso o sargento decidiu avançar: levar a experiência de quem conhece o problema de perto para onde as decisões são tomadas.",
+      "São mais de **15 anos na linha de frente da segurança pública de Mato Grosso**. Nesse período, o Sargento Casarin aprendeu uma lição dura: a coragem e o trabalho policial podem colocar o criminoso atrás das grades, mas a falta de investimentos nas forças de segurança, a baixa remuneração dos profissionais e as brechas e aberrações jurídicas podem comprometer todo o trabalho realizado e devolver o criminoso às ruas.",
+      "Muitas das decisões que impactam diretamente a segurança das famílias mato-grossenses são tomadas longe da realidade das ruas e, muitas vezes, por pessoas que nunca vestiram uma farda nem enfrentaram de perto os desafios cotidianos da segurança pública.",
+      "Por isso, o Sargento Casarin decidiu avançar: levar a experiência adquirida na linha de frente e o conhecimento de quem vivencia os problemas da segurança pública para os espaços onde essas decisões são tomadas.",
     ],
     targets: [
       "Quem conhece a rua, não só o gabinete",
@@ -177,9 +177,12 @@ export const DEFAULT_CONTENT: SiteContentData = {
   },
   creds: {
     formacao: [
-      "Bacharel em Direito · Faculdade Fasip (2020)",
-      "Tecnólogo em Gestão Pública · Anhanguera (2018)",
       "Curso de Formação de Soldados · PMMT (2011)",
+      "Gestão Pública pela Faculdade Anhanguera – 2018",
+      "Bacharel em Direito, iniciado pela Universidade do Estado de Mato Grosso UNEMAT, e concluído pela Faculdade de Sinop FASIP – 2020",
+      "Pós-graduação em Direito Militar com Ênfase em Política e Sistema de Defesa Nacional, pela Faculdade Única de Ipatinga – 2022",
+      "Análise e Desenvolvido de Sistemas Pela Uniasselvi – (cursando)",
+      "Pós-graduação em Cibersegurança pela Faculdade Uniasselvi - (cursando)",
     ],
     especializacoes: [
       "Curso de Capacitação da ROTAM (2014)",
@@ -193,14 +196,16 @@ export const DEFAULT_CONTENT: SiteContentData = {
   },
   manifesto: {
     eyebrow: "Manifesto",
-    titleLine1: "NINGUÉM",
-    titleEm: "AGUENTA",
-    titleLine2: "MAIS",
+    titleLine1: "NÃO DÁ",
+    titleEm: "MAIS",
+    titleLine2: "PARA ACEITAR",
     paragraphs: [
-      "Ninguém aguenta mais viver com medo. Medo de sair de casa, medo de deixar os filhos na escola, medo de trabalhar e perder tudo o que construiu com esforço.",
-      "Enquanto isso, muitas das decisões que definem a segurança das nossas famílias são tomadas longe das ruas — por quem nunca sentiu na pele o que é enfrentar o crime de frente.",
-      "Eu passei 15 anos na linha de frente da segurança pública de Mato Grosso. Aprendi que coragem sem estrutura não basta, e que lei frouxa desfaz o trabalho de quem arrisca a vida para proteger a sociedade.",
-      "Por isso aceitei uma nova missão: levar a voz da linha de frente — e a voz de quem vive, trabalha e produz neste estado — para dentro da Assembleia Legislativa. Com disciplina, técnica e respeito por cada família mato-grossense.",
+      "O povo mato-grossense não aguenta mais viver com medo.",
+      "Medo de sair de casa, medo de deixar os filhos na escola, medo de atender ao telefone e ser ameaçado por um criminoso. Medo de trabalhar uma vida inteira e perder, em poucos minutos, tudo aquilo que foi construído com tanto esforço. Mulheres com medo de viver ao lado de um covarde.",
+      "Além de tudo isso, facções criminosas dominam territórios e recrutam nossas crianças e nossos jovens, muitas vezes porque o Estado não conseguiu chegar antes.",
+      "Ninguém aguenta mais ligar para o 190, 197 ou 193 em uma situação de emergência e ouvir que todas as viaturas estão ocupadas.",
+      "Enquanto isso, muitas das decisões que definem a segurança das nossas famílias são tomadas longe das ruas, por quem nunca sentiu na pele o que significa enfrentar o crime de frente.",
+      "Essa causa vai muito além de qualquer discurso político. É sobre segurança, responsabilidade e, acima de tudo, sobre o futuro das nossas famílias. Porque construir um lugar mais seguro para viver é uma responsabilidade de todos nós.",
     ],
     stats: [
       { value: "15", label: "Anos de farda" },

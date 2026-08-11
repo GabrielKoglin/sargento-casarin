@@ -22,27 +22,7 @@ export default async function ContatoPage() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: "3rem" }}>
-        <div className="container">
-          <div className="contact-grid">
-            <div className="contact-card fi">
-              <div className="contact-icon" aria-hidden="true">📍</div>
-              <h2>{contato.baseLabel}</h2>
-              <p>{contato.baseValue}</p>
-            </div>
-            <div className="contact-card fi d1">
-              <div className="contact-icon" aria-hidden="true">✉️</div>
-              <h2>{contato.emailLabel}</h2>
-              <a href={`mailto:${contato.emailValue}`}>{contato.emailValue}</a>
-            </div>
-            <div className="contact-card fi d2">
-              <div className="contact-icon" aria-hidden="true">💬</div>
-              <h2>{contato.whatsLabel}</h2>
-              <p>{contato.whatsValue}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       <div className="form-wrap">
         <div className="container">

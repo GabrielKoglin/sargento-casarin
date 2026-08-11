@@ -17,7 +17,7 @@ export default async function ManifestoPage() {
     <section className="manifesto-hero">
       <div
         className="manifesto-bg"
-        style={{ backgroundImage: "url(/casarin-retrato.jpeg)" }}
+        style={{ backgroundImage: "url(/casarin-why.jpeg)" }}
       ></div>
       <div className="container">
         <div className="manifesto-content">
