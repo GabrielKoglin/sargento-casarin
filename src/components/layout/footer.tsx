@@ -33,9 +33,7 @@ const socialLinks = [
   { name: "Instagram", icon: SiInstagram, href: "https://www.instagram.com/sargentocasarin" },
   { name: "Facebook", icon: SiFacebook, href: "https://www.facebook.com/sargentocasarin" },
   { name: "Threads", icon: SiThreads, href: "https://www.threads.com/@sargentocasarin" },
-  { name: "X (Twitter)", icon: SiX, href: "https://twitter.com" },
   { name: "TikTok", icon: SiTiktok, href: "https://www.tiktok.com/@sargentocasarin" },
-  { name: "YouTube", icon: SiYoutube, href: "https://youtube.com" },
 ];
 
 export function Footer() {
@@ -48,7 +46,7 @@ export function Footer() {
           <div className="foot-logo">
             <Link href="/" aria-label="Página inicial">
               <span className="nav-wordmark">
-                Sgt <em>CASARIN</em>
+                Sargento <em>CASARIN</em>
               </span>
             </Link>
             <p style={{ marginTop: "1.25rem" }}>
