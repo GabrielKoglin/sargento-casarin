@@ -18,7 +18,6 @@ const CARDS: {
   { label: "Propostas", hint: "Eixos de atuação", href: "/admin/propostas", icon: "◆", count: () => prisma.proposal.count() },
   { label: "Notícias", hint: "Fila e publicações", href: "/admin/noticias", icon: "❖", count: () => prisma.news.count() },
   { label: "Agenda", hint: "Eventos", href: "/admin/agenda", icon: "▤", count: () => prisma.event.count() },
-  { label: "Mídia", hint: "Fotos e vídeos", href: "/admin/midia", icon: "▷", count: () => prisma.media.count() },
   { label: "Mensagens", hint: "Contatos recebidos", href: "/admin/mensagens", icon: "✉", count: () => prisma.contact.count() },
 ];
 
@@ -49,8 +48,7 @@ export default async function AdminDashboardPage() {
       <p className="admin-note">
         <strong>Dica.</strong> Cada cartão acima abre a gestão da seção. Em{" "}
         <code>Notícias</code>, a fila traz manchetes ingeridas dos portais de Mato
-        Grosso para moderação; em <code>Mídia</code>, você adiciona as fotos e vídeos
-        que aparecem na galeria do site.
+        Grosso para moderação.
       </p>
     </>
   );

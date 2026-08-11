@@ -27,7 +27,6 @@ const NAV_ITEMS: AdminNavItem[] = [
   { href: "/admin/propostas", label: "Propostas", icon: "propostas" },
   { href: "/admin/noticias", label: "Notícias", icon: "noticias" },
   { href: "/admin/agenda", label: "Agenda", icon: "agenda" },
-  { href: "/admin/midia", label: "Mídia", icon: "midia" },
   { href: "/admin/conteudo", label: "Conteúdo", icon: "conteudo" },
   { href: "/admin/mensagens", label: "Mensagens", icon: "mensagens" },
   { href: "/admin/equipe", label: "Equipe", icon: "equipe" },
