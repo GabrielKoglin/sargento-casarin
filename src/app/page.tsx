@@ -74,7 +74,7 @@ export default async function Home() {
             <p className="hero-lead sl d3">{home.heroLead}</p>
             <div className="hero-actions sl d4">
               <a href="https://apoiar.me/sargentocasarin" target="_blank" rel="noopener noreferrer" className="btn btn-help"><span aria-hidden="true">💲</span> Quero ajudar</a>
-              <a href="https://wpgrupos.spx.ia.br/entrar" target="_blank" rel="noopener noreferrer" className="btn btn-gold"><span aria-hidden="true">💪</span> Quero Apoiar</a>
+              <Link href="/contato" className="btn btn-gold"><span aria-hidden="true">💪</span> Quero Apoiar</Link>
             </div>
             <div className="ribbons">
               <span className="ribbon ribbon-green">{home.ribbon1}</span>
@@ -214,7 +214,7 @@ export default async function Home() {
           <div className="eyebrow fi" style={{ justifyContent: 'center', display: 'flex', marginBottom: '1.25rem' }}>{home.ctaEyebrow}</div>
           <h2 className="d-lg fi d1">{home.ctaTitle1}<br /><em>{home.ctaTitle2}</em></h2>
           <p className="cta-lead fi d2">{home.ctaLead}</p>
-          <a href="https://wpgrupos.spx.ia.br/entrar" target="_blank" rel="noopener noreferrer" className="btn btn-gold fi d3">Nossos Grupos <span aria-hidden="true">➔</span></a>
+          <Link href="/contato" className="btn btn-gold fi d3">Quero Apoiar <span aria-hidden="true">💪</span></Link>
         </div>
       </section>
     </>
