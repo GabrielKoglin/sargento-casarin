@@ -14,8 +14,35 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  FiGrid,
+  FiFileText,
+  FiRss,
+  FiCalendar,
+  FiImage,
+  FiEdit3,
+  FiMail,
+  FiUsers,
+  FiShield,
+  FiSettings,
+} from "react-icons/fi";
+import type { IconType } from "react-icons";
 import { logout } from "../actions";
 import type { AdminNavItem } from "./admin-nav";
+
+// Chave (definida no layout) → ícone (Feather/react-icons).
+const NAV_ICONS: Record<string, IconType> = {
+  dashboard: FiGrid,
+  propostas: FiFileText,
+  noticias: FiRss,
+  agenda: FiCalendar,
+  midia: FiImage,
+  conteudo: FiEdit3,
+  mensagens: FiMail,
+  equipe: FiUsers,
+  seguranca: FiShield,
+  config: FiSettings,
+};
 
 export function AdminSidebar({
   items,
@@ -108,30 +135,29 @@ export function AdminSidebar({
         </Link>
 
         <nav className="admin-nav" aria-label="Navegação do painel">
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="admin-nav__link"
-              aria-current={isActive(item.href) ? "page" : undefined}
-              onClick={close}
-            >
-              {item.icon ? (
-                <span className="admin-nav__icon" aria-hidden="true">
-                  {item.icon}
-                </span>
-              ) : null}
-              <span>{item.label}</span>
-              {item.badge && item.badge > 0 ? (
-                <span
-                  className="admin-nav__badge"
-                  aria-label={`${item.badge} não lidas`}
-                >
-                  {item.badge > 99 ? "99+" : item.badge}
-                </span>
-              ) : null}
-            </Link>
-          ))}
+          {items.map((item) => {
+            const Icon = item.icon ? NAV_ICONS[item.icon] : undefined;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="admin-nav__link"
+                aria-current={isActive(item.href) ? "page" : undefined}
+                onClick={close}
+              >
+                {Icon ? <Icon className="admin-nav__icon" aria-hidden="true" /> : null}
+                <span>{item.label}</span>
+                {item.badge && item.badge > 0 ? (
+                  <span
+                    className="admin-nav__badge"
+                    aria-label={`${item.badge} não lidas`}
+                  >
+                    {item.badge > 99 ? "99+" : item.badge}
+                  </span>
+                ) : null}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="admin-sidebar__footer">

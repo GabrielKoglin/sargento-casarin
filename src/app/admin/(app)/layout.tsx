@@ -21,17 +21,18 @@ import { type AdminNavItem } from "./admin-nav";
 import { AdminSidebar } from "./admin-sidebar";
 import "../admin.css";
 
+// `icon` é uma CHAVE mapeada para um ícone (react-icons) em admin-sidebar.tsx.
 const NAV_ITEMS: AdminNavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: "▪" },
-  { href: "/admin/propostas", label: "Propostas", icon: "◆" },
-  { href: "/admin/noticias", label: "Notícias", icon: "❖" },
-  { href: "/admin/agenda", label: "Agenda", icon: "▤" },
-  { href: "/admin/midia", label: "Mídia", icon: "▷" },
-  { href: "/admin/conteudo", label: "Conteúdo", icon: "✎" },
-  { href: "/admin/mensagens", label: "Mensagens", icon: "✉" },
-  { href: "/admin/equipe", label: "Equipe", icon: "◊" },
-  { href: "/admin/seguranca", label: "Segurança", icon: "▣" },
-  { href: "/admin/config", label: "Config", icon: "⚙" },
+  { href: "/admin", label: "Dashboard", icon: "dashboard" },
+  { href: "/admin/propostas", label: "Propostas", icon: "propostas" },
+  { href: "/admin/noticias", label: "Notícias", icon: "noticias" },
+  { href: "/admin/agenda", label: "Agenda", icon: "agenda" },
+  { href: "/admin/midia", label: "Mídia", icon: "midia" },
+  { href: "/admin/conteudo", label: "Conteúdo", icon: "conteudo" },
+  { href: "/admin/mensagens", label: "Mensagens", icon: "mensagens" },
+  { href: "/admin/equipe", label: "Equipe", icon: "equipe" },
+  { href: "/admin/seguranca", label: "Segurança", icon: "seguranca" },
+  { href: "/admin/config", label: "Config", icon: "config" },
 ];
 
 export default async function AdminAppLayout({

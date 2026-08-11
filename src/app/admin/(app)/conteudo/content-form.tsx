@@ -52,53 +52,53 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
       </p>
 
       {/* ------------------------------------------------------- Home: Hero */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Home — Hero (topo)</h2>
+      <details className="admin-form-card admin-acc" open>
+        <summary className="admin-acc__summary admin-section-title">Home — Hero (topo)</summary>
         <Field label="Rótulo (eyebrow)" value={data.home.heroEyebrow} onChange={(v) => setHome({ heroEyebrow: v })} />
         <Field label="Nome (exibido grande)" value={data.home.heroName} onChange={(v) => setHome({ heroName: v })} />
         <Field label="Subtítulo (Enter quebra linha)" value={data.home.heroSubtitle} onChange={(v) => setHome({ heroSubtitle: v })} multiline />
         <Field label="Chamada (lead)" value={data.home.heroLead} onChange={(v) => setHome({ heroLead: v })} multiline />
         <Field label="Faixa 1 (verde)" value={data.home.ribbon1} onChange={(v) => setHome({ ribbon1: v })} />
         <Field label="Faixa 2 (bege)" value={data.home.ribbon2} onChange={(v) => setHome({ ribbon2: v })} />
-      </section>
+      </details>
 
       {/* ------------------------------------------ Home: credenciais (tarja) */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Home — Credenciais (tarja)</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Home — Credenciais (tarja)</summary>
         <CredsEditor creds={data.home.creds} onChange={(creds) => setHome({ creds })} />
-      </section>
+      </details>
 
       {/* ------------------------------------------- Home: faixa da Comenda */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Home — Faixa da Comenda</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Home — Faixa da Comenda</summary>
         <Field label="Rótulo" value={data.home.comendaEyebrow} onChange={(v) => setHome({ comendaEyebrow: v })} />
         <Field label="Título" value={data.home.comendaTitle} onChange={(v) => setHome({ comendaTitle: v })} />
         <Field label="Rodapé (fonte)" value={data.home.comendaMeta} onChange={(v) => setHome({ comendaMeta: v })} />
-      </section>
+      </details>
 
       {/* --------------------------------------- Home: propostas + marquee */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Home — Propostas (cabeçalho) &amp; Marquee</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Home — Propostas (cabeçalho) &amp; Marquee</summary>
         <Field label="Rótulo das propostas" value={data.home.propostasEyebrow} onChange={(v) => setHome({ propostasEyebrow: v })} />
         <Field label="Título — linha 1" value={data.home.propostasTitle1} onChange={(v) => setHome({ propostasTitle1: v })} />
         <Field label="Título — linha 2 (destaque verde)" value={data.home.propostasTitle2} onChange={(v) => setHome({ propostasTitle2: v })} />
         <ListEditor label="Marquee (frases que passam na faixa)" items={data.home.marquee} onChange={(marquee) => setHome({ marquee })} addLabel="+ Frase" />
-      </section>
+      </details>
 
       {/* -------------------------------------------- Home: CTA "Faça parte" */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Home — Chamada “Faça parte da tropa”</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Home — Chamada “Faça parte da tropa”</summary>
         <Field label="Rótulo" value={data.home.ctaEyebrow} onChange={(v) => setHome({ ctaEyebrow: v })} />
         <Field label="Título — linha 1" value={data.home.ctaTitle1} onChange={(v) => setHome({ ctaTitle1: v })} />
         <Field label="Título — linha 2 (destaque)" value={data.home.ctaTitle2} onChange={(v) => setHome({ ctaTitle2: v })} />
         <Field label="Texto" value={data.home.ctaLead} onChange={(v) => setHome({ ctaLead: v })} multiline />
-      </section>
+      </details>
 
       {/* ---------------------------------------------------- Home: "Por que" */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">
           Home — “Por que entrar para a política?”
-        </h2>
+        </summary>
         <Field
           label="Frase de topo"
           value={data.why.caption}
@@ -123,11 +123,11 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           onChange={(targets) => setWhy({ targets })}
           addLabel="+ Selo"
         />
-      </section>
+      </details>
 
       {/* ----------------------------------------------------------- Manifesto */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Manifesto</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Manifesto</summary>
         <Field
           label="Rótulo (eyebrow)"
           value={data.manifesto.eyebrow}
@@ -159,11 +159,11 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           stats={data.manifesto.stats}
           onChange={(stats) => setManifesto({ stats })}
         />
-      </section>
+      </details>
 
       {/* --------------------------------------------------------- Sobre: bio */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Sobre — Biografia</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Sobre — Biografia</summary>
         <Field
           label="Rótulo (eyebrow)"
           value={data.bio.eyebrow}
@@ -193,17 +193,17 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           onChange={(v) => setBio({ closing: v })}
           multiline
         />
-      </section>
+      </details>
 
       {/* -------------------------------------------------- Sobre: trajetória */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Sobre — Trajetória</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Sobre — Trajetória</summary>
         <StepsEditor steps={data.trajetoria.steps} onChange={setSteps} />
-      </section>
+      </details>
 
       {/* ----------------------------------------------------- Sobre: comenda */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Sobre — Comenda / Honraria</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Sobre — Comenda / Honraria</summary>
         <Field
           label="Rótulo (eyebrow)"
           value={data.comenda.eyebrow}
@@ -225,11 +225,11 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           value={data.comenda.meta}
           onChange={(v) => setComenda({ meta: v })}
         />
-      </section>
+      </details>
 
       {/* ---------------------------------------------------- Sobre: formação */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Sobre — Formação &amp; Reconhecimentos</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Sobre — Formação &amp; Reconhecimentos</summary>
         <ListEditor
           label="Formação"
           items={data.creds.formacao}
@@ -248,20 +248,20 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           onChange={(honrarias) => setCreds({ honrarias })}
           addLabel="+ Item"
         />
-      </section>
+      </details>
 
       {/* --------------------------------------------- Seja um Apoiador (/tropa) */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Seja um Apoiador (/tropa)</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Seja um Apoiador (/tropa)</summary>
         <Field label="Título (use *palavra* p/ destaque)" value={data.tropa.heroTitle} onChange={(v) => setTropa({ heroTitle: v })} />
         <Field label="Chamada" value={data.tropa.heroLead} onChange={(v) => setTropa({ heroLead: v })} multiline />
         <Field label="Título do formulário" value={data.tropa.formTitle} onChange={(v) => setTropa({ formTitle: v })} />
         <Field label="Texto do formulário" value={data.tropa.formText} onChange={(v) => setTropa({ formText: v })} multiline />
-      </section>
+      </details>
 
       {/* ------------------------------------------------- Quero Ajudar (/ajudar) */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Quero Ajudar (/ajudar)</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Quero Ajudar (/ajudar)</summary>
         <Field label="Rótulo" value={data.ajudar.heroEyebrow} onChange={(v) => setAjudar({ heroEyebrow: v })} />
         <Field label="Título (use *palavra* p/ destaque)" value={data.ajudar.heroTitle} onChange={(v) => setAjudar({ heroTitle: v })} />
         <Field label="Chamada" value={data.ajudar.heroLead} onChange={(v) => setAjudar({ heroLead: v })} multiline />
@@ -274,11 +274,11 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
         <Field label="Rodapé de confiança — **negrito**" value={data.ajudar.supportTrust} onChange={(v) => setAjudar({ supportTrust: v })} multiline />
         <Field label="Título “Comece agora”" value={data.ajudar.comeceTitle} onChange={(v) => setAjudar({ comeceTitle: v })} />
         <Field label="Texto “Comece agora”" value={data.ajudar.comeceText} onChange={(v) => setAjudar({ comeceText: v })} multiline />
-      </section>
+      </details>
 
       {/* ------------------------------------------------ Nossas Mídias (/midias) */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Nossas Mídias (/midias)</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Nossas Mídias (/midias)</summary>
         <Field label="Rótulo" value={data.midias.heroEyebrow} onChange={(v) => setMidias({ heroEyebrow: v })} />
         <Field label="Título (use *palavra* p/ destaque)" value={data.midias.heroTitle} onChange={(v) => setMidias({ heroTitle: v })} />
         <Field label="Chamada" value={data.midias.heroLead} onChange={(v) => setMidias({ heroLead: v })} multiline />
@@ -286,11 +286,11 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
         <SocialEditor canais={data.midias.canais} onChange={(canais) => setMidias({ canais })} />
         <Field label="Título do bloco final" value={data.midias.ctaTitle} onChange={(v) => setMidias({ ctaTitle: v })} />
         <Field label="Texto do bloco final" value={data.midias.ctaText} onChange={(v) => setMidias({ ctaText: v })} multiline />
-      </section>
+      </details>
 
       {/* -------------------------------------------------------- Contato (/contato) */}
-      <section className="admin-form-card">
-        <h2 className="admin-section-title">Contato (/contato)</h2>
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Contato (/contato)</summary>
         <Field label="Rótulo" value={data.contato.heroEyebrow} onChange={(v) => setContato({ heroEyebrow: v })} />
         <Field label="Título (use *palavra* p/ destaque)" value={data.contato.heroTitle} onChange={(v) => setContato({ heroTitle: v })} />
         <Field label="Chamada" value={data.contato.heroLead} onChange={(v) => setContato({ heroLead: v })} multiline />
@@ -302,7 +302,7 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
         <Field label="WhatsApp — valor" value={data.contato.whatsValue} onChange={(v) => setContato({ whatsValue: v })} />
         <Field label="Título do formulário" value={data.contato.formTitle} onChange={(v) => setContato({ formTitle: v })} />
         <Field label="Texto do formulário" value={data.contato.formText} onChange={(v) => setContato({ formText: v })} multiline />
-      </section>
+      </details>
 
       {/* ---------------------------------------------------------- Páginas legais */}
       <LegalCard label="Legal — Política de Privacidade" page={data.legal.privacidade} onChange={(p) => setLegal("privacidade", p)} />
@@ -311,23 +311,22 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
       <LegalCard label="Legal — Portal LGPD" page={data.legal.lgpd} onChange={(p) => setLegal("lgpd", p)} />
       <LegalCard label="Legal — Regras e Normas" page={data.legal.regras} onChange={(p) => setLegal("regras", p)} />
 
-      {state.error ? (
-        <p className="admin-notice admin-notice--fail">{state.error}</p>
-      ) : null}
-      {state.ok ? (
-        <p className="admin-notice admin-notice--ok">
-          Conteúdo salvo! As mudanças já aparecem no site.
-        </p>
-      ) : null}
-
-      <button
-        type="submit"
-        className="admin-btn"
-        disabled={pending}
-        style={{ marginTop: "0.5rem" }}
-      >
-        {pending ? "Salvando…" : "Salvar conteúdo"}
-      </button>
+      <div className="admin-savebar">
+        <span className="admin-savebar__msg">
+          {state.error ? (
+            <span className="admin-savebar__msg--fail">{state.error}</span>
+          ) : state.ok ? (
+            <span className="admin-savebar__msg--ok">
+              ✓ Conteúdo salvo! As mudanças já aparecem no site.
+            </span>
+          ) : (
+            "As mudanças aparecem no site logo após salvar."
+          )}
+        </span>
+        <button type="submit" className="admin-btn" disabled={pending}>
+          {pending ? "Salvando…" : "Salvar conteúdo"}
+        </button>
+      </div>
     </form>
   );
 }
@@ -705,8 +704,8 @@ function LegalCard({
   onChange: (patch: Partial<LegalPage>) => void;
 }) {
   return (
-    <section className="admin-form-card">
-      <h2 className="admin-section-title">{label}</h2>
+    <details className="admin-form-card admin-acc">
+      <summary className="admin-acc__summary admin-section-title">{label}</summary>
       <Field label="Rótulo" value={page.eyebrow} onChange={(v) => onChange({ eyebrow: v })} />
       <Field label="Título (use *palavra* p/ destaque)" value={page.title} onChange={(v) => onChange({ title: v })} />
       <Field label="Chamada (opcional)" value={page.lead} onChange={(v) => onChange({ lead: v })} multiline />
@@ -723,6 +722,6 @@ function LegalCard({
           style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "0.85rem", lineHeight: 1.5 }}
         />
       </div>
-    </section>
+    </details>
   );
 }

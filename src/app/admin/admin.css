@@ -473,9 +473,9 @@ body:has(.admin-login) {
   transition: background 0.12s ease, color 0.12s ease;
 }
 .admin-nav__icon {
-  width: 1.1rem;
-  text-align: center;
-  font-size: 0.8rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
   color: var(--a-faint);
   transition: color 0.12s ease;
 }
@@ -1233,6 +1233,65 @@ span.admin-pager__btn[aria-disabled="true"] { color: var(--a-faint); opacity: 0.
 
 /* Cartão de formulário (config, mídia) */
 .admin-form-card { padding: 1.25rem; margin: 0 0 2rem; border: 1px solid var(--a-line); border-radius: var(--a-radius); background: var(--a-panel); }
+
+/* Barra de salvar fixa: acompanha o scroll no fim do form longo de Conteúdo,
+   pra salvar de qualquer ponto sem rolar até o fim. */
+.admin-savebar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding: 0.8rem 0.85rem 0.8rem 1.1rem;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius);
+  background: rgba(4, 17, 31, 0.9);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+}
+.admin-savebar__msg { color: var(--a-muted); font-size: 0.85rem; }
+.admin-savebar__msg--ok { color: var(--a-green-bright); font-weight: 600; }
+.admin-savebar__msg--fail { color: var(--a-danger); font-weight: 600; }
+.admin-savebar .admin-btn { flex-shrink: 0; }
+
+/* Accordion: cada seção do form de Conteúdo é um <details> recolhível. O form
+   serializa tudo num payload JSON único, então recolher NÃO perde dados. */
+.admin-acc > .admin-acc__summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  transition: color 0.12s ease;
+}
+.admin-acc > .admin-acc__summary::-webkit-details-marker { display: none; }
+.admin-acc > .admin-acc__summary::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid var(--a-muted);
+  border-bottom: 2px solid var(--a-muted);
+  transform: rotate(45deg);
+  transition: transform 0.18s ease, border-color 0.12s ease;
+  flex-shrink: 0;
+}
+.admin-acc[open] > .admin-acc__summary::after { transform: rotate(-135deg); }
+.admin-acc[open] > .admin-acc__summary { margin-bottom: 1.15rem; }
+.admin-acc > .admin-acc__summary:hover { color: var(--a-green-bright); }
+.admin-acc > .admin-acc__summary:hover::after { border-color: var(--a-green-bright); }
+.admin-acc > .admin-acc__summary:focus-visible {
+  outline: 2px solid var(--a-green);
+  outline-offset: 4px;
+  border-radius: var(--a-radius-sm);
+}
 
 /* Interior do cartão de mensagem */
 .admin-msg__contacts { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; margin-top: 0.6rem; font-size: 0.85rem; }
