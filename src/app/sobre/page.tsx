@@ -103,14 +103,6 @@ export default async function SobrePage() {
                     </div>
                   )}
                   <div className="creds-col">
-                    <h4>Especializações</h4>
-                    <ul>
-                      {creds.especializacoes.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="creds-col">
                     <h4>Honrarias</h4>
                     <ul>
                       {creds.honrarias.map((item, i) => (

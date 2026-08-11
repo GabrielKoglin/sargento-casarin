@@ -35,7 +35,6 @@ export type SiteContentData = {
   creds: {
     formacao: string[];
     profissional: string[];
-    especializacoes: string[];
     honrarias: string[];
   };
   manifesto: {
@@ -186,11 +185,6 @@ export const DEFAULT_CONTENT: SiteContentData = {
       "Pós-graduação em Cibersegurança pela Faculdade Uniasselvi - (cursando)",
     ],
     profissional: [],
-    especializacoes: [
-      "Curso de Capacitação da ROTAM (2014)",
-      "Inteligência de Segurança Pública (2017)",
-      "Atendimento Pré-hospitalar (2015)",
-    ],
     honrarias: [
       "Comenda Marechal Cândido Rondon · ALMT (2026)",
       "Moção de Aplausos · Câmara de Lucas do Rio Verde (2013)",
@@ -613,7 +607,6 @@ function coerce(raw: unknown): SiteContentData {
     creds: {
       formacao: strArr(creds.formacao, d.creds.formacao),
       profissional: strArr(creds.profissional, d.creds.profissional),
-      especializacoes: strArr(creds.especializacoes, d.creds.especializacoes),
       honrarias: strArr(creds.honrarias, d.creds.honrarias),
     },
     manifesto: {
