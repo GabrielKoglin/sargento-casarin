@@ -92,6 +92,16 @@ export default async function SobrePage() {
                       ))}
                     </ul>
                   </div>
+                  {(creds.profissional && creds.profissional.length > 0) && (
+                    <div className="creds-col">
+                      <h4>Formação Profissional</h4>
+                      <ul>
+                        {creds.profissional.map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <div className="creds-col">
                     <h4>Especializações</h4>
                     <ul>

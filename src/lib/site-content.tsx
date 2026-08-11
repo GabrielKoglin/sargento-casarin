@@ -34,6 +34,7 @@ export type SiteContentData = {
   comenda: { eyebrow: string; title: string; desc: string; meta: string };
   creds: {
     formacao: string[];
+    profissional: string[];
     especializacoes: string[];
     honrarias: string[];
   };
@@ -184,6 +185,7 @@ export const DEFAULT_CONTENT: SiteContentData = {
       "Análise e Desenvolvido de Sistemas Pela Uniasselvi – (cursando)",
       "Pós-graduação em Cibersegurança pela Faculdade Uniasselvi - (cursando)",
     ],
+    profissional: [],
     especializacoes: [
       "Curso de Capacitação da ROTAM (2014)",
       "Inteligência de Segurança Pública (2017)",

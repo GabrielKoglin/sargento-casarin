@@ -237,6 +237,12 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           addLabel="+ Item"
         />
         <ListEditor
+          label="Formação Profissional"
+          items={data.creds.profissional}
+          onChange={(profissional) => setCreds({ profissional })}
+          addLabel="+ Item"
+        />
+        <ListEditor
           label="Especializações"
           items={data.creds.especializacoes}
           onChange={(especializacoes) => setCreds({ especializacoes })}
