@@ -612,6 +612,7 @@ function coerce(raw: unknown): SiteContentData {
     },
     creds: {
       formacao: strArr(creds.formacao, d.creds.formacao),
+      profissional: strArr(creds.profissional, d.creds.profissional),
       especializacoes: strArr(creds.especializacoes, d.creds.especializacoes),
       honrarias: strArr(creds.honrarias, d.creds.honrarias),
     },
