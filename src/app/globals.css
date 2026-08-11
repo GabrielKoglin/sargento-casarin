@@ -242,7 +242,7 @@ body::after {
 /* Foto do candidato — lado esquerdo, fundida no fundo */
 .hero-bg {
   position:absolute; inset:0; width:100%;
-  background:url('/casarin-hero-flag.jpg') left center / cover no-repeat;
+  background:url('/casarin-hero-flag.jpg') 30% center / cover no-repeat;
 }
 .hero-bg::after {
   content:''; position:absolute; inset:0; pointer-events:none;
