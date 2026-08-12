@@ -28,8 +28,8 @@ export default async function SobrePage() {
             QUEM É O <em>CASARIN?</em>
           </h1>
           <p className="fi d2">
-            15 anos de farda e de linha de frente na segurança pública de Mato Grosso.
-            Experiência real — não teoria.
+            Mais de 15 anos de farda e linha de frente na segurança pública de Mato Grosso.
+            Experiência real, não teoria.
           </p>
         </div>
       </section>
