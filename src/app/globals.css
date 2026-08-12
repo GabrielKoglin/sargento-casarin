@@ -128,9 +128,7 @@ body::after {
   font-size:.7rem; font-weight:700; letter-spacing:.28em;
   text-transform:uppercase; color:var(--B);
 }
-.eyebrow::before { content:''; display:inline-block; width:1.8rem; height:1px; background:var(--B); }
 .eyebrow-dark { color:var(--G); }
-.eyebrow-dark::before { background:var(--G); }
 
 /* ============================================
    NAVBAR
