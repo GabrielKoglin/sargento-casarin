@@ -10,7 +10,6 @@ import { Fragment, type ReactNode } from "react";
 import { prisma } from "@/lib/prisma";
 
 export type TrajetoriaStep = { label: string; title: string; text: string };
-export type ManifestoStat = { value: string; label: string };
 export type CredItem = { num: string; title: string; text: string };
 export type IconCard = { icon: string; title: string; text: string };
 export type SocialChannel = { icon: string; name: string; handle: string; href: string };
@@ -43,7 +42,6 @@ export type SiteContentData = {
     titleEm: string;
     titleLine2: string;
     paragraphs: string[];
-    stats: ManifestoStat[];
   };
   home: {
     heroEyebrow: string;
@@ -202,11 +200,6 @@ export const DEFAULT_CONTENT: SiteContentData = {
       "Ninguém aguenta mais ligar para o 190, 197 ou 193 em uma situação de emergência e ouvir que todas as viaturas estão ocupadas.",
       "Enquanto isso, muitas das decisões que definem a segurança das nossas famílias são tomadas longe das ruas, por quem nunca sentiu na pele o que significa enfrentar o crime de frente.",
       "Essa causa vai muito além de qualquer discurso político. É sobre segurança, responsabilidade e, acima de tudo, sobre o futuro das nossas famílias. Porque construir um lugar mais seguro para viver é uma responsabilidade de todos nós.",
-    ],
-    stats: [
-      { value: "15", label: "Anos de farda" },
-      { value: "142", label: "Municípios em MT" },
-      { value: "2027", label: "A missão continua" },
     ],
   },
   home: {
@@ -528,14 +521,6 @@ function coerce(raw: unknown): SiteContentData {
         .filter((s) => s.title || s.text)
     : d.trajetoria.steps;
   const man = sec("manifesto");
-  const stats = Array.isArray(man.stats)
-    ? (man.stats as unknown[])
-        .map((s) => {
-          const st = (s && typeof s === "object" ? s : {}) as Record<string, unknown>;
-          return { value: str(st.value, ""), label: str(st.label, "") };
-        })
-        .filter((s) => s.value || s.label)
-    : d.manifesto.stats;
   const home = sec("home");
   const creds3 = Array.isArray(home.creds)
     ? (home.creds as unknown[])
@@ -615,7 +600,6 @@ function coerce(raw: unknown): SiteContentData {
       titleEm: str(man.titleEm, d.manifesto.titleEm),
       titleLine2: str(man.titleLine2, d.manifesto.titleLine2),
       paragraphs: strArr(man.paragraphs, d.manifesto.paragraphs),
-      stats: stats.length ? stats : d.manifesto.stats,
     },
     home: {
       heroEyebrow: str(home.heroEyebrow, d.home.heroEyebrow),

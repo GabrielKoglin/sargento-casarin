@@ -38,15 +38,6 @@ export default async function ManifestoPage() {
             ))}
           </div>
 
-          <div className="manifesto-stats">
-            {manifesto.stats.map((s, i) => (
-              <div key={i} className={`m-stat fi${i > 0 ? ` d${i}` : ""}`}>
-                <strong>{s.value}</strong>
-                <span>{s.label}</span>
-              </div>
-            ))}
-          </div>
-
           <div className="fi d3" style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
             <Link href="/tropa" className="btn btn-gold">
               Nossos Grupos ➔

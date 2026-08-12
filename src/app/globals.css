@@ -828,9 +828,6 @@ body::after {
 .manifesto-content h1 em { font-style:normal; color:var(--B); }
 .manifesto-hr { width:3rem; height:2px; background:var(--B); margin:2rem 0; }
 .manifesto-p p { color:rgba(255,255,255,.72); font-size:clamp(.95rem,1.6vw,1.1rem); line-height:1.8; margin-bottom:1.5rem; }
-.manifesto-stats { display:flex; flex-wrap:wrap; gap:2rem; margin:2.5rem 0; }
-.m-stat strong { font-family:var(--fc); font-size:clamp(2rem,5vw,3.5rem); font-weight:900; color:var(--B); display:block; }
-.m-stat span { font-size:.65rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.6); }
 
 /* ============================================
    NOTÃCIAS
@@ -1215,8 +1212,6 @@ footer {
   /* ===== /manifesto — texto, régua, stats e CTAs centralizados ===== */
   .manifesto-content { text-align:center; }
   .manifesto-hr { margin-inline:auto; }
-  .manifesto-stats { justify-content:center; }
-  .m-stat { text-align:center; }
   .manifesto-content > .fi.d3 { flex-direction:column; justify-content:center; }
   .manifesto-content > .fi.d3 .btn { width:100%; justify-content:center; }
 
@@ -1345,7 +1340,6 @@ html.a11y-contrast li,
 html.a11y-contrast .page-hero p,
 html.a11y-contrast .proposito-lead,
 html.a11y-contrast .mt-bloco p,
-html.a11y-contrast .m-stat span,
 html.a11y-contrast .news-date,
 html.a11y-contrast .form-box > p,
 html.a11y-contrast .grupo-txt span,

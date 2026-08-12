@@ -9,7 +9,7 @@
 // textos: markdown simples `**assim**`.
 import { useActionState, useState } from "react";
 import { saveSiteContent, type ContentFormState } from "./actions";
-import type { SiteContentData, TrajetoriaStep, ManifestoStat, CredItem, IconCard, SocialChannel, LegalPage } from "@/lib/site-content";
+import type { SiteContentData, TrajetoriaStep, CredItem, IconCard, SocialChannel, LegalPage } from "@/lib/site-content";
 
 const INITIAL: ContentFormState = { ok: false, error: null };
 
@@ -154,10 +154,6 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           onChange={(paragraphs) => setManifesto({ paragraphs })}
           multiline
           addLabel="+ Parágrafo"
-        />
-        <StatsEditor
-          stats={data.manifesto.stats}
-          onChange={(stats) => setManifesto({ stats })}
         />
       </details>
 
@@ -496,65 +492,6 @@ function StepsEditor({
       ))}
       <button type="button" className="admin-linkbtn" onClick={add}>
         + Passo
-      </button>
-    </div>
-  );
-}
-
-// ------------------------------------ números em destaque do Manifesto (add/remove)
-function StatsEditor({
-  stats,
-  onChange,
-}: {
-  stats: ManifestoStat[];
-  onChange: (stats: ManifestoStat[]) => void;
-}) {
-  const update = (i: number, patch: Partial<ManifestoStat>) =>
-    onChange(stats.map((s, j) => (j === i ? { ...s, ...patch } : s)));
-  const add = () => onChange([...stats, { value: "", label: "" }]);
-  const remove = (i: number) => onChange(stats.filter((_, j) => j !== i));
-
-  return (
-    <div className="admin-field" style={{ marginBottom: "1rem" }}>
-      <label className="admin-field__label">Números em destaque</label>
-      <div className="flex flex-col gap-2">
-        {stats.map((s, i) => (
-          <div key={i} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end" }}>
-            <div className="admin-field" style={{ width: "6.5rem" }}>
-              <label className="admin-field__label">Número</label>
-              <input
-                className="admin-field__input"
-                value={s.value}
-                onChange={(e) => update(i, { value: e.target.value })}
-              />
-            </div>
-            <div className="admin-field" style={{ flex: "1 1 10rem" }}>
-              <label className="admin-field__label">Legenda</label>
-              <input
-                className="admin-field__input"
-                value={s.label}
-                onChange={(e) => update(i, { label: e.target.value })}
-              />
-            </div>
-            <button
-              type="button"
-              className="admin-btn admin-btn--ghost admin-btn--sm"
-              onClick={() => remove(i)}
-              aria-label={`Remover número ${i + 1}`}
-              style={{ flexShrink: 0 }}
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
-      <button
-        type="button"
-        className="admin-linkbtn"
-        onClick={add}
-        style={{ marginTop: "0.5rem" }}
-      >
-        + Número
       </button>
     </div>
   );
