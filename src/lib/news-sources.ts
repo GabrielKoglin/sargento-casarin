@@ -25,8 +25,9 @@ export interface NewsSource {
   /**
    * Termo de busca literal para o Google News. Quando presente numa fonte
    * "gnews", tem PRECEDÊNCIA sobre `domain`: a URL vira uma busca por esse termo
-   * (últimos 30 dias) em vez de `site:domain`. Use aspas para frase exata,
-   * ex.: '"Sargento Casarin"'.
+   * (SEM janela de tempo) em vez de `site:domain`. Use aspas para frase exata,
+   * ex.: '"Sargento Casarin"'. Fontes com `query` são CONFIÁVEIS: a ingestão
+   * pula o filtro de relevância nelas (a própria query já é a relevância).
    */
   query?: string;
 }
@@ -52,11 +53,15 @@ export const NEWS_SOURCES: NewsSource[] = [
   // TODO: "A Folha de Notícias" — domínio ainda a confirmar pelo cliente.
   //       NÃO inventar o domínio; adicionar aqui (type "gnews") quando confirmado.
 
-  // --- Google News: busca DEDICADA por termo (o candidato), últimos 30 dias ---
-  // Já vêm super-relevantes; ainda assim o filtro de relevância da ingestão se
-  // aplica (defesa dupla). O cliente pode ajustar/expandir estes termos.
+  // --- Google News: busca DEDICADA pelo NOME do candidato (SEM janela) --------
+  // O Google já garante a relevância (busca o nome dele), então a ingestão NÃO
+  // aplica o filtro de relevância a estas fontes (as manchetes do Google News
+  // quase nunca trazem o nome no título/resumo). SEM `when:` de propósito: as
+  // matérias importantes (candidatura, ação do PT) são de meses atrás e uma
+  // janela curta as derruba do ranking. O cliente pode ajustar/expandir.
   { name: "Google News — Sargento Casarin", type: "gnews", query: '"Sargento Casarin"' },
   { name: "Google News — Dickson Casarin", type: "gnews", query: '"Dickson Casarin"' },
+  { name: "Google News — Dickson Soares Casarin", type: "gnews", query: '"Dickson Soares Casarin"' },
 
   // --- Google News (busca por domínio, últimos 7 dias) ---------------------
   { name: "Olhar Direto", type: "gnews", domain: "olhardireto.com.br" },
@@ -74,14 +79,17 @@ export const NEWS_SOURCES: NewsSource[] = [
 /**
  * Resolve a URL de feed a ser buscada para uma fonte.
  * - rss:   retorna o feed nativo configurado.
- * - gnews: monta a busca do Google News RSS. `query` (busca por termo, últimos
- *          30 dias) tem PRECEDÊNCIA sobre `domain` (busca `site:`, últimos 7 dias).
+ * - gnews: monta a busca do Google News RSS. `query` (busca por termo, SEM
+ *          janela de tempo) tem PRECEDÊNCIA sobre `domain` (busca `site:`,
+ *          últimos 7 dias).
  */
 export function sourceFeedUrl(source: NewsSource): string {
   if (source.type === "gnews") {
     // `query` tem precedência sobre `domain`: busca por termo em vez de site:.
+    // SEM `when:` — o ranking do Google News sem janela é o que traz as matérias
+    // históricas do candidato (uma janela curta as some do resultado).
     if (source.query) {
-      return `https://news.google.com/rss/search?q=${encodeURIComponent(source.query)}%20when:30d&hl=pt-BR&gl=BR&ceid=BR:pt`;
+      return `https://news.google.com/rss/search?q=${encodeURIComponent(source.query)}&hl=pt-BR&gl=BR&ceid=BR:pt`;
     }
     if (!source.domain) {
       throw new Error(

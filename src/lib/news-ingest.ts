@@ -388,6 +388,13 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
   async function processSource(
     source: (typeof NEWS_SOURCES)[number],
   ): Promise<void> {
+    // Fontes com query dedicada (o nome do candidato) já são relevantes por
+    // construção — o Google buscou o nome dele. Confiamos na query e pulamos o
+    // filtro de relevância (as manchetes do Google News quase nunca trazem o
+    // nome no título/resumo, então o filtro por substring descartaria matérias
+    // que SÃO sobre ele, ex.: "PT aciona 'sargento blogueiro' em MT").
+    const trusted = source.type === "gnews" && Boolean(source.query);
+
     try {
       const feedUrl = sourceFeedUrl(source);
       const xml = await fetchFeedXml(feedUrl);
@@ -409,8 +416,9 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
 
         // FILTRO DE RELEVÂNCIA: só interessam notícias que citam / têm a ver com
         // o candidato. Fora do tema → descarta (contado em `filtered`, não em
-        // `skipped`) e nem consulta o banco.
-        if (!isRelevant(title, itemSummary)) {
+        // `skipped`) e nem consulta o banco. Fontes `trusted` (query dedicada
+        // pelo nome dele) pulam o filtro — a query já garante a relevância.
+        if (!trusted && !isRelevant(title, itemSummary)) {
           summary.filtered += 1;
           continue;
         }
