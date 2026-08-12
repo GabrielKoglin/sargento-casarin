@@ -25,7 +25,7 @@ export default async function SobrePage() {
         <div className="container">
           <div className="eyebrow sl">Trajetória</div>
           <h1 className="sl d1">
-            QUEM É O <em>CASARIN</em>
+            QUEM É O <em>CASARIN?</em>
           </h1>
           <p className="fi d2">
             15 anos de farda e de linha de frente na segurança pública de Mato Grosso.
