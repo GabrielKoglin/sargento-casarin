@@ -1416,3 +1416,63 @@ html.a11y-contrast .foot-col a,
 html.a11y-contrast .foot-bottom a {
   text-decoration:underline !important; font-weight:600 !important;
 }
+
+/* ============================================
+   POPUP DE BOAS-VINDAS (welcome-popup.tsx)
+============================================ */
+.welcome-backdrop {
+  position:fixed; inset:0; z-index:10050;
+  display:flex; align-items:center; justify-content:center; padding:1.25rem;
+  background:rgba(3,9,20,.76);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  animation:welcomeFade .3s ease both;
+}
+.welcome-card {
+  position:relative; width:min(430px,100%);
+  background:
+    radial-gradient(130% 80% at 50% -10%, rgba(0,184,75,.15) 0%, transparent 55%),
+    linear-gradient(165deg,#0f1c40 0%,#0a1330 55%,#050c1f 100%);
+  border:1px solid rgba(196,168,130,.30);
+  border-radius:18px; padding:2.7rem 1.6rem 1.9rem; text-align:center;
+  box-shadow:0 30px 90px rgba(0,0,0,.55);
+  animation:welcomePop .5s cubic-bezier(.2,.9,.3,1.25) both;
+}
+.welcome-close {
+  position:absolute; top:.5rem; right:.65rem; width:2rem; height:2rem;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent; border:none; color:rgba(255,255,255,.5);
+  font-size:1.65rem; line-height:1; cursor:pointer; border-radius:6px;
+}
+.welcome-close:hover { color:#fff; background:rgba(255,255,255,.09); }
+.welcome-eyebrow {
+  display:block; color:#c8ab7d; font-size:.72rem; font-weight:700;
+  letter-spacing:.3em; text-transform:uppercase; margin-bottom:.55rem;
+}
+.welcome-title {
+  font-family:var(--fc); color:var(--W); text-transform:uppercase;
+  font-size:clamp(1.75rem,6vw,2.35rem); line-height:.98; margin-bottom:.5rem;
+}
+.welcome-title em { font-style:normal; color:var(--B); }
+.welcome-sub { color:rgba(255,255,255,.6); font-size:.85rem; margin-bottom:1.5rem; }
+.welcome-actions { display:grid; gap:.6rem; }
+.welcome-btn {
+  display:flex; align-items:center; justify-content:center; gap:.55rem;
+  padding:.95rem 1rem; border-radius:11px; font-weight:700; font-size:.88rem;
+  text-transform:uppercase; letter-spacing:.02em; text-decoration:none; border:none;
+  transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  animation:welcomeBtn .5s ease both;
+}
+.welcome-btn:hover { transform:translateY(-2px); filter:brightness(1.05); }
+.welcome-btn:active { transform:translateY(0); }
+.welcome-btn__ico { font-size:1.1rem; }
+.welcome-btn--gold { background:var(--AU); color:#141414; }
+.welcome-btn--gold:hover { box-shadow:0 10px 26px rgba(255,213,0,.32); }
+.welcome-btn--green { background:var(--B); color:#fff; }
+.welcome-btn--green:hover { box-shadow:0 10px 26px rgba(0,184,75,.42); }
+@keyframes welcomeFade { from{opacity:0} to{opacity:1} }
+@keyframes welcomePop { from{opacity:0; transform:translateY(18px) scale(.95)} to{opacity:1; transform:none} }
+@keyframes welcomeBtn { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none} }
+@media (prefers-reduced-motion:reduce) {
+  .welcome-backdrop, .welcome-card, .welcome-btn { animation:none !important; }
+  .welcome-btn:hover { transform:none; }
+}

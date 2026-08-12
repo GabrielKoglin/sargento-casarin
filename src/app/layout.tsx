@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { TacticalFx } from "@/components/tactical-fx";
 import { CookieConsent } from "@/components/cookie-consent";
 import { AiAssistant } from "@/components/ai-assistant";
+import { WelcomePopup } from "@/components/welcome-popup";
 import { VLibras } from "@/components/vlibras";
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <AiAssistant />
+        <WelcomePopup />
         <VLibras />
         <TacticalFx />
         <CookieConsent />
