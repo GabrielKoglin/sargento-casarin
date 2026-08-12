@@ -66,7 +66,7 @@ export function ContactForm({
           <label htmlFor={`phone-${origin}`}>Telefone / WhatsApp *</label>
           <input type="tel" id={`phone-${origin}`} name="phone" required autoComplete="tel" />
         </div>
-        <div className="fg">
+        <div className="fg full">
           <label htmlFor={`city-${origin}`}>Cidade *</label>
           <input type="text" id={`city-${origin}`} name="city" required autoComplete="address-level2" />
         </div>
@@ -93,9 +93,11 @@ export function ContactForm({
         </p>
       )}
 
-      <button type="submit" className="btn btn-gold" disabled={pending}>
-        {pending ? "Enviando..." : submitLabel}
-      </button>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+        <button type="submit" className="btn btn-gold" disabled={pending}>
+          {pending ? "Enviando..." : submitLabel}
+        </button>
+      </div>
     </form>
   );
 }
