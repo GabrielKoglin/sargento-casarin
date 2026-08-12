@@ -11,6 +11,7 @@ const navLinks = [
   { name: "Manifesto", href: "/manifesto" },
   { name: "Notícias", href: "/noticias" },
   { name: "Agenda", href: "/agenda" },
+  { name: "Adesivos", href: "/adesivos" },
   { name: "Quero Apoiar", href: "/contato" },
 ];
 

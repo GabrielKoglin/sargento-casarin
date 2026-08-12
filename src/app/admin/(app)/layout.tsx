@@ -29,6 +29,7 @@ const NAV_ITEMS: AdminNavItem[] = [
   { href: "/admin/agenda", label: "Agenda", icon: "agenda" },
   { href: "/admin/conteudo", label: "Conteúdo", icon: "conteudo" },
   { href: "/admin/mensagens", label: "Mensagens", icon: "mensagens" },
+  { href: "/admin/adesivos", label: "Adesivos", icon: "adesivos" },
   { href: "/admin/equipe", label: "Equipe", icon: "equipe" },
   { href: "/admin/seguranca", label: "Segurança", icon: "seguranca" },
   { href: "/admin/config", label: "Config", icon: "config" },
@@ -77,9 +78,18 @@ export default async function AdminAppLayout({
   } catch {
     unread = 0;
   }
-  const navItems: AdminNavItem[] = NAV_ITEMS.map((item) =>
-    item.href === "/admin/mensagens" ? { ...item, badge: unread } : item,
-  );
+  // Badge da aba "Adesivos": pedidos ainda não entregues.
+  let pendingStickers = 0;
+  try {
+    pendingStickers = await prisma.stickerRequest.count({ where: { delivered: false } });
+  } catch {
+    pendingStickers = 0;
+  }
+  const navItems: AdminNavItem[] = NAV_ITEMS.map((item) => {
+    if (item.href === "/admin/mensagens") return { ...item, badge: unread };
+    if (item.href === "/admin/adesivos") return { ...item, badge: pendingStickers };
+    return item;
+  });
 
   if (!user) {
     // Cookie órfão: tenta limpá-lo. Em Server Component (fase de render) os

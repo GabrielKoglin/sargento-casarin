@@ -12,6 +12,7 @@ const routes = [
   "/manifesto",
   "/noticias",
   "/agenda",
+  "/adesivos",
   "/tropa",
   "/contato",
   "/ajudar",

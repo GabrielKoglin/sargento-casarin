@@ -127,3 +127,70 @@ export async function saveContact(
 
   return { status: "success" };
 }
+
+// ---------------------------------------------------------------------------
+// Pedido de adesivo (página pública /adesivos → tabela StickerRequest)
+// ---------------------------------------------------------------------------
+// Mesmo padrão do saveContact: honeypot + validação + rate-limit por IP.
+// Entregamos se estivermos na cidade; senão, a retirada é com o apoiador
+// responsável da cidade — a equipe organiza pelos pedidos no painel.
+export async function saveStickerRequest(
+  _prev: ContactFormState,
+  formData: FormData,
+): Promise<ContactFormState> {
+  // Honeypot: humanos não veem este campo; bots o preenchem.
+  if (String(formData.get("website") ?? "") !== "") {
+    return { status: "success" };
+  }
+
+  const name = String(formData.get("name") ?? "").trim();
+  const whatsapp = String(formData.get("whatsapp") ?? "").trim();
+  const city = String(formData.get("city") ?? "").trim();
+  const address = String(formData.get("address") ?? "").trim();
+  const quantityRaw = Number.parseInt(String(formData.get("quantity") ?? "1"), 10);
+  const quantity = Number.isFinite(quantityRaw) ? Math.min(Math.max(quantityRaw, 1), 50) : 1;
+  const consent = formData.get("consent");
+
+  if (!name || !whatsapp || !city || !address) {
+    return { status: "error", message: "Preencha todos os campos obrigatórios." };
+  }
+  if (!consent) {
+    return {
+      status: "error",
+      message: "É necessário autorizar o uso dos dados para continuar.",
+    };
+  }
+
+  const headerList = await headers();
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headerList.get("x-real-ip")?.trim() ||
+    null;
+
+  if (ip && isRateLimited(ip)) {
+    return {
+      status: "error",
+      message: "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+    };
+  }
+
+  try {
+    await prisma.stickerRequest.create({
+      data: {
+        name: name.slice(0, 120),
+        whatsapp: whatsapp.slice(0, 40),
+        city: city.slice(0, 120),
+        address: address.slice(0, 300),
+        quantity,
+      },
+    });
+  } catch (error) {
+    console.error("Sticker request could not be saved.", error);
+    return {
+      status: "error",
+      message: "Não foi possível enviar agora. Tente novamente em instantes.",
+    };
+  }
+
+  return { status: "success" };
+}

@@ -881,6 +881,12 @@ body::after {
 .form-box { background:rgba(255,255,255,.03); border:1px solid rgba(196,168,130,.1); padding:3rem; max-width:680px; margin:0 auto; }
 .form-box h2 { font-family:var(--fc); text-transform:uppercase; color:var(--B); font-size:clamp(1.5rem,3vw,2.2rem); margin-bottom:.5rem; }
 .form-box > p { color:rgba(255,255,255,.45); margin-bottom:2rem; font-size:.88rem; }
+/* /adesivos — bloco "como funciona" (entrega x retirada) */
+.adesivo-how { list-style:none; display:grid; gap:.75rem; margin:0 0 1.9rem; }
+.adesivo-how li { display:flex; gap:.85rem; align-items:flex-start; padding:.9rem 1rem; background:rgba(196,168,130,.04); border:1px solid rgba(196,168,130,.1); border-radius:8px; }
+.adesivo-how__ico { font-size:1.35rem; line-height:1.25; flex-shrink:0; }
+.adesivo-how strong { display:block; color:var(--W); font-size:.9rem; margin-bottom:.12rem; }
+.adesivo-how li > div > span { color:rgba(255,255,255,.6); font-size:.82rem; line-height:1.5; }
 
 /* Grupos por regiÃ£o â pÃ¡gina Tropa */
 .grupos-list { display:flex; flex-direction:column; gap:.75rem; }

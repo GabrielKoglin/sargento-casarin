@@ -116,6 +116,26 @@ model Contact {
   @@index([read])
 }
 
+// Pedidos de adesivo feitos pela página pública /adesivos. Entregamos se
+// estivermos na cidade; caso contrário, a retirada é com o apoiador responsável
+// da cidade (a equipe organiza pelo painel).
+model StickerRequest {
+  id        String   @id @default(cuid())
+  name      String
+  whatsapp  String
+  city      String
+  address   String
+  quantity  Int      @default(1)
+  // Pedidos nascem NÃO entregues (delivered=false). O painel mostra o total de
+  // pendentes como badge e um selo "Novo" em cada pedido.
+  delivered Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // O badge conta count({ where: { delivered: false } }) a cada render do
+  // painel — índice evita full scan conforme os pedidos acumulam.
+  @@index([delivered])
+}
+
 // Conteúdo editável do site (seção "Por que", bio, trajetória, comenda e listas
 // de formação/reconhecimentos). Registro ÚNICO (id fixo "main") com um documento
 // JSON — o admin edita pela aba "Conteúdo" e as páginas leem daqui, caindo nos

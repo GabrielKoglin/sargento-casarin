@@ -13,6 +13,7 @@ const navFooter = [
 const participeFooter = [
   { name: "Nossos Grupos", href: "https://wpgrupos.spx.ia.br/entrar" },
   { name: "Seja um Apoiador", href: "/tropa" },
+  { name: "Retire seu Adesivo", href: "/adesivos" },
   { name: "Quero Ajudar", href: "/ajudar" },
   { name: "Nossas Mídias", href: "/midias" },
   { name: "Quero Apoiar", href: "/contato" },
