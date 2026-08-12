@@ -101,6 +101,7 @@ model Event {
 model Contact {
   id        String   @id @default(cuid())
   name      String
+  cpf       String?
   email     String
   phone     String
   city      String

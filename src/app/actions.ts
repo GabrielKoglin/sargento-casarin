@@ -63,6 +63,7 @@ export async function saveContact(
 
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+  const cpf = String(formData.get("cpf") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
@@ -109,6 +110,7 @@ export async function saveContact(
     await prisma.contact.create({
       data: {
         name: name.slice(0, 120),
+        cpf: cpf.slice(0, 20),
         email: email.slice(0, 160),
         phone: phone.slice(0, 40),
         city: city.slice(0, 80),

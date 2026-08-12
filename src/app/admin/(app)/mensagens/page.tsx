@@ -128,6 +128,7 @@ export default async function AdminMensagensPage({
               </div>
 
               <div className="admin-msg__contacts">
+                {msg.cpf ? <span style={{ marginRight: '1rem' }}>CPF: {msg.cpf}</span> : null}
                 <a href={`mailto:${msg.email}`}>{msg.email}</a>
                 <a href={`tel:${msg.phone}`}>{msg.phone}</a>
               </div>

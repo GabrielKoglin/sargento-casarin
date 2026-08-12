@@ -55,6 +55,10 @@ export function ContactForm({
           <input type="text" id={`name-${origin}`} name="name" required autoComplete="name" />
         </div>
         <div className="fg">
+          <label htmlFor={`cpf-${origin}`}>CPF</label>
+          <input type="text" id={`cpf-${origin}`} name="cpf" />
+        </div>
+        <div className="fg">
           <label htmlFor={`email-${origin}`}>E-mail *</label>
           <input type="email" id={`email-${origin}`} name="email" required autoComplete="email" />
         </div>
