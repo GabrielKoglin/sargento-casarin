@@ -9,7 +9,9 @@ async function main() {
     
     // Update contato section
     data.contato.heroTitle = "SEJA UM *APOIADOR*";
-    data.contato.heroLead = "Sua participação é fundamental. Preencha o formulário abaixo para se tornar um apoiador, enviar sugestões ou conversar com a nossa equipe.";
+    // Update bio eyebrow
+    if (!data.bio) data.bio = {};
+    data.bio.eyebrow = "Dickson Soares Casarin - Sargento de Polícia";
     
     await prisma.siteContent.update({
       where: { id: "main" },

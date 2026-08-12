@@ -134,7 +134,7 @@ export const DEFAULT_CONTENT: SiteContentData = {
     ],
   },
   bio: {
-    eyebrow: "Sargento Dickson Casarin",
+    eyebrow: "Dickson Soares Casarin - Sargento de Polícia",
     title: "Uma vida dedicada a proteger Mato Grosso",
     paragraphs: [
       "Dickson Casarin é Sargento da Polícia Militar de Mato Grosso, com 15 anos de serviço dedicados à segurança da população. Da ronda nas ruas às operações da ROTAM, construiu sua trajetória onde o problema acontece: na linha de frente.",
