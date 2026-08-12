@@ -1195,6 +1195,9 @@ footer {
   .why .container, .why-left { text-align:center; }
   .why-left .eyebrow { justify-content:center; }
   .why-lead, .why-caption { margin-inline:auto; }
+  /* corpo do texto alinhado à ESQUERDA no mobile — parágrafo corrido
+     centralizado fica ruim de ler (o título grande segue centralizado). */
+  .why-lead { text-align:left; }
 
   /* Cabeçalhos de seção centralizados */
   .eyebrow { justify-content:center; }
@@ -1219,6 +1222,8 @@ footer {
 
   /* ===== /sobre (bio) — timeline PERMANECE à esquerda ===== */
   .bio-text { text-align:center; }
+  /* corpo da biografia à ESQUERDA no mobile (título/eyebrow seguem centralizados) */
+  .bio-text p { text-align:left; }
   .bio-text .timeline, .bio-text .tl-body { text-align:left; }
   /* Comenda + credenciais ficam alinhadas à ESQUERDA no mobile (legibilidade) */
   .bio-text .honor-body, .bio-text .creds { text-align:left; }
