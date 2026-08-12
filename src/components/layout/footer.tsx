@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SiFacebook, SiInstagram, SiThreads, SiTiktok, SiX, SiYoutube } from "react-icons/si";
+import { SiFacebook, SiInstagram, SiThreads, SiTiktok } from "react-icons/si";
 
 const navFooter = [
   { name: "Início", href: "/" },
