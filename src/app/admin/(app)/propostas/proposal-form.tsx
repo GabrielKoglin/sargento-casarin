@@ -165,7 +165,7 @@ export function ProposalForm({
         </p>
       )}
 
-      <Field label="Título" htmlFor="title" required error={errorFor("title")}>
+      <Field label="Título" htmlFor="title" error={errorFor("title")}>
         <input
           id="title"
           name="title"
@@ -173,7 +173,6 @@ export function ProposalForm({
           value={values.title}
           onChange={(e) => set("title", e.target.value)}
           aria-invalid={Boolean(errorFor("title"))}
-          required
         />
       </Field>
 
@@ -203,7 +202,6 @@ export function ProposalForm({
       <Field
         label="Categoria"
         htmlFor="category"
-        required
         error={errorFor("category")}
       >
         <input
@@ -214,7 +212,6 @@ export function ProposalForm({
           value={values.category}
           onChange={(e) => set("category", e.target.value)}
           aria-invalid={Boolean(errorFor("category"))}
-          required
         />
         <datalist id="proposal-categories">
           {CATEGORY_SUGGESTIONS.map((c) => (
@@ -226,7 +223,6 @@ export function ProposalForm({
       <Field
         label="Descrição"
         htmlFor="description"
-        required
         error={errorFor("description")}
         hint="Resumo curto exibido no card da lista de propostas."
       >
@@ -242,7 +238,6 @@ export function ProposalForm({
       <Field
         label="O problema"
         htmlFor="problem"
-        required
         error={errorFor("problem")}
       >
         <Textarea
@@ -257,7 +252,6 @@ export function ProposalForm({
       <Field
         label="Objetivo"
         htmlFor="objective"
-        required
         error={errorFor("objective")}
       >
         <Textarea
@@ -272,7 +266,6 @@ export function ProposalForm({
       <Field
         label="Como vamos fazer"
         htmlFor="solution"
-        required
         error={errorFor("solution")}
       >
         <Textarea
@@ -287,7 +280,6 @@ export function ProposalForm({
       <Field
         label="Metas"
         htmlFor="goals"
-        required
         error={errorFor("goals")}
         hint="Uma meta por linha — cada linha vira um item da lista no site."
       >
@@ -303,7 +295,6 @@ export function ProposalForm({
       <Field
         label="Benefícios para você"
         htmlFor="benefits"
-        required
         error={errorFor("benefits")}
         hint="Um benefício por linha."
       >

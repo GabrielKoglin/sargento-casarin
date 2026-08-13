@@ -12,6 +12,7 @@
 //  3. SLUG único: pré-checamos com findUnique (mensagem amigável) E, por
 //     segurança contra corrida, tratamos o erro P2002 do Prisma no create/
 //     update — nunca deixamos estourar um 500.
+import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
@@ -62,8 +63,8 @@ export type ProposalFormState = {
   fieldErrors?: Record<string, string>;
 };
 
-/** Campos obrigatórios (todos String no schema; image/faq são opcionais). */
-const REQUIRED_FIELDS = [
+/** Campos de texto da proposta — TODOS OPCIONAIS (vazio vira ""). */
+const TEXT_FIELDS = [
   "title",
   "category",
   "description",
@@ -88,10 +89,6 @@ type ProposalData = {
   faq: string | null;
 };
 
-type ParseResult =
-  | { ok: true; data: ProposalData }
-  | { ok: false; state: ProposalFormState };
-
 /** Lê um campo do FormData: string, com CRLF normalizado e trim. */
 function field(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -99,48 +96,35 @@ function field(formData: FormData, name: string): string {
   return value.replace(/\r\n/g, "\n").trim();
 }
 
-/** Valida e normaliza o FormData. Não toca no banco. */
-function parseProposal(formData: FormData): ParseResult {
-  const fieldErrors: Record<string, string> = {};
-
+/**
+ * Normaliza o FormData. Todos os campos são OPCIONAIS; a única garantia é um
+ * slug válido (para a URL): usa o informado, senão deriva do título, senão gera
+ * um fallback único. Não toca no banco e nunca falha.
+ */
+function parseProposal(formData: FormData): ProposalData {
   const values: Record<string, string> = {};
-  for (const name of REQUIRED_FIELDS) {
-    values[name] = field(formData, name);
-    if (!values[name]) fieldErrors[name] = "Campo obrigatório.";
-  }
+  for (const name of TEXT_FIELDS) values[name] = field(formData, name);
 
   const image = field(formData, "image");
   const faq = field(formData, "faq");
 
-  // Slug: usa o informado (normalizado) ou deriva do título.
-  const slug = slugify(field(formData, "slug")) || slugify(values.title);
-  if (!slug) {
-    fieldErrors.slug =
-      "Não foi possível gerar um slug. Ajuste o título ou preencha o slug.";
-  }
-
-  if (Object.keys(fieldErrors).length > 0) {
-    return {
-      ok: false,
-      state: { error: "Corrija os campos destacados abaixo.", fieldErrors },
-    };
-  }
+  const slug =
+    slugify(field(formData, "slug")) ||
+    slugify(values.title) ||
+    `proposta-${randomUUID().slice(0, 8)}`;
 
   return {
-    ok: true,
-    data: {
-      title: values.title,
-      slug,
-      category: values.category,
-      description: values.description,
-      problem: values.problem,
-      objective: values.objective,
-      solution: values.solution,
-      goals: values.goals,
-      benefits: values.benefits,
-      image: image || null,
-      faq: faq || null,
-    },
+    title: values.title,
+    slug,
+    category: values.category,
+    description: values.description,
+    problem: values.problem,
+    objective: values.objective,
+    solution: values.solution,
+    goals: values.goals,
+    benefits: values.benefits,
+    image: image || null,
+    faq: faq || null,
   };
 }
 
@@ -179,13 +163,12 @@ export async function createProposal(
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const parsed = parseProposal(formData);
-  if (!parsed.ok) return parsed.state;
+  const base = parseProposal(formData);
 
   // Upload da imagem (se enviaram um arquivo) antes de gravar.
-  const img = await resolveImage(formData, parsed.data.image);
+  const img = await resolveImage(formData, base.image);
   if (!img.ok) return img.state;
-  const data = { ...parsed.data, image: img.image };
+  const data = { ...base, image: img.image };
 
   try {
     // Pré-checagem amigável de unicidade antes de tentar gravar.
@@ -220,13 +203,12 @@ export async function updateProposal(
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const parsed = parseProposal(formData);
-  if (!parsed.ok) return parsed.state;
+  const base = parseProposal(formData);
 
   // Upload da imagem (se enviaram um arquivo) antes de gravar.
-  const img = await resolveImage(formData, parsed.data.image);
+  const img = await resolveImage(formData, base.image);
   if (!img.ok) return img.state;
-  const data = { ...parsed.data, image: img.image };
+  const data = { ...base, image: img.image };
 
   // Imagem antiga: se for trocada por outra, apagamos do storage depois.
   let oldImage: string | null = null;
