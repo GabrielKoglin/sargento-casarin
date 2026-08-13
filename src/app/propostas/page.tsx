@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { Proposal } from "@/generated/prisma/client";
+import { ProposalIcon } from "@/components/proposal-icon";
 
 export const dynamic = "force-dynamic";
 
@@ -10,20 +11,6 @@ export const metadata: Metadata = {
   description:
     "Os eixos de atuação do Sargento Dickson Casarin para Mato Grosso: segurança, valorização dos profissionais, educação e desenvolvimento.",
 };
-
-const icons: Record<string, string> = {
-  "seguranca-publica": "🛡️",
-  "valorizacao-dos-profissionais": "🎖️",
-  "educacao-e-valores": "📚",
-  "mato-grosso-forte": "🌾",
-};
-
-function iconFor(slug: string, category: string) {
-  if (icons[slug]) return icons[slug];
-  if (category === "Segurança") return "🛡️";
-  if (category === "Educação") return "📚";
-  return "📌";
-}
 
 // Uma falha de I/O não pode derrubar a página: cai numa lista vazia, que
 // mostra o empty-state "em breve" em vez de estourar 500.
@@ -64,7 +51,9 @@ export default async function PropostasPage() {
           ) : (
             propostas.map((p) => (
               <Link href={`/propostas/${p.slug}`} className="eixo-card fi" key={p.id}>
-                <div className="eixo-icon" aria-hidden="true">{iconFor(p.slug, p.category)}</div>
+                <div className="eixo-icon" aria-hidden="true">
+                  <ProposalIcon slug={p.slug} category={p.category} />
+                </div>
                 <div>
                   <h2>{p.title}</h2>
                   <p>{p.description}</p>

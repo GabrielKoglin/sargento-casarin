@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import type { Proposal } from "@/generated/prisma/client";
 import { getSiteContent, renderRich } from "@/lib/site-content";
 import { HomeFx } from "@/components/home-fx";
+import { ProposalIcon } from "@/components/proposal-icon";
 
 export const dynamic = "force-dynamic";
 
@@ -176,11 +177,7 @@ export default async function Home() {
               {propostas.map((p, i) => (
                 <div className={`prop-card fi ${i > 0 ? `d${i}` : ''}`} key={p.id}>
                   <div className="prop-icon" aria-hidden="true">
-                    {p.slug === 'seguranca-publica' ? '🛡️'
-                      : p.slug === 'valorizacao-dos-profissionais' ? '🎖️'
-                      : p.slug === 'educacao-e-valores' ? '📚'
-                      : p.slug === 'mato-grosso-forte' ? '🌾'
-                      : '📌'}
+                    <ProposalIcon slug={p.slug} category={p.category} />
                   </div>
                   <h3>{p.title}</h3>
                   <p>{p.description}</p>

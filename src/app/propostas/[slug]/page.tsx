@@ -55,9 +55,9 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
     <>
       <section className="page-hero">
         <div className="container">
-          <div className="eyebrow sl">{proposta.category}</div>
+          {proposta.category && <div className="eyebrow sl">{proposta.category}</div>}
           <h1 className="sl d1">{proposta.title}</h1>
-          <p className="fi d2">{proposta.description}</p>
+          {proposta.description && <p className="fi d2">{proposta.description}</p>}
         </div>
       </section>
 
@@ -73,28 +73,48 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
       <section className="section">
         <div className="container">
           <div className="priv-body">
-            <h2>O problema</h2>
-            <p>{proposta.problem}</p>
+            {proposta.problem && (
+              <>
+                <h2>O problema</h2>
+                <p>{proposta.problem}</p>
+              </>
+            )}
 
-            <h2>Objetivo</h2>
-            <p>{proposta.objective}</p>
+            {proposta.objective && (
+              <>
+                <h2>Objetivo</h2>
+                <p>{proposta.objective}</p>
+              </>
+            )}
 
-            <h2>Como vamos fazer</h2>
-            <p>{proposta.solution}</p>
+            {proposta.solution && (
+              <>
+                <h2>Como vamos fazer</h2>
+                <p>{proposta.solution}</p>
+              </>
+            )}
 
-            <h2>Metas</h2>
-            <ul>
-              {goals.map((goal, index) => (
-                <li key={`${proposta.id}-goal-${index}`}>{goal}</li>
-              ))}
-            </ul>
+            {goals.length > 0 && (
+              <>
+                <h2>Metas</h2>
+                <ul>
+                  {goals.map((goal, index) => (
+                    <li key={`${proposta.id}-goal-${index}`}>{goal}</li>
+                  ))}
+                </ul>
+              </>
+            )}
 
-            <h2>Benefícios para você</h2>
-            <ul>
-              {benefits.map((benefit, index) => (
-                <li key={`${proposta.id}-benefit-${index}`}>{benefit}</li>
-              ))}
-            </ul>
+            {benefits.length > 0 && (
+              <>
+                <h2>Benefícios para você</h2>
+                <ul>
+                  {benefits.map((benefit, index) => (
+                    <li key={`${proposta.id}-benefit-${index}`}>{benefit}</li>
+                  ))}
+                </ul>
+              </>
+            )}
 
             {proposta.faq && (
               <>
