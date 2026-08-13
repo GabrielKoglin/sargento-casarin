@@ -61,6 +61,15 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
         </div>
       </section>
 
+      {proposta.image && (
+        <div className="container">
+          {/* Imagem de host arbitrário (upload no bucket/CMS); next/image exigiria
+              hostname fixo em images.remotePatterns, então usamos <img>. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="proposta-img" src={proposta.image} alt={proposta.title} />
+        </div>
+      )}
+
       <section className="section">
         <div className="container">
           <div className="priv-body">

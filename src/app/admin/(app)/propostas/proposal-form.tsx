@@ -11,7 +11,7 @@
 // O slug é gerado automaticamente a partir do título enquanto o usuário não o
 // editar manualmente; ao editar, "travamos" a geração automática. O servidor
 // (actions.ts) sempre re-normaliza e valida a unicidade do slug.
-import { useActionState, useState, type ReactNode } from "react";
+import { useActionState, useState, type ChangeEvent, type ReactNode } from "react";
 import Link from "next/link";
 import type { ProposalFormState } from "./actions";
 import { slugify } from "./slug";
@@ -57,6 +57,41 @@ const CATEGORY_SUGGESTIONS = [
   "Mato Grosso forte",
 ];
 
+// A Vercel corta requisições acima de ~4,5 MB — foto de celular estoura isso e o
+// upload falha ANTES de chegar no servidor. Solução: reduzir a imagem NO
+// NAVEGADOR (canvas → JPEG) antes de enviar. Acima de ~3,5 MB, encolhe para no
+// máx. `maxDim` px. Best-effort: se algo falhar, mantém o arquivo original.
+const RESIZE_THRESHOLD_BYTES = 3_500_000;
+
+function resizeImageInBrowser(
+  file: File,
+  maxDim = 2200,
+  quality = 0.82,
+): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return resolve(null);
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", quality);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
+
 export function ProposalForm({
   action,
   submitLabel,
@@ -76,6 +111,36 @@ export function ProposalForm({
   const [values, setValues] = useState<ProposalFormValues>(initial);
   // Em edição já existe slug: não regenerar automaticamente a partir do título.
   const [slugLocked, setSlugLocked] = useState<boolean>(Boolean(initial.slug));
+  const [filePreview, setFilePreview] = useState<string>("");
+  const [resizing, setResizing] = useState(false);
+
+  // Ao escolher um arquivo: reduz no navegador (se grande), substitui o arquivo
+  // do input pela versão menor e mostra a pré-visualização.
+  async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file || !file.type.startsWith("image/")) {
+      setFilePreview("");
+      return;
+    }
+    let finalFile = file;
+    if (file.size > RESIZE_THRESHOLD_BYTES) {
+      setResizing(true);
+      try {
+        const blob = await resizeImageInBrowser(file);
+        if (blob && blob.size < file.size) {
+          const base = file.name.replace(/\.[^.]+$/, "") || "imagem";
+          finalFile = new File([blob], `${base}.jpg`, { type: "image/jpeg" });
+          const dt = new DataTransfer();
+          dt.items.add(finalFile);
+          input.files = dt.files;
+        }
+      } finally {
+        setResizing(false);
+      }
+    }
+    setFilePreview(URL.createObjectURL(finalFile));
+  }
 
   const set = (name: keyof ProposalFormValues, value: string) => {
     setValues((prev) => {
@@ -89,7 +154,11 @@ export function ProposalForm({
   const errorFor = (name: string) => state.fieldErrors?.[name];
 
   return (
-    <form action={formAction} className="flex max-w-3xl flex-col gap-5">
+    <form
+      action={formAction}
+      encType="multipart/form-data"
+      className="flex max-w-3xl flex-col gap-5"
+    >
       {state.error && (
         <p className="admin-login__error" role="alert">
           {state.error}
@@ -248,10 +317,45 @@ export function ProposalForm({
       </Field>
 
       <Field
-        label="Imagem (URL) — opcional"
+        label="Imagem de destaque — opcional"
+        htmlFor="imageFile"
+        error={errorFor("imageFile")}
+        hint="Envie uma foto (JPG/PNG) — é otimizada automaticamente. Ou cole uma URL abaixo."
+      >
+        {(filePreview || values.image) && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={filePreview || values.image}
+            alt="Pré-visualização da imagem da proposta"
+            style={{
+              maxWidth: "260px",
+              width: "100%",
+              height: "auto",
+              borderRadius: "6px",
+              border: "1px solid var(--a-line)",
+              marginBottom: "0.6rem",
+              display: "block",
+            }}
+          />
+        )}
+        <input
+          id="imageFile"
+          name="imageFile"
+          type="file"
+          accept="image/*"
+          className="admin-field__input"
+          onChange={handleFileChange}
+        />
+        {resizing && (
+          <span className="text-xs text-[var(--a-muted)]">Otimizando imagem…</span>
+        )}
+      </Field>
+
+      <Field
+        label="… ou cole a URL de uma imagem"
         htmlFor="image"
         error={errorFor("image")}
-        hint="Caminho ou URL da imagem de destaque. Deixe em branco para usar o padrão do site."
+        hint="Alternativa ao upload. Se você enviar um arquivo acima, ele tem prioridade."
       >
         <input
           id="image"
@@ -259,7 +363,7 @@ export function ProposalForm({
           className="admin-field__input"
           value={values.image}
           onChange={(e) => set("image", e.target.value)}
-          placeholder="/img/proposta.jpg"
+          placeholder="https://…/imagem.jpg"
         />
       </Field>
 

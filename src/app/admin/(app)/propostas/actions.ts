@@ -17,7 +17,42 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { Prisma } from "@/generated/prisma/client";
+import { optimizeAndUploadImage } from "@/lib/image-upload";
+import { deleteImage, isStorageUrl } from "@/lib/storage";
 import { slugify } from "./slug";
+
+// Teto do arquivo enviado. A imagem é reduzida no navegador antes do envio
+// (proposal-form.tsx); este guard só protege contra um envio direto sem JS.
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+
+/**
+ * Resolve a imagem final: se veio um ARQUIVO no campo `imageFile`, otimiza +
+ * sobe ao storage e usa a URL pública; senão mantém `fallback` (a URL digitada
+ * no campo de texto, ou a imagem atual em edição). Nunca lança — devolve estado
+ * de erro amigável para o formulário.
+ */
+async function resolveImage(
+  formData: FormData,
+  fallback: string | null,
+): Promise<{ ok: true; image: string | null } | { ok: false; state: ProposalFormState }> {
+  const file = formData.get("imageFile");
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: true, image: fallback };
+  }
+  if (!file.type.startsWith("image/")) {
+    return { ok: false, state: { fieldErrors: { imageFile: "Envie um arquivo de imagem válido." } } };
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return { ok: false, state: { fieldErrors: { imageFile: "Imagem muito grande. Envie uma foto menor." } } };
+  }
+  try {
+    const url = await optimizeAndUploadImage(file);
+    return { ok: true, image: url };
+  } catch (error) {
+    console.error("Upload da imagem da proposta falhou:", error);
+    return { ok: false, state: { error: "Não foi possível enviar a imagem. Tente novamente." } };
+  }
+}
 
 /** Estado devolvido ao formulário (via useActionState) em caso de validação. */
 export type ProposalFormState = {
@@ -146,7 +181,11 @@ export async function createProposal(
 
   const parsed = parseProposal(formData);
   if (!parsed.ok) return parsed.state;
-  const { data } = parsed;
+
+  // Upload da imagem (se enviaram um arquivo) antes de gravar.
+  const img = await resolveImage(formData, parsed.data.image);
+  if (!img.ok) return img.state;
+  const data = { ...parsed.data, image: img.image };
 
   try {
     // Pré-checagem amigável de unicidade antes de tentar gravar.
@@ -183,7 +222,14 @@ export async function updateProposal(
 
   const parsed = parseProposal(formData);
   if (!parsed.ok) return parsed.state;
-  const { data } = parsed;
+
+  // Upload da imagem (se enviaram um arquivo) antes de gravar.
+  const img = await resolveImage(formData, parsed.data.image);
+  if (!img.ok) return img.state;
+  const data = { ...parsed.data, image: img.image };
+
+  // Imagem antiga: se for trocada por outra, apagamos do storage depois.
+  let oldImage: string | null = null;
 
   try {
     // O slug pode colidir com OUTRA proposta (não com ela mesma).
@@ -193,6 +239,12 @@ export async function updateProposal(
       where: { slug: data.slug, NOT: { id } },
     });
     if (clash) return slugTakenState("outra");
+
+    const current = await prisma.proposal.findUnique({
+      where: { id },
+      select: { image: true },
+    });
+    oldImage = current?.image ?? null;
 
     await prisma.proposal.update({ where: { id }, data });
   } catch (error) {
@@ -208,6 +260,11 @@ export async function updateProposal(
     // action de formulário admin — vira 500. Loga e devolve mensagem amigável.
     console.error("updateProposal falhou:", error);
     return { error: "Não foi possível salvar. Tente novamente." };
+  }
+
+  // Trocou a imagem por outra? apaga a antiga do bucket (best-effort, não lança).
+  if (oldImage && oldImage !== data.image && isStorageUrl(oldImage)) {
+    await deleteImage(oldImage);
   }
 
   revalidateProposals(data.slug);
