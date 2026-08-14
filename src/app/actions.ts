@@ -68,7 +68,12 @@ export async function saveContact(
   const city = String(formData.get("city") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
   const rawOrigin = String(formData.get("origin") ?? "contato").replace(/[\r\n]/g, "");
-  const origin = rawOrigin === "tropa" ? "tropa" : "contato";
+  const origin =
+    rawOrigin === "tropa"
+      ? "tropa"
+      : rawOrigin === "adesivos"
+        ? "adesivos"
+        : "contato";
   const consent = formData.get("consent");
 
   if (!name || !email || !phone || !city) {

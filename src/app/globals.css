@@ -1676,12 +1676,19 @@ html.a11y-contrast .foot-bottom a {
 
 /* modal "quero ser lider" */
 .lead-modal-backdrop { position:fixed; inset:0; z-index:10060; display:flex; align-items:center; justify-content:center; padding:1.25rem; background:rgba(3,9,20,.78); backdrop-filter:blur(6px); animation:welcomeFade .3s ease both; }
-.lead-modal { position:relative; width:min(500px,100%); max-height:90vh; overflow-y:auto; background:linear-gradient(165deg,#0f1c40,#0a1330 60%,#050c1f); border:1px solid rgba(196,168,130,.24); border-radius:16px; padding:2.4rem 2rem 2rem; box-shadow:0 30px 90px rgba(0,0,0,.55); animation:welcomePop .45s cubic-bezier(.2,.9,.3,1.2) both; }
+.lead-modal { position:relative; width:min(560px,100%); max-height:90vh; overflow-y:auto; background:linear-gradient(165deg,#0f1c40,#0a1330 60%,#050c1f); border:1px solid rgba(196,168,130,.24); border-radius:16px; padding:2.4rem 2rem 2rem; box-shadow:0 30px 90px rgba(0,0,0,.55); animation:welcomePop .45s cubic-bezier(.2,.9,.3,1.2) both; }
 .lead-modal__close { position:absolute; top:.6rem; right:.7rem; width:2.1rem; height:2.1rem; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.06); border:none; color:rgba(255,255,255,.7); font-size:1.6rem; line-height:1; cursor:pointer; border-radius:8px; }
 .lead-modal__close:hover { color:#fff; background:rgba(255,255,255,.12); }
 .lead-modal__eyebrow { display:block; color:var(--B); font-size:.7rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; margin-bottom:.4rem; }
 .lead-modal__title { font-family:var(--fc); color:var(--W); text-transform:uppercase; font-size:clamp(1.5rem,4vw,2rem); line-height:1.05; margin-bottom:.7rem; padding-right:1.5rem; }
 .lead-modal__lead { color:rgba(255,255,255,.72); font-size:.92rem; line-height:1.6; margin-bottom:1.4rem; }
+/* popup da cidade (city-modal): lista de WhatsApp + botões da pergunta */
+.citymodal__wa-list { display:flex; flex-direction:column; gap:.7rem; }
+.citymodal__wa-list .mtmap__wa { justify-content:center; }
+.citymodal__actions { display:flex; flex-direction:column; gap:.7rem; }
+.citymodal__actions .mtmap__cta { justify-content:center; }
+.citymodal__no { background:none; border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.75); padding:.7rem 1rem; border-radius:9px; font-family:inherit; font-size:.82rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; transition:border-color .2s, color .2s; }
+.citymodal__no:hover { border-color:rgba(255,255,255,.45); color:#fff; }
 .lead-form { display:flex; flex-direction:column; gap:1rem; }
 .lead-form__hp { position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
 .lead-field { display:flex; flex-direction:column; gap:.35rem; }

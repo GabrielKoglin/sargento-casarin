@@ -20,8 +20,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { waLink } from "@/lib/whatsapp";
-import { LeaderSignup } from "@/components/leader-signup";
+import { CityModal } from "@/components/city-modal";
 
 export type LeaderPin = {
   id: string;
@@ -54,7 +53,6 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   const [openList, setOpenList] = useState(false);
   const [selected, setSelected] = useState<Muni | null>(null);
   const [hover, setHover] = useState<string | null>(null);
-  const [signupCity, setSignupCity] = useState<Muni | null>(null);
 
   const stageRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ x: 0, y: 0, s: 1 });
@@ -150,7 +148,6 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
     (m: Muni) => {
       setQuery(m.name);
       setOpenList(false);
-      setSignupCity(null);
       focusMuni(m);
     },
     [focusMuni],
@@ -340,66 +337,12 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
         )}
       </div>
 
-      {/* ---------------- painel da cidade ---------------- */}
+      {/* ---------------- popup da cidade (líder → WhatsApp / sem líder → cadastro) */}
       {selected && (
-        <div className="mtmap__panel" role="region" aria-label={`Cidade: ${selected.name}`}>
-          <div className="mtmap__panel-head">
-            <span className="mtmap__panel-eyebrow">Sua cidade</span>
-            <h3 className="mtmap__panel-city">{selected.name}</h3>
-          </div>
-
-          {selectedLeaders.length > 0 ? (
-            <>
-              <p className="mtmap__panel-lead">
-                {selectedLeaders.length === 1
-                  ? "Temos um líder apoiador aqui! Fale no WhatsApp para combinar a retirada do seu adesivo:"
-                  : "Temos líderes apoiadores aqui! Escolha um e fale no WhatsApp para retirar seu adesivo:"}
-              </p>
-              <ul className="mtmap__leaders">
-                {selectedLeaders.map((l) => (
-                  <li key={l.id}>
-                    <div className="mtmap__leader-info">
-                      <strong>{l.name}</strong>
-                      <span>Líder apoiador · {selected.name}</span>
-                    </div>
-                    <a
-                      className="mtmap__wa"
-                      href={waLink(
-                        l.whatsapp,
-                        `Olá, ${l.name}! Vi no site do Sargento Casarin que você é líder apoiador em ${selected.name}. Gostaria de pegar meu adesivo. Pode me ajudar?`,
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span aria-hidden="true">💬</span> Falar no WhatsApp
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : (
-            <div className="mtmap__empty">
-              <p className="mtmap__panel-lead">
-                Ainda <strong>não temos um líder apoiador</strong> em {selected.name}.
-                Que tal ser você a levar os adesivos do Casarin para a sua cidade?
-              </p>
-              <button
-                type="button"
-                className="mtmap__cta"
-                onClick={() => setSignupCity(selected)}
-              >
-                Quero ser líder apoiador <span aria-hidden="true">➔</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {signupCity && (
-        <LeaderSignup
-          city={signupCity.name}
-          cityCode={signupCity.code}
-          onClose={() => setSignupCity(null)}
+        <CityModal
+          cityName={selected.name}
+          leaders={selectedLeaders}
+          onClose={() => setSelected(null)}
         />
       )}
     </div>

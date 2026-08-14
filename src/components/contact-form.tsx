@@ -12,6 +12,8 @@ type ContactFormProps = {
   submitLabel: string;
   successTitle: string;
   successText: string;
+  /** Pré-preenche a cidade (ex.: quando aberto a partir do mapa de adesivos). */
+  defaultCity?: string;
 };
 
 export function ContactForm({
@@ -20,6 +22,7 @@ export function ContactForm({
   submitLabel,
   successTitle,
   successText,
+  defaultCity,
 }: ContactFormProps) {
   const [state, formAction, pending] = useActionState(saveContact, initialState);
   const successTitleRef = useRef<HTMLDivElement>(null);
@@ -68,7 +71,7 @@ export function ContactForm({
         </div>
         <div className="fg full">
           <label htmlFor={`city-${origin}`}>Cidade *</label>
-          <input type="text" id={`city-${origin}`} name="city" required autoComplete="address-level2" />
+          <input type="text" id={`city-${origin}`} name="city" required autoComplete="address-level2" defaultValue={defaultCity} />
         </div>
         {withMessage && (
           <div className="fg full">
