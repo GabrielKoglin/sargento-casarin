@@ -13,10 +13,10 @@ export const dynamic = "force-dynamic";
 async function loadPropostas(): Promise<Proposal[]> {
   try {
     const all = await prisma.proposal.findMany({ orderBy: { createdAt: "asc" } });
-    // Teaser da home: as propostas COM texto completo primeiro, depois os temas.
-    return [...all]
-      .sort((a, b) => (b.content ? 1 : 0) - (a.content ? 1 : 0))
-      .slice(0, 4);
+    // Teaser da home: mostra os TEMAS (as propostas principais têm o palco na
+    // página /propostas). Se ainda não houver temas, cai para as que existirem.
+    const temas = all.filter((p) => !p.featured);
+    return (temas.length > 0 ? temas : all).slice(0, 4);
   } catch (error) {
     console.error("Falha ao carregar propostas na home.", error);
     return [];

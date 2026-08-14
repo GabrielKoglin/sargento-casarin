@@ -94,7 +94,16 @@ export default async function PropostasAdminPage({
               {propostas.map((p) => (
                 <tr key={p.id} className="hover:bg-[var(--a-panel-2)]">
                   <td className="font-semibold text-[var(--a-text)]">
-                    {p.title}
+                    <span className="inline-flex items-center gap-2">
+                      {p.title}
+                      {p.featured ? (
+                        <span className="prop-badge prop-badge--main">
+                          Principal
+                        </span>
+                      ) : (
+                        <span className="prop-badge prop-badge--tema">Tema</span>
+                      )}
+                    </span>
                   </td>
                   <td className="text-[var(--a-muted)]">{p.category}</td>
                   <td>

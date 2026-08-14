@@ -590,6 +590,34 @@ body::after {
 .prop-link { display:inline-flex; align-items:center; gap:.4rem; margin-top:1.5rem; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--B); transition:gap .25s; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; }
 .prop-card:hover .prop-link { gap:.7rem; }
 
+/* Legenda "estes são temas" acima da grade da home */
+.propostas-temas-cap { text-align:center; color:rgba(26,26,26,.5); font-size:.68rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1.6rem; }
+
+/* Botão animado "Ver as propostas" (abaixo da grade de temas na home) */
+.propostas-more { display:flex; justify-content:center; margin-top:2.75rem; }
+.propostas-cta { animation:propCtaPulse 2.4s ease-in-out infinite; }
+.propostas-cta span { transition:transform .3s var(--ease); }
+.propostas-cta:hover span { transform:translateX(5px); }
+/* Reflexo automático varrendo o botão de tempos em tempos (chama atenção) */
+.propostas-cta::after {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.35) 50%, transparent 62%);
+  transform:translateX(-120%);
+  animation:propCtaShine 3.6s ease-in-out infinite;
+}
+@keyframes propCtaPulse {
+  0%,100% { box-shadow:0 8px 24px rgba(0,184,75,.28); }
+  50%     { box-shadow:0 14px 36px rgba(0,184,75,.55); }
+}
+@keyframes propCtaShine {
+  0%,55%,100% { transform:translateX(-120%); }
+  78%         { transform:translateX(120%); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .propostas-cta { animation:none; }
+  .propostas-cta::after { display:none; }
+}
+
 /* ============================================
    MARQUEE
 ============================================ */
@@ -832,6 +860,31 @@ body::after {
 .prop-modal__body p { color:rgba(255,255,255,.7); font-size:.94rem; line-height:1.75; margin-bottom:1rem; }
 .prop-modal__body ul { padding-left:1.4rem; margin-bottom:1rem; }
 .prop-modal__body li { list-style:disc; color:rgba(255,255,255,.68); font-size:.92rem; line-height:1.7; margin-bottom:.4rem; }
+
+/* Proposta PRINCIPAL: entrada mais destacada (moldura dourada + brilho + varredura) */
+.prop-modal--featured {
+  border-color:rgba(255,213,0,.5);
+  box-shadow:0 30px 90px rgba(0,0,0,.6), 0 0 0 1px rgba(255,213,0,.28), 0 0 70px rgba(255,213,0,.16);
+  animation:propModalFeatured .7s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes propModalFeatured {
+  0%   { opacity:0; transform:translateY(46px) scale(.9); }
+  60%  { opacity:1; }
+  100% { opacity:1; transform:none; }
+}
+/* Faixa de luz que varre o modal uma vez ao abrir */
+.prop-modal__sheen { position:absolute; inset:0; z-index:1; border-radius:16px; overflow:hidden; pointer-events:none; }
+.prop-modal__sheen::before {
+  content:''; position:absolute; top:-40%; left:-70%; width:55%; height:180%;
+  background:linear-gradient(105deg, transparent 30%, rgba(255,213,0,.22) 50%, transparent 70%);
+  transform:skewX(-16deg);
+  animation:propSheen 1.15s ease-out .28s both;
+}
+@keyframes propSheen { from { left:-70%; } to { left:150%; } }
+@media (prefers-reduced-motion:reduce) {
+  .prop-modal--featured { animation:welcomePop .3s ease both; }
+  .prop-modal__sheen { display:none; }
+}
 .mt-bloco { background:var(--GX); padding:3rem; margin-top:2rem; }
 .mt-bloco h2 { font-family:var(--fc); text-transform:uppercase; color:var(--B); font-size:clamp(1.5rem,3vw,2rem); margin-bottom:.75rem; }
 .mt-bloco p { color:rgba(255,255,255,.6); margin-bottom:1rem; font-size:.92rem; }

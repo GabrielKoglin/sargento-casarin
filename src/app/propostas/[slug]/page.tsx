@@ -49,9 +49,6 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
   // fora do try/catch do loader para não ser engolido.
   if (!proposta) notFound();
 
-  const goals = proposta.goals.split("\n").filter(Boolean);
-  const benefits = proposta.benefits.split("\n").filter(Boolean);
-
   return (
     <>
       <section className="page-hero">
@@ -74,55 +71,16 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
       <section className="section">
         <div className="container">
           <div className="priv-body">
-            {proposta.content && <RichText md={proposta.content} />}
-            {proposta.problem && (
-              <>
-                <h2>O problema</h2>
-                <p>{proposta.problem}</p>
-              </>
-            )}
-
-            {proposta.objective && (
-              <>
-                <h2>Objetivo</h2>
-                <p>{proposta.objective}</p>
-              </>
-            )}
-
-            {proposta.solution && (
-              <>
-                <h2>Como vamos fazer</h2>
-                <p>{proposta.solution}</p>
-              </>
-            )}
-
-            {goals.length > 0 && (
-              <>
-                <h2>Metas</h2>
-                <ul>
-                  {goals.map((goal, index) => (
-                    <li key={`${proposta.id}-goal-${index}`}>{goal}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-
-            {benefits.length > 0 && (
-              <>
-                <h2>Benefícios para você</h2>
-                <ul>
-                  {benefits.map((benefit, index) => (
-                    <li key={`${proposta.id}-benefit-${index}`}>{benefit}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-
-            {proposta.faq && (
-              <>
-                <h2>Perguntas frequentes</h2>
-                <p>{proposta.faq}</p>
-              </>
+            {proposta.content ? (
+              <RichText md={proposta.content} />
+            ) : (
+              !proposta.image &&
+              !proposta.description && (
+                <p>
+                  Proposta em elaboração. Em breve o conteúdo completo estará
+                  disponível aqui.
+                </p>
+              )
             )}
           </div>
 

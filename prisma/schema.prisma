@@ -43,9 +43,11 @@ model Proposal {
   benefits    String
   faq         String?
   // Proposta completa em mini-markdown (## título, - lista, **negrito**),
-  // exibida no modal "Ver proposta completa". Alternativa aos campos acima
-  // para propostas longas/estruturadas.
+  // exibida no modal "Ver proposta completa".
   content     String?
+  // Proposta PRINCIPAL (card grande no topo) vs TEMA (card quadrado). Escolha
+  // explícita no painel — antes era inferido pela presença de `content`.
+  featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

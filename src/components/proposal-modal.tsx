@@ -3,14 +3,13 @@
 // ============================================================================
 // proposal-modal.tsx — modal "proposta completa" (reutilizável: /propostas + home)
 // ============================================================================
-// Mostra a proposta INTEIRA (imagem + texto completo em markdown + campos).
-// Acessível: role=dialog, foco no botão de fechar, Esc e clique no fundo fecham,
-// trava o scroll do body e devolve o foco ao fechar.
+// Mostra a proposta (imagem + resumo + texto completo em markdown). Acessível:
+// role=dialog, foco no botão de fechar, Esc e clique no fundo fecham, trava o
+// scroll do body e devolve o foco ao fechar. Propostas PRINCIPAIS (`featured`)
+// ganham uma entrada animada mais destacada.
 import { useEffect, useRef } from "react";
 import type { Proposal } from "@/generated/prisma/client";
 import { RichText } from "@/components/rich-text";
-
-const lines = (s: string) => s.split("\n").filter(Boolean);
 
 export function ProposalModal({
   proposal,
@@ -37,28 +36,20 @@ export function ProposalModal({
     };
   }, [onClose]);
 
-  const goals = lines(proposal.goals);
-  const benefits = lines(proposal.benefits);
-  const empty =
-    !proposal.content &&
-    !proposal.image &&
-    !proposal.description &&
-    !proposal.problem &&
-    !proposal.objective &&
-    !proposal.solution &&
-    goals.length === 0 &&
-    benefits.length === 0 &&
-    !proposal.faq;
+  const empty = !proposal.content && !proposal.image && !proposal.description;
 
   return (
     <div className="prop-modal-backdrop" role="presentation" onClick={onClose}>
       <div
-        className="prop-modal"
+        className={`prop-modal ${proposal.featured ? "prop-modal--featured" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label={proposal.title}
         onClick={(e) => e.stopPropagation()}
       >
+        {proposal.featured && (
+          <span className="prop-modal__sheen" aria-hidden="true" />
+        )}
         <button
           ref={closeBtnRef}
           type="button"
@@ -84,50 +75,6 @@ export function ProposalModal({
               <p className="prop-modal__lead">{proposal.description}</p>
             )}
             {proposal.content && <RichText md={proposal.content} />}
-            {proposal.problem && (
-              <>
-                <h3>O problema</h3>
-                <p>{proposal.problem}</p>
-              </>
-            )}
-            {proposal.objective && (
-              <>
-                <h3>Objetivo</h3>
-                <p>{proposal.objective}</p>
-              </>
-            )}
-            {proposal.solution && (
-              <>
-                <h3>Como vamos fazer</h3>
-                <p>{proposal.solution}</p>
-              </>
-            )}
-            {goals.length > 0 && (
-              <>
-                <h3>Metas</h3>
-                <ul>
-                  {goals.map((g, i) => (
-                    <li key={i}>{g}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-            {benefits.length > 0 && (
-              <>
-                <h3>Benefícios para você</h3>
-                <ul>
-                  {benefits.map((b, i) => (
-                    <li key={i}>{b}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-            {proposal.faq && (
-              <>
-                <h3>Perguntas frequentes</h3>
-                <p>{proposal.faq}</p>
-              </>
-            )}
             {empty && (
               <p className="prop-modal__lead">
                 Proposta em elaboração. Em breve o conteúdo completo estará

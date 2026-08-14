@@ -4,8 +4,8 @@
 // proposals-list.tsx — propostas principais (cards largos) + temas (grade
 // quadrada). Ambos abrem a proposta completa no ProposalModal reutilizável.
 // ============================================================================
-// Propostas COM texto completo (`content`) são as PRINCIPAIS: card largo com
-// resumo. As demais são TEMAS: cards quadrados, lado a lado, só com o título.
+// Propostas marcadas como PRINCIPAIS (`featured`) viram cards largos com resumo.
+// As demais são TEMAS: cards quadrados, lado a lado, só com o título.
 import { useState } from "react";
 import type { Proposal } from "@/generated/prisma/client";
 import { ProposalIcon } from "@/components/proposal-icon";
@@ -21,9 +21,9 @@ export function ProposalsList({
   const [openId, setOpenId] = useState<string | null>(null);
   const open = proposals.find((p) => p.id === openId) ?? null;
 
-  // COM texto completo = proposta principal; SEM = tema.
-  const main = proposals.filter((p) => p.content);
-  const temas = proposals.filter((p) => !p.content);
+  // Marcada como principal = card largo; as demais = temas (cards quadrados).
+  const main = proposals.filter((p) => p.featured);
+  const temas = proposals.filter((p) => !p.featured);
 
   return (
     <>

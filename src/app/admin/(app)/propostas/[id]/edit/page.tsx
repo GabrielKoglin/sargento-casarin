@@ -48,14 +48,10 @@ export default async function EditProposalPage({
           title: proposta.title,
           slug: proposta.slug,
           category: proposta.category,
+          featured: proposta.featured,
           description: proposta.description,
-          problem: proposta.problem,
-          objective: proposta.objective,
-          solution: proposta.solution,
-          goals: proposta.goals,
-          benefits: proposta.benefits,
           image: proposta.image ?? "",
-          faq: proposta.faq ?? "",
+          content: proposta.content ?? "",
         }}
       />
     </>

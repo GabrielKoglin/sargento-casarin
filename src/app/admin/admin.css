@@ -1297,3 +1297,87 @@ span.admin-pager__btn[aria-disabled="true"] { color: var(--a-faint); opacity: 0.
 .admin-msg__contacts { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; margin-top: 0.6rem; font-size: 0.85rem; }
 .admin-msg__body { margin-top: 0.8rem; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; color: var(--a-text); }
 .admin-msg__footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 0.9rem; padding-top: 0.75rem; border-top: 1px solid var(--a-line-soft); }
+
+/* ============================================================================
+   PROPOSTAS — ajuda "principal vs tema", toggle e selo na lista
+   ============================================================================ */
+/* Guia rápido no topo do formulário */
+.prop-help {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--a-line);
+  border-left: 3px solid var(--a-green);
+  border-radius: var(--a-radius-sm);
+  background: var(--a-panel-2);
+}
+.prop-help p { margin: 0; font-size: 0.85rem; line-height: 1.6; color: var(--a-muted); }
+.prop-help strong { color: var(--a-text); }
+.prop-help__main { color: var(--a-green-bright) !important; }
+.prop-help__tema { color: #a9c0cf !important; }
+
+/* Toggle "marcar como principal" */
+.prop-type {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: #020b14;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.prop-type:hover { border-color: var(--a-green); }
+.prop-type.is-main { border-color: var(--a-green); background: var(--a-green-dim); }
+.prop-type input { position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; }
+.prop-type__box {
+  flex: 0 0 auto;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.1rem;
+  border: 2px solid var(--a-line);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.prop-type.is-main .prop-type__box { border-color: var(--a-green); background: var(--a-green); }
+.prop-type.is-main .prop-type__box::after {
+  content: "✓";
+  color: #04111f;
+  font-size: 0.85rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.prop-type input:focus-visible + .prop-type__box {
+  outline: 2px solid var(--a-green);
+  outline-offset: 2px;
+}
+.prop-type__text { display: flex; flex-direction: column; gap: 0.15rem; }
+.prop-type__text strong { color: var(--a-text); font-size: 0.92rem; font-weight: 700; }
+.prop-type__text span { color: var(--a-muted); font-size: 0.78rem; }
+
+/* Selo PRINCIPAL / TEMA na lista de propostas */
+.prop-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.prop-badge--main {
+  color: var(--a-green-bright);
+  background: var(--a-green-dim);
+  border: 1px solid rgba(0, 184, 75, 0.4);
+}
+.prop-badge--tema {
+  color: var(--a-muted);
+  background: var(--a-line-soft);
+  border: 1px solid var(--a-line);
+}

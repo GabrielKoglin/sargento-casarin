@@ -8,9 +8,10 @@
 // garantem que os valores digitados SOBREVIVAM a um erro de validação (o React
 // 19 reseta os campos não-controlados de um <form action> após a action).
 //
-// O slug é gerado automaticamente a partir do título enquanto o usuário não o
-// editar manualmente; ao editar, "travamos" a geração automática. O servidor
-// (actions.ts) sempre re-normaliza e valida a unicidade do slug.
+// Modelo enxuto: uma proposta tem Título, Categoria (ícone), um marcador
+// "principal" (destaque) e o conteúdo — Resumo (card), Imagem (opcional) e o
+// texto completo (opcional). O slug é gerado do título; o servidor sempre
+// re-normaliza e valida a unicidade.
 import { useActionState, useState, type ChangeEvent, type ReactNode } from "react";
 import Link from "next/link";
 import type { ProposalFormState } from "./actions";
@@ -25,14 +26,9 @@ export type ProposalFormValues = {
   title: string;
   slug: string;
   category: string;
+  featured: boolean;
   description: string;
-  problem: string;
-  objective: string;
-  solution: string;
-  goals: string;
-  benefits: string;
   image: string;
-  faq: string;
   content: string;
 };
 
@@ -40,16 +36,14 @@ const EMPTY_VALUES: ProposalFormValues = {
   title: "",
   slug: "",
   category: "",
+  featured: false,
   description: "",
-  problem: "",
-  objective: "",
-  solution: "",
-  goals: "",
-  benefits: "",
   image: "",
-  faq: "",
   content: "",
 };
+
+// Campos de texto simples (não incluem featured, que é boolean).
+type StringField = Exclude<keyof ProposalFormValues, "featured">;
 
 // Sugestões de categoria (datalist) — coerentes com os ícones do site público.
 const CATEGORY_SUGGESTIONS = [
@@ -144,7 +138,7 @@ export function ProposalForm({
     setFilePreview(URL.createObjectURL(finalFile));
   }
 
-  const set = (name: keyof ProposalFormValues, value: string) => {
+  const set = (name: StringField, value: string) => {
     setValues((prev) => {
       if (name === "title" && !slugLocked) {
         return { ...prev, title: value, slug: slugify(value) };
@@ -167,6 +161,19 @@ export function ProposalForm({
         </p>
       )}
 
+      {/* Guia rápido: o que é principal vs tema */}
+      <div className="prop-help">
+        <p>
+          <strong className="prop-help__main">Proposta principal</strong> — aparece
+          em <strong>destaque no topo</strong> da página de propostas (card largo,
+          com o resumo e o botão “Ver proposta completa”).
+        </p>
+        <p>
+          <strong className="prop-help__tema">Tema</strong> — aparece como um{" "}
+          <strong>card quadrado</strong>, lado a lado com os outros temas.
+        </p>
+      </div>
+
       <Field label="Título" htmlFor="title" error={errorFor("title")}>
         <input
           id="title"
@@ -179,32 +186,10 @@ export function ProposalForm({
       </Field>
 
       <Field
-        label="Slug (URL)"
-        htmlFor="slug"
-        error={errorFor("slug")}
-        hint="Gerado a partir do título. Edite se quiser um endereço diferente."
-      >
-        <input
-          id="slug"
-          name="slug"
-          className="admin-field__input font-mono"
-          value={values.slug}
-          onChange={(e) => {
-            setSlugLocked(true);
-            setValues((prev) => ({ ...prev, slug: e.target.value }));
-          }}
-          onBlur={(e) =>
-            setValues((prev) => ({ ...prev, slug: slugify(e.target.value) }))
-          }
-          placeholder="ex.: seguranca-publica"
-          aria-invalid={Boolean(errorFor("slug"))}
-        />
-      </Field>
-
-      <Field
         label="Categoria"
         htmlFor="category"
         error={errorFor("category")}
+        hint="Define o ícone do card (ex.: Segurança, Educação, Saúde)."
       >
         <input
           id="category"
@@ -222,15 +207,39 @@ export function ProposalForm({
         </datalist>
       </Field>
 
+      {/* Marcador PRINCIPAL vs TEMA — a escolha que define onde a proposta aparece */}
+      <div className="admin-field">
+        <span className="admin-field__label">Tipo</span>
+        <label className={`prop-type ${values.featured ? "is-main" : ""}`}>
+          <input
+            type="checkbox"
+            name="featured"
+            checked={values.featured}
+            onChange={(e) =>
+              setValues((prev) => ({ ...prev, featured: e.target.checked }))
+            }
+          />
+          <span className="prop-type__box" aria-hidden="true" />
+          <span className="prop-type__text">
+            <strong>Marcar como proposta principal</strong>
+            <span>
+              {values.featured
+                ? "Vai aparecer em destaque no topo."
+                : "Deixe desmarcado para entrar como tema (card quadrado)."}
+            </span>
+          </span>
+        </label>
+      </div>
+
       <Field
-        label="Descrição"
+        label="Resumo"
         htmlFor="description"
         error={errorFor("description")}
-        hint="Resumo curto exibido no card da lista de propostas."
+        hint="Texto curto que aparece no card e como abertura do popup."
       >
         <Textarea
           id="description"
-          rows={2}
+          rows={3}
           value={values.description}
           onChange={(v) => set("description", v)}
           invalid={Boolean(errorFor("description"))}
@@ -238,82 +247,10 @@ export function ProposalForm({
       </Field>
 
       <Field
-        label="O problema"
-        htmlFor="problem"
-        error={errorFor("problem")}
-      >
-        <Textarea
-          id="problem"
-          rows={3}
-          value={values.problem}
-          onChange={(v) => set("problem", v)}
-          invalid={Boolean(errorFor("problem"))}
-        />
-      </Field>
-
-      <Field
-        label="Objetivo"
-        htmlFor="objective"
-        error={errorFor("objective")}
-      >
-        <Textarea
-          id="objective"
-          rows={3}
-          value={values.objective}
-          onChange={(v) => set("objective", v)}
-          invalid={Boolean(errorFor("objective"))}
-        />
-      </Field>
-
-      <Field
-        label="Como vamos fazer"
-        htmlFor="solution"
-        error={errorFor("solution")}
-      >
-        <Textarea
-          id="solution"
-          rows={3}
-          value={values.solution}
-          onChange={(v) => set("solution", v)}
-          invalid={Boolean(errorFor("solution"))}
-        />
-      </Field>
-
-      <Field
-        label="Metas"
-        htmlFor="goals"
-        error={errorFor("goals")}
-        hint="Uma meta por linha — cada linha vira um item da lista no site."
-      >
-        <Textarea
-          id="goals"
-          rows={4}
-          value={values.goals}
-          onChange={(v) => set("goals", v)}
-          invalid={Boolean(errorFor("goals"))}
-        />
-      </Field>
-
-      <Field
-        label="Benefícios para você"
-        htmlFor="benefits"
-        error={errorFor("benefits")}
-        hint="Um benefício por linha."
-      >
-        <Textarea
-          id="benefits"
-          rows={4}
-          value={values.benefits}
-          onChange={(v) => set("benefits", v)}
-          invalid={Boolean(errorFor("benefits"))}
-        />
-      </Field>
-
-      <Field
         label="Imagem de destaque — opcional"
         htmlFor="imageFile"
         error={errorFor("imageFile")}
-        hint="Envie uma foto (JPG/PNG) — é otimizada automaticamente. Ou cole uma URL abaixo."
+        hint="Envie uma foto/infográfico (JPG/PNG) — é otimizada automaticamente. Ou cole uma URL abaixo."
       >
         {(filePreview || values.image) && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -361,21 +298,6 @@ export function ProposalForm({
       </Field>
 
       <Field
-        label="FAQ — opcional"
-        htmlFor="faq"
-        error={errorFor("faq")}
-        hint="Perguntas frequentes sobre a proposta."
-      >
-        <Textarea
-          id="faq"
-          rows={3}
-          value={values.faq}
-          onChange={(v) => set("faq", v)}
-          invalid={Boolean(errorFor("faq"))}
-        />
-      </Field>
-
-      <Field
         label="Proposta completa (texto) — opcional"
         htmlFor="content"
         error={errorFor("content")}
@@ -387,6 +309,29 @@ export function ProposalForm({
           value={values.content}
           onChange={(v) => set("content", v)}
           invalid={Boolean(errorFor("content"))}
+        />
+      </Field>
+
+      <Field
+        label="Slug (URL)"
+        htmlFor="slug"
+        error={errorFor("slug")}
+        hint="Gerado a partir do título. Edite só se quiser um endereço diferente."
+      >
+        <input
+          id="slug"
+          name="slug"
+          className="admin-field__input font-mono"
+          value={values.slug}
+          onChange={(e) => {
+            setSlugLocked(true);
+            setValues((prev) => ({ ...prev, slug: e.target.value }));
+          }}
+          onBlur={(e) =>
+            setValues((prev) => ({ ...prev, slug: slugify(e.target.value) }))
+          }
+          placeholder="ex.: seguranca-publica"
+          aria-invalid={Boolean(errorFor("slug"))}
         />
       </Field>
 

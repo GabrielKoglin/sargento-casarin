@@ -63,22 +63,14 @@ export type ProposalFormState = {
   fieldErrors?: Record<string, string>;
 };
 
-/** Campos de texto da proposta — TODOS OPCIONAIS (vazio vira ""). */
-const TEXT_FIELDS = [
-  "title",
-  "category",
-  "description",
-  "problem",
-  "objective",
-  "solution",
-  "goals",
-  "benefits",
-] as const;
+/** Campos de texto editáveis no painel — TODOS OPCIONAIS (vazio vira ""). */
+const TEXT_FIELDS = ["title", "category", "description"] as const;
 
 type ProposalData = {
   title: string;
   slug: string;
   category: string;
+  featured: boolean;
   description: string;
   problem: string;
   objective: string;
@@ -107,8 +99,9 @@ function parseProposal(formData: FormData): ProposalData {
   for (const name of TEXT_FIELDS) values[name] = field(formData, name);
 
   const image = field(formData, "image");
-  const faq = field(formData, "faq");
   const content = field(formData, "content");
+  // Checkbox: presente no FormData apenas quando marcado.
+  const featured = formData.get("featured") != null;
 
   const slug =
     slugify(field(formData, "slug")) ||
@@ -119,14 +112,17 @@ function parseProposal(formData: FormData): ProposalData {
     title: values.title,
     slug,
     category: values.category,
+    featured,
     description: values.description,
-    problem: values.problem,
-    objective: values.objective,
-    solution: values.solution,
-    goals: values.goals,
-    benefits: values.benefits,
+    // Campos estruturados legados: continuam NOT NULL no banco, mas saíram do
+    // painel (confundiam). Gravamos vazio — o conteúdo rico vai em `content`.
+    problem: "",
+    objective: "",
+    solution: "",
+    goals: "",
+    benefits: "",
     image: image || null,
-    faq: faq || null,
+    faq: null,
     content: content || null,
   };
 }
