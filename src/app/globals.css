@@ -856,11 +856,11 @@ body::after {
 .prop-modal__eyebrow { display:block; color:var(--B); font-size:.72rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase; margin-bottom:.5rem; }
 .prop-modal__title { font-family:var(--fc); color:var(--W); text-transform:uppercase; font-size:clamp(1.6rem,4vw,2.3rem); line-height:1.02; margin-bottom:1.25rem; padding-right:2rem; }
 .prop-modal__img { display:block; width:100%; height:auto; border-radius:10px; margin-bottom:1.5rem; border:1px solid rgba(196,168,130,.18); }
-.prop-modal__lead { color:rgba(255,255,255,.82); font-size:1rem; margin-bottom:1.5rem; line-height:1.7; }
+.prop-modal__lead { color:rgba(255,255,255,.82); font-size:1rem; margin-bottom:1.5rem; line-height:1.7; text-align:justify; hyphens:auto; }
 .prop-modal__body h3 { color:var(--B); font-size:.92rem; letter-spacing:.05em; text-transform:uppercase; margin:1.6rem 0 .55rem; }
 .prop-modal__body h3:first-child { margin-top:0; }
 .prop-modal__body h4 { color:rgba(255,255,255,.92); font-size:.9rem; font-weight:700; margin:1.2rem 0 .35rem; }
-.prop-modal__body p { color:rgba(255,255,255,.7); font-size:.94rem; line-height:1.75; margin-bottom:1rem; }
+.prop-modal__body p { color:rgba(255,255,255,.7); font-size:.94rem; line-height:1.75; margin-bottom:1rem; text-align:justify; hyphens:auto; }
 .prop-modal__body ul { padding-left:1.4rem; margin-bottom:1rem; }
 .prop-modal__body li { list-style:disc; color:rgba(255,255,255,.68); font-size:.92rem; line-height:1.7; margin-bottom:.4rem; }
 
@@ -1040,7 +1040,7 @@ body::after {
 .priv-body h3 { color:var(--B); margin:2rem 0 .6rem; font-size:1rem; letter-spacing:.04em; text-transform:uppercase; }
 .priv-body h3:first-child { margin-top:0; }
 .priv-body h4 { color:var(--W); margin:1.5rem 0 .5rem; font-size:.95rem; }
-.priv-body p { margin-bottom:1rem; font-size:.92rem; }
+.priv-body p { margin-bottom:1rem; font-size:.92rem; text-align:justify; hyphens:auto; }
 .priv-body ul { padding-left:1.5rem; margin-bottom:1rem; }
 .priv-body li { list-style:disc; font-size:.9rem; color:rgba(255,255,255,.58); line-height:1.7; margin-bottom:.35rem; }
 .priv-body a { color:var(--B); }
