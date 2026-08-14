@@ -115,6 +115,12 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
     return [p[2], p[3]];
   }, [geo]);
 
+  // União de todos os municípios (um path só) para recortar a imagem de satélite.
+  const clipD = useMemo(
+    () => (geo ? geo.municipios.map((m) => m.d).join("") : ""),
+    [geo],
+  );
+
   // Busca (accent-insensitive), no máx. 8 resultados.
   const matches = useMemo(() => {
     if (!geo || query.trim().length < 1) return [];
@@ -294,19 +300,28 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
                     onWheel={onWheel}
                   >
                     <defs>
-                      {/* cor base da terra — azul-aço com leve gradiente (profundidade) */}
-                      <linearGradient id="mtLand" x1="0.1" y1="0" x2="0.25" y2="1">
-                        <stop offset="0" stopColor="#4d7db0" />
-                        <stop offset="1" stopColor="#2c5279" />
-                      </linearGradient>
+                      {/* recorte: imagem de satélite só dentro do estado (união dos municípios) */}
+                      <clipPath id="mtClip">
+                        <path d={clipD} />
+                      </clipPath>
                       {/* brilho suave dos pinos de cidade com líder */}
                       <filter id="mtPin" x="-120%" y="-120%" width="340%" height="340%">
                         <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#12b84b" floodOpacity="0.9" />
                       </filter>
                     </defs>
 
-                    {/* terra com extrusão sólida (sombra empilhada = espessura limpa) */}
+                    {/* terra: imagem de satélite recortada + extrusão (espessura) */}
                     <g className="mtmap__land">
+                      <image
+                        className="mtmap__sat"
+                        href="/data/mt-satellite.webp"
+                        x="0"
+                        y="0"
+                        width={vbW}
+                        height={vbH}
+                        preserveAspectRatio="none"
+                        clipPath="url(#mtClip)"
+                      />
                       <g className="mtmap__faces">
                         {geo.municipios.map((m) =>
                           m.d ? (
@@ -378,6 +393,10 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
           </>
         )}
       </div>
+
+      <p className="mtmap__credit">
+        Imagem de satélite: <a href="https://s2maps.eu" target="_blank" rel="noopener noreferrer">Sentinel-2 cloudless</a> (EOX) · ESA
+      </p>
 
       {/* ---------------- painel da cidade ---------------- */}
       {selected && (
