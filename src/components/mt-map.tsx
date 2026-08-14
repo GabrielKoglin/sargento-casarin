@@ -181,19 +181,29 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
     setView((v) => ({ ...v, x: v.x + dx, y: v.y + dy }));
   };
   const onPointerUp = (e: ReactPointerEvent) => {
+    const d = drag.current;
     (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
     drag.current = null;
+    // Seleção robusta: o `click` nativo do <path> não dispara de forma
+    // confiável por causa do pointer capture. Então, se NÃO houve arrasto,
+    // descobrimos o município sob o cursor no pointerup (hit-test) e abrimos
+    // o popup daquela cidade.
+    if (d && !d.moved && geo) {
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const code =
+        el instanceof Element
+          ? el.closest("[data-code]")?.getAttribute("data-code")
+          : null;
+      if (code) {
+        const m = geo.municipios.find((x) => x.code === code);
+        if (m) selectByMuni(m);
+      }
+    }
   };
   const onWheel = (e: React.WheelEvent) => {
     if (!stageRef.current) return;
     const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
     setView((v) => ({ ...v, s: clamp(v.s * factor, MIN_SCALE, MAX_SCALE) }));
-  };
-
-  // Clique num município (só conta se não foi arrasto).
-  const onMuniClick = (m: Muni) => {
-    if (drag.current?.moved) return;
-    selectByMuni(m);
   };
 
   const selectedLeaders = leadersFor(selected);
@@ -308,7 +318,6 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
                               .join(" ")}
                             onMouseEnter={() => setHover(m.code)}
                             onMouseLeave={() => setHover((h) => (h === m.code ? null : h))}
-                            onClick={() => onMuniClick(m)}
                           >
                             <title>{m.name}</title>
                           </path>
