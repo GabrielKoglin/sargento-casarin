@@ -833,6 +833,9 @@ body::after {
 .eixo-card h2 { color:var(--G); font-size:1.15rem; margin-bottom:.5rem; }
 .eixo-card p { font-size:.93rem; color:rgba(28,40,24,.65); }
 .eixo-body { min-width:0; }
+/* proposta principal COM imagem externa: imagem à direita do card */
+.eixo-card--with-img { grid-template-columns:auto 1fr minmax(190px, 280px); }
+.eixo-img { width:100%; max-height:300px; object-fit:cover; border-radius:8px; align-self:center; }
 .eixo-btn { margin-top:1.15rem; font-size:.78rem; padding:.6rem 1.15rem; }
 
 /* Temas — cards quadrados, lado a lado (grade) */
@@ -1225,7 +1228,7 @@ footer {
   .propostas-grid { grid-template-columns:1fr; }
   .foot-grid { grid-template-columns:1fr; gap:2rem; }
   .foot-bottom { flex-direction:column; text-align:center; }
-  .eixo-card { grid-template-columns:1fr; }
+  .eixo-card, .eixo-card--with-img { grid-template-columns:1fr; }
   .form-grid { grid-template-columns:1fr; }
 
   /* reserva espaço sob o FAB do assistente p/ não cobrir links legais do rodapé */

@@ -35,6 +35,9 @@ model Proposal {
   slug        String   @unique
   category    String
   image       String?
+  // Onde exibir a imagem de destaque: "popup" (dentro do modal, padrão) ou
+  // "external" (ao lado da proposta, no card da página /propostas).
+  imagePlacement String @default("popup")
   description String
   problem     String
   objective   String

@@ -51,6 +51,7 @@ export default async function EditProposalPage({
           featured: proposta.featured,
           description: proposta.description,
           image: proposta.image ?? "",
+          imagePlacement: proposta.imagePlacement,
           content: proposta.content ?? "",
         }}
       />

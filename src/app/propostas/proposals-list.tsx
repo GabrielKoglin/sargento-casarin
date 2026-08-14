@@ -27,24 +27,34 @@ export function ProposalsList({
 
   return (
     <>
-      {main.map((p) => (
-        <div className="eixo-card fi" key={p.id}>
-          <div className="eixo-icon" aria-hidden="true">
-            <ProposalIcon slug={p.slug} category={p.category} />
+      {main.map((p) => {
+        const externalImg = Boolean(p.image) && p.imagePlacement === "external";
+        return (
+          <div
+            className={`eixo-card fi${externalImg ? " eixo-card--with-img" : ""}`}
+            key={p.id}
+          >
+            <div className="eixo-icon" aria-hidden="true">
+              <ProposalIcon slug={p.slug} category={p.category} />
+            </div>
+            <div className="eixo-body">
+              <h2>{p.title}</h2>
+              {p.description && <p>{p.description}</p>}
+              <button
+                type="button"
+                className="btn btn-outline eixo-btn"
+                onClick={() => setOpenId(p.id)}
+              >
+                Ver proposta completa <span aria-hidden="true">➔</span>
+              </button>
+            </div>
+            {externalImg && p.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="eixo-img" src={p.image} alt={p.title} />
+            )}
           </div>
-          <div className="eixo-body">
-            <h2>{p.title}</h2>
-            {p.description && <p>{p.description}</p>}
-            <button
-              type="button"
-              className="btn btn-outline eixo-btn"
-              onClick={() => setOpenId(p.id)}
-            >
-              Ver proposta completa <span aria-hidden="true">➔</span>
-            </button>
-          </div>
-        </div>
-      ))}
+        );
+      })}
 
       {temas.length > 0 && (
         <>

@@ -29,6 +29,7 @@ export type ProposalFormValues = {
   featured: boolean;
   description: string;
   image: string;
+  imagePlacement: string;
   content: string;
 };
 
@@ -39,6 +40,7 @@ const EMPTY_VALUES: ProposalFormValues = {
   featured: false,
   description: "",
   image: "",
+  imagePlacement: "popup",
   content: "",
 };
 
@@ -295,6 +297,23 @@ export function ProposalForm({
           onChange={(e) => set("image", e.target.value)}
           placeholder="https://…/imagem.jpg"
         />
+      </Field>
+
+      <Field
+        label="Onde exibir a imagem"
+        htmlFor="imagePlacement"
+        hint="“No popup”: aparece dentro do “Ver proposta completa”. “Ao lado da proposta”: aparece à direita do card, na página de propostas."
+      >
+        <select
+          id="imagePlacement"
+          name="imagePlacement"
+          className="admin-field__input"
+          value={values.imagePlacement}
+          onChange={(e) => set("imagePlacement", e.target.value)}
+        >
+          <option value="popup">No popup (dentro de “Ver proposta completa”)</option>
+          <option value="external">Ao lado da proposta (no card)</option>
+        </select>
       </Field>
 
       <Field

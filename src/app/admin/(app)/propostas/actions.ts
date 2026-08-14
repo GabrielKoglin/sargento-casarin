@@ -78,6 +78,7 @@ type ProposalData = {
   goals: string;
   benefits: string;
   image: string | null;
+  imagePlacement: string;
   faq: string | null;
   content: string | null;
 };
@@ -100,6 +101,9 @@ function parseProposal(formData: FormData): ProposalData {
 
   const image = field(formData, "image");
   const content = field(formData, "content");
+  // Onde a imagem aparece: só aceita os dois valores conhecidos.
+  const imagePlacement =
+    field(formData, "imagePlacement") === "external" ? "external" : "popup";
   // Checkbox: presente no FormData apenas quando marcado.
   const featured = formData.get("featured") != null;
 
@@ -122,6 +126,7 @@ function parseProposal(formData: FormData): ProposalData {
     goals: "",
     benefits: "",
     image: image || null,
+    imagePlacement,
     faq: null,
     content: content || null,
   };

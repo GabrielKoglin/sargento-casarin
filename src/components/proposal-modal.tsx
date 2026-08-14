@@ -36,7 +36,9 @@ export function ProposalModal({
     };
   }, [onClose]);
 
-  const empty = !proposal.content && !proposal.image && !proposal.description;
+  // "Vazio" = nada a mostrar DENTRO do popup (imagem externa não conta aqui).
+  const showsImage = Boolean(proposal.image) && proposal.imagePlacement !== "external";
+  const empty = !proposal.content && !showsImage && !proposal.description;
 
   return (
     <div className="prop-modal-backdrop" role="presentation" onClick={onClose}>
@@ -65,7 +67,7 @@ export function ProposalModal({
           )}
           <h2 className="prop-modal__title">{proposal.title}</h2>
 
-          {proposal.image && (
+          {proposal.image && proposal.imagePlacement !== "external" && (
             // eslint-disable-next-line @next/next/no-img-element
             <img className="prop-modal__img" src={proposal.image} alt={proposal.title} />
           )}
