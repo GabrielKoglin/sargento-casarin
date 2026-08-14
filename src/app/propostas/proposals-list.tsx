@@ -1,11 +1,14 @@
 "use client";
 
 // ============================================================================
-// proposals-list.tsx — cards das propostas + modal "proposta completa"
+// proposals-list.tsx — propostas principais (cards largos) + temas (grade
+// quadrada) + modal "proposta completa"
 // ============================================================================
-// Cada card mostra título + resumo e um botão que abre a proposta INTEIRA num
-// modal (sem navegar). Acessível: role=dialog, foco no botão de fechar, Esc e
-// clique no fundo fecham, trava o scroll do body e devolve o foco ao fechar.
+// Propostas COM texto completo (`content`) são as PRINCIPAIS: card largo com
+// resumo. As demais são TEMAS: cards quadrados, lado a lado, só com o título.
+// Ambos abrem a proposta INTEIRA num modal (sem navegar). Acessível: role=
+// dialog, foco no botão de fechar, Esc e clique no fundo fecham, trava o scroll
+// do body e devolve o foco ao fechar.
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Proposal } from "@/generated/prisma/client";
 import { ProposalIcon } from "@/components/proposal-icon";
@@ -13,7 +16,13 @@ import { RichText } from "@/components/rich-text";
 
 const lines = (s: string) => s.split("\n").filter(Boolean);
 
-export function ProposalsList({ proposals }: { proposals: Proposal[] }) {
+export function ProposalsList({
+  proposals,
+  listTitle,
+}: {
+  proposals: Proposal[];
+  listTitle: string;
+}) {
   const [openId, setOpenId] = useState<string | null>(null);
   const open = proposals.find((p) => p.id === openId) ?? null;
   const close = useCallback(() => setOpenId(null), []);
@@ -39,9 +48,13 @@ export function ProposalsList({ proposals }: { proposals: Proposal[] }) {
   const goals = open ? lines(open.goals) : [];
   const benefits = open ? lines(open.benefits) : [];
 
+  // COM texto completo = proposta principal; SEM = tema.
+  const main = proposals.filter((p) => p.content);
+  const temas = proposals.filter((p) => !p.content);
+
   return (
     <>
-      {proposals.map((p) => (
+      {main.map((p) => (
         <div className="eixo-card fi" key={p.id}>
           <div className="eixo-icon" aria-hidden="true">
             <ProposalIcon slug={p.slug} category={p.category} />
@@ -59,6 +72,30 @@ export function ProposalsList({ proposals }: { proposals: Proposal[] }) {
           </div>
         </div>
       ))}
+
+      {temas.length > 0 && (
+        <>
+          {listTitle && <h2 className="propostas-list-title fi">{listTitle}</h2>}
+          <div className="temas-grid">
+            {temas.map((t) => (
+              <button
+                type="button"
+                className="tema-card fi"
+                key={t.id}
+                onClick={() => setOpenId(t.id)}
+              >
+                <span className="tema-card__icon" aria-hidden="true">
+                  <ProposalIcon slug={t.slug} category={t.category} />
+                </span>
+                <span className="tema-card__title">{t.title}</span>
+                <span className="tema-card__link">
+                  Ver proposta completa <span aria-hidden="true">➔</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       {open && (
         <div className="prop-modal-backdrop" role="presentation" onClick={close}>
@@ -138,6 +175,20 @@ export function ProposalsList({ proposals }: { proposals: Proposal[] }) {
                     <p>{open.faq}</p>
                   </>
                 )}
+                {/* Tema ainda sem conteúdo detalhado */}
+                {!open.content &&
+                  !open.description &&
+                  !open.problem &&
+                  !open.objective &&
+                  !open.solution &&
+                  goals.length === 0 &&
+                  benefits.length === 0 &&
+                  !open.faq && (
+                    <p className="prop-modal__lead">
+                      Proposta em elaboração. Em breve o conteúdo completo estará
+                      disponível aqui.
+                    </p>
+                  )}
               </div>
             </div>
           </div>

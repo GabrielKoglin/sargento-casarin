@@ -807,6 +807,15 @@ body::after {
 .eixo-body { min-width:0; }
 .eixo-btn { margin-top:1.15rem; font-size:.78rem; padding:.6rem 1.15rem; }
 
+/* Temas — cards quadrados, lado a lado (grade) */
+.temas-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:1rem; margin-bottom:1rem; }
+.tema-card { background:var(--W); border:1px solid rgba(58,82,64,.1); border-top:4px solid var(--G); border-radius:6px; padding:1.7rem 1.5rem; display:flex; flex-direction:column; align-items:flex-start; gap:1.1rem; min-height:210px; cursor:pointer; text-align:left; font:inherit; transition:transform .2s, box-shadow .2s; }
+.tema-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,.12); }
+.tema-card__icon { width:3rem; height:3rem; border-radius:var(--r); background:var(--G); color:var(--W); display:flex; align-items:center; justify-content:center; font-size:1.45rem; flex-shrink:0; }
+.tema-card__title { color:var(--G); font-family:var(--fc); font-size:1.2rem; line-height:1.05; text-transform:uppercase; flex:1; }
+.tema-card__link { color:var(--G); font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.75; }
+.tema-card:hover .tema-card__link { opacity:1; }
+
 /* Modal "proposta completa" (proposals-list.tsx) */
 .prop-modal-backdrop { position:fixed; inset:0; z-index:10050; display:flex; align-items:center; justify-content:center; padding:1.25rem; background:rgba(3,9,20,.78); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); animation:welcomeFade .3s ease both; }
 .prop-modal { position:relative; width:min(760px,100%); max-height:88vh; display:flex; flex-direction:column; background:linear-gradient(165deg,#0f1c40 0%,#0a1330 55%,#050c1f 100%); border:1px solid rgba(196,168,130,.26); border-radius:16px; box-shadow:0 30px 90px rgba(0,0,0,.55); animation:welcomePop .45s cubic-bezier(.2,.9,.3,1.2) both; }

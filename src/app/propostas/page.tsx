@@ -50,12 +50,7 @@ export default async function PropostasPage() {
               As propostas detalhadas serão publicadas em breve.
             </p>
           ) : (
-            <>
-              {hero.listTitle && (
-                <h2 className="propostas-list-title fi">{hero.listTitle}</h2>
-              )}
-              <ProposalsList proposals={propostas} />
-            </>
+            <ProposalsList proposals={propostas} listTitle={hero.listTitle} />
           )}
 
           <div className="mt-bloco">
