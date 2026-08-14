@@ -1597,17 +1597,16 @@ html.a11y-contrast .foot-bottom a {
 .mtmap__legend-count { margin-left:auto; font-weight:700; color:var(--G); }
 
 /* palco 3D */
-/* mapa REAL (Leaflet) num cartão claro */
+/* mapa REAL (Leaflet) mascarado só em Mato Grosso — flutua no fundo escuro */
 .mtmap__stage {
   position:relative; height:clamp(440px, 66vh, 700px); overflow:hidden;
-  border-radius:14px; border:1px solid rgba(13,59,102,.16); isolation:isolate;
-  box-shadow:0 12px 34px rgba(13,30,50,.18);
+  border-radius:14px; isolation:isolate;
 }
 .mtmap__leaflet { position:absolute; inset:0; z-index:0; }
-.leaflet-container { font:inherit; background:#e8ecef; }
+.leaflet-container { font:inherit; background:#020b14; }
 .mtmap__loading {
   position:absolute; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
-  background:#eef1f4; color:rgba(28,40,24,.6); font-size:.95rem;
+  background:#020b14; color:rgba(255,255,255,.6); font-size:.95rem;
 }
 /* pino de líder no mapa */
 .mtmk__pin {

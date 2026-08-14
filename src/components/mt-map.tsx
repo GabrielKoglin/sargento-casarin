@@ -83,7 +83,8 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
     mapRef.current?.flyTo([c.lat, c.lng], 9, { duration: 0.9 });
   }, []);
 
-  // Inicializa o mapa Leaflet uma vez (client-only).
+  // Inicializa o mapa Leaflet uma vez (client-only). Mascara tudo FORA de MT
+  // (só o estado aparece) e trava a navegação dentro de Mato Grosso.
   useEffect(() => {
     if (!mapEl.current || mapRef.current) return;
     let cancelled = false;
@@ -95,8 +96,9 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
         zoomControl: true,
         attributionControl: true,
         scrollWheelZoom: true,
-        minZoom: 5,
         maxZoom: 16,
+        maxBoundsViscosity: 1,
+        preferCanvas: true,
       });
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
@@ -107,7 +109,49 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
           maxZoom: 20,
         },
       ).addTo(map);
+
+      // Máscara: pinta tudo FORA de Mato Grosso com a cor do fundo (o estado
+      // vira o "buraco" do polígono) + contorno + divisas dos municípios.
+      try {
+        const [outline, munis] = await Promise.all([
+          fetch("/data/mt-outline.json").then((r) => r.json()),
+          fetch("/data/mt-municipios-geo.json").then((r) => r.json()),
+        ]);
+        if (cancelled) return;
+        const toLatLng = (ring: number[][]) =>
+          ring.map(([lng, lat]) => [lat, lng] as [number, number]);
+        const holes = (outline.rings as number[][][]).map(toLatLng);
+        const world: [number, number][] = [
+          [-85, -179],
+          [-85, 179],
+          [85, 179],
+          [85, -179],
+        ];
+        L.polygon([world, ...holes], {
+          stroke: false,
+          fillColor: "#020b14",
+          fillOpacity: 1,
+          interactive: false,
+        }).addTo(map);
+        // divisas dos municípios (linhas finas) + contorno do estado
+        L.geoJSON(munis, {
+          style: { color: "#6f8168", weight: 0.6, opacity: 0.5, fill: false },
+          interactive: false,
+        }).addTo(map);
+        L.polygon(holes, {
+          color: "#9fb2c6",
+          weight: 1.6,
+          fill: false,
+          interactive: false,
+        }).addTo(map);
+      } catch {
+        // sem a máscara, o mapa ainda funciona (mostra a região inteira)
+      }
+
       map.fitBounds(MT_BOUNDS);
+      map.setMaxBounds(L.latLngBounds(MT_BOUNDS).pad(0.12));
+      map.setMinZoom(map.getZoom());
+
       created = map;
       mapRef.current = map;
       setReady(true);
