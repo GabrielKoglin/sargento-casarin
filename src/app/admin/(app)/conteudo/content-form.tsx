@@ -161,7 +161,7 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
 
       {/* ------------------------------------------------ Propostas (página) */}
       <details className="admin-form-card admin-acc">
-        <summary className="admin-acc__summary admin-section-title">Propostas — Hero (topo da página)</summary>
+        <summary className="admin-acc__summary admin-section-title">Propostas (página /propostas)</summary>
         <Field
           label="Rótulo (eyebrow)"
           value={data.propostasPage.heroEyebrow}
@@ -177,6 +177,11 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           value={data.propostasPage.heroLead}
           onChange={(v) => setPropostasPage({ heroLead: v })}
           multiline
+        />
+        <Field
+          label="Título acima dos cards"
+          value={data.propostasPage.listTitle}
+          onChange={(v) => setPropostasPage({ listTitle: v })}
         />
       </details>
 

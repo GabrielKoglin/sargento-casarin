@@ -94,6 +94,7 @@ export type SiteContentData = {
     heroEyebrow: string;
     heroTitle: string;
     heroLead: string;
+    listTitle: string;
   };
   contato: {
     heroEyebrow: string;
@@ -289,6 +290,7 @@ export const DEFAULT_CONTENT: SiteContentData = {
     heroTitle: "PLANOS DE *AÇÃO*",
     heroLead:
       "O que o Sargento Casarin vai defender na Assembleia Legislativa de Mato Grosso.",
+    listTitle: "Outros temas que iremos abordar",
   },
   contato: {
     heroEyebrow: "Canal direto",
@@ -664,6 +666,7 @@ function coerce(raw: unknown): SiteContentData {
       heroEyebrow: str(pp.heroEyebrow, d.propostasPage.heroEyebrow),
       heroTitle: str(pp.heroTitle, d.propostasPage.heroTitle),
       heroLead: str(pp.heroLead, d.propostasPage.heroLead),
+      listTitle: str(pp.listTitle, d.propostasPage.listTitle),
     },
     contato: {
       heroEyebrow: str(contato.heroEyebrow, d.contato.heroEyebrow),
