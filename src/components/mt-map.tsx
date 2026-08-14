@@ -294,46 +294,20 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
                     onWheel={onWheel}
                   >
                     <defs>
-                      {/* cor base da terra (cerrado: verde -> terra) */}
-                      <linearGradient id="mtLand" x1="0" y1="0" x2="0.15" y2="1">
-                        <stop offset="0" stopColor="#c3c47c" />
-                        <stop offset="0.5" stopColor="#ada05f" />
-                        <stop offset="1" stopColor="#94824e" />
+                      {/* cor base da terra — azul-aço com leve gradiente (profundidade) */}
+                      <linearGradient id="mtLand" x1="0.1" y1="0" x2="0.25" y2="1">
+                        <stop offset="0" stopColor="#4d7db0" />
+                        <stop offset="1" stopColor="#2c5279" />
                       </linearGradient>
-                      {/* sombreamento de relevo: ruído -> iluminação -> multiplica na terra */}
-                      <filter id="mtRelief" x="-4%" y="-4%" width="108%" height="108%">
-                        <feTurbulence
-                          type="fractalNoise"
-                          baseFrequency="0.011"
-                          numOctaves="4"
-                          seed="11"
-                          result="noise"
-                        />
-                        <feDiffuseLighting
-                          in="noise"
-                          lightingColor="#ffffff"
-                          surfaceScale="2.4"
-                          diffuseConstant="1.1"
-                          result="light"
-                        >
-                          <feDistantLight azimuth="235" elevation="55" />
-                        </feDiffuseLighting>
-                        <feComposite in="light" in2="SourceAlpha" operator="in" result="relief" />
-                        <feBlend in="SourceGraphic" in2="relief" mode="multiply" />
-                      </filter>
-                      {/* brilho dos pinos de cidade com líder */}
-                      <filter id="mtPin" x="-80%" y="-80%" width="260%" height="260%">
-                        <feGaussianBlur stdDeviation="3.5" result="b" />
-                        <feMerge>
-                          <feMergeNode in="b" />
-                          <feMergeNode in="SourceGraphic" />
-                        </feMerge>
+                      {/* brilho suave dos pinos de cidade com líder */}
+                      <filter id="mtPin" x="-120%" y="-120%" width="340%" height="340%">
+                        <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#12b84b" floodOpacity="0.9" />
                       </filter>
                     </defs>
 
-                    {/* terra com extrusão (sombra empilhada) por cima do relevo */}
+                    {/* terra com extrusão sólida (sombra empilhada = espessura limpa) */}
                     <g className="mtmap__land">
-                      <g className="mtmap__faces" filter="url(#mtRelief)">
+                      <g className="mtmap__faces">
                         {geo.municipios.map((m) =>
                           m.d ? (
                             <path
