@@ -587,7 +587,7 @@ body::after {
 .prop-icon { font-size:2rem; color:var(--B); margin-bottom:1.25rem; line-height:1; }
 .prop-card h3 { color:var(--GX); font-size:.92rem; margin-bottom:.7rem; line-height:1.3; }
 .prop-card p { font-size:.82rem; color:rgba(26,26,26,.68); line-height:1.75; }
-.prop-link { display:inline-flex; align-items:center; gap:.4rem; margin-top:1.5rem; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--B); transition:gap .25s; }
+.prop-link { display:inline-flex; align-items:center; gap:.4rem; margin-top:1.5rem; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--B); transition:gap .25s; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; }
 .prop-card:hover .prop-link { gap:.7rem; }
 
 /* ============================================

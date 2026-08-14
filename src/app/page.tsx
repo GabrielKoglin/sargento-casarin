@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import type { Proposal } from "@/generated/prisma/client";
 import { getSiteContent, renderRich } from "@/lib/site-content";
 import { HomeFx } from "@/components/home-fx";
-import { ProposalIcon } from "@/components/proposal-icon";
+import { HomeProposals } from "@/components/home-proposals";
 
 export const dynamic = "force-dynamic";
 
@@ -12,10 +12,11 @@ export const dynamic = "force-dynamic";
 // falha de I/O cai numa lista vazia (a seção de propostas mostra "em breve").
 async function loadPropostas(): Promise<Proposal[]> {
   try {
-    return await prisma.proposal.findMany({
-      orderBy: { createdAt: "asc" },
-      take: 4,
-    });
+    const all = await prisma.proposal.findMany({ orderBy: { createdAt: "asc" } });
+    // Teaser da home: as propostas COM texto completo primeiro, depois os temas.
+    return [...all]
+      .sort((a, b) => (b.content ? 1 : 0) - (a.content ? 1 : 0))
+      .slice(0, 4);
   } catch (error) {
     console.error("Falha ao carregar propostas na home.", error);
     return [];
@@ -173,18 +174,7 @@ export default async function Home() {
               As propostas detalhadas serão publicadas em breve.
             </p>
           ) : (
-            <div className="propostas-grid">
-              {propostas.map((p, i) => (
-                <div className={`prop-card fi ${i > 0 ? `d${i}` : ''}`} key={p.id}>
-                  <div className="prop-icon" aria-hidden="true">
-                    <ProposalIcon slug={p.slug} category={p.category} />
-                  </div>
-                  <h3>{p.title}</h3>
-                  <p>{p.description}</p>
-                  <Link href={`/propostas/${p.slug}`} className="prop-link">Ver proposta <span aria-hidden="true">➔</span></Link>
-                </div>
-              ))}
-            </div>
+            <HomeProposals proposals={propostas} />
           )}
         </div>
       </section>
