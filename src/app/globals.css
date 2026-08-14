@@ -770,7 +770,7 @@ body::after {
 .bio-photo img { width:100%; height:540px; object-fit:cover; object-position:top; }
 .bio-text .eyebrow { margin-bottom:1.5rem; }
 .bio-text h2 { font-family:var(--fc); text-transform:uppercase; color:var(--GX); font-size:clamp(2rem,4vw,3rem); margin-bottom:1.5rem; }
-.bio-text p { color:rgba(28,40,24,.65); margin-bottom:1.2rem; font-size:.93rem; }
+.bio-text p { color:rgba(28,40,24,.65); margin-bottom:1.2rem; font-size:.93rem; text-align:justify; hyphens:auto; }
 .bio-quote { border-left:3px solid var(--G); padding:1.25rem 1.5rem; background:rgba(58,82,64,.07); margin:2rem 0; }
 .bio-quote p { font-weight:600; font-style:italic; color:var(--GD); font-size:1rem; }
 .timeline { margin-top:3rem; }
@@ -912,7 +912,7 @@ body::after {
 .manifesto-content h1 { font-family:var(--fc); color:var(--W); font-size:clamp(4rem,11vw,10rem); line-height:.84; text-transform:uppercase; margin-bottom:2rem; }
 .manifesto-content h1 em { font-style:normal; color:var(--B); }
 .manifesto-hr { width:3rem; height:2px; background:var(--B); margin:2rem 0; }
-.manifesto-p p { color:rgba(255,255,255,.72); font-size:clamp(.95rem,1.6vw,1.1rem); line-height:1.8; margin-bottom:1.5rem; }
+.manifesto-p p { color:rgba(255,255,255,.72); font-size:clamp(.95rem,1.6vw,1.1rem); line-height:1.8; margin-bottom:1.5rem; text-align:justify; hyphens:auto; }
 
 /* ============================================
    NOTÃCIAS
@@ -1308,8 +1308,8 @@ footer {
 
   /* ===== /sobre (bio) — timeline PERMANECE à esquerda ===== */
   .bio-text { text-align:center; }
-  /* corpo da biografia à ESQUERDA no mobile (título/eyebrow seguem centralizados) */
-  .bio-text p { text-align:left; }
+  /* corpo da biografia JUSTIFICADO (ABNT) no mobile também (título/eyebrow seguem centralizados) */
+  .bio-text p { text-align:justify; }
   .bio-text .timeline, .bio-text .tl-body { text-align:left; }
   /* Comenda + credenciais ficam alinhadas à ESQUERDA no mobile (legibilidade) */
   .bio-text .honor-body, .bio-text .creds { text-align:left; }
