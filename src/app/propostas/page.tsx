@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { Proposal } from "@/generated/prisma/client";
-import { ProposalIcon } from "@/components/proposal-icon";
+import { ProposalsList } from "./proposals-list";
 import { getSiteContent, renderHeading } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
@@ -50,17 +50,7 @@ export default async function PropostasPage() {
               As propostas detalhadas serão publicadas em breve.
             </p>
           ) : (
-            propostas.map((p) => (
-              <Link href={`/propostas/${p.slug}`} className="eixo-card fi" key={p.id}>
-                <div className="eixo-icon" aria-hidden="true">
-                  <ProposalIcon slug={p.slug} category={p.category} />
-                </div>
-                <div>
-                  <h2>{p.title}</h2>
-                  <p>{p.description}</p>
-                </div>
-              </Link>
-            ))
+            <ProposalsList proposals={propostas} />
           )}
 
           <div className="mt-bloco">
