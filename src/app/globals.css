@@ -1597,85 +1597,52 @@ html.a11y-contrast .foot-bottom a {
 .mtmap__legend-count { margin-left:auto; font-weight:700; color:var(--G); }
 
 /* palco 3D */
-/* mapa REAL (Leaflet) mascarado só em Mato Grosso — MT preenche o quadro */
 .mtmap__stage {
-  position:relative; width:min(760px,100%); height:min(680px,94vw); margin:0 auto;
-  overflow:hidden; border-radius:16px; isolation:isolate;
+  position:relative; height:clamp(400px, 58vh, 620px); border-radius:16px; overflow:hidden;
+  background:radial-gradient(120% 90% at 50% -5%, #143560 0%, #0a1c34 55%, #050d1c 100%);
+  border:1px solid rgba(255,255,255,.08); box-shadow:inset 0 0 80px rgba(0,0,0,.45);
+  touch-action:none;
 }
-.mtmap__leaflet { position:absolute; inset:0; z-index:0; }
-.leaflet-container { font:inherit; background:#03101d; }
-.mtmap__loading {
-  position:absolute; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
-  background:#020b14; color:rgba(255,255,255,.6); font-size:.95rem;
-}
-/* pino de líder no mapa */
-.mtmk__pin {
-  display:block; width:16px; height:16px; border-radius:50%;
-  background:#12b84b; border:2.5px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.4); position:relative;
-}
-.mtmk__pin::after {
-  content:''; position:absolute; inset:-6px; border-radius:50%;
-  border:2px solid rgba(18,184,75,.5); animation:mtmkPulse 2s ease-out infinite;
-}
-@keyframes mtmkPulse { 0% { transform:scale(.6); opacity:.9; } 100% { transform:scale(1.4); opacity:0; } }
-@media (prefers-reduced-motion:reduce) { .mtmk__pin::after { animation:none; opacity:0; } }
+.mtmap__loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.6); font-size:.95rem; }
 .mtmap__float { position:absolute; inset:0; animation:mtFloat 8s ease-in-out infinite; }
-.mtmap__float.is-paused { animation-play-state:paused; }
-/* inclinação/giro 3D vem do inline (state). transição só na entrada e no fly-to */
-.mtmap__tilt { position:absolute; inset:0; transform-origin:50% 50%; transition:transform .8s cubic-bezier(.2,.7,.25,1); will-change:transform; }
-.mtmap__tilt.is-flying { transition:transform .6s cubic-bezier(.22,.61,.36,1); }
-.mtmap__tilt.is-dragging { transition:none; }
+.mtmap__tilt { position:absolute; inset:0; transform:perspective(1500px) rotateX(30deg); transform-origin:50% 42%; }
 .mtmap__pan { position:absolute; inset:0; cursor:grab; }
 .mtmap__pan:active { cursor:grabbing; }
 .mtmap__pan.is-flying { transition:transform .6s cubic-bezier(.22,.61,.36,1); }
-.mtmap__svg { width:100%; height:100%; display:block; overflow:visible; animation:mtEnter .7s ease both; }
+.mtmap__svg { width:100%; height:100%; display:block; overflow:visible; }
 
-/* rótulo do nome da cidade ao passar o mouse (pílula branca estilo mapa) */
-.mtmap__tip {
-  position:absolute; z-index:15; transform:translate(-50%, calc(-100% - 14px));
-  pointer-events:none; white-space:nowrap;
-  background:#fff; color:#1a2b17; font-size:.8rem; font-weight:700;
-  padding:.3rem .65rem; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.4);
+/* extrusao (efeito de espessura) via sombras empilhadas */
+.mtmap__faces {
+  filter:
+    drop-shadow(0 1px 0 #071d33) drop-shadow(0 2px 0 #071d33)
+    drop-shadow(0 3px 0 #06182b) drop-shadow(0 5px 0 #06182b)
+    drop-shadow(0 7px 0 #050f1f) drop-shadow(0 11px 16px rgba(0,0,0,.55));
 }
-.mtmap__tip::after {
-  content:''; position:absolute; left:50%; top:100%; transform:translateX(-50%);
-  border:6px solid transparent; border-top-color:#fff;
-}
-
-/* mapa PLANO (estilo Google Maps) — sem sombra/relevo em repouso */
-.mtmap__land { filter: none; }
-/* municípios: terra clara (estilo Google) com divisa suave; destaques sólidos */
 .mtmap__muni {
-  fill:url(#mtLand); stroke:#a7bd92; stroke-width:.45;
+  fill:#224973; stroke:rgba(255,255,255,.12); stroke-width:.6;
   transform-box:fill-box; transform-origin:center;
   transition:fill .18s, transform .18s, stroke .18s;
   cursor:pointer;
 }
-.mtmap__muni.is-covered { fill:#16b552; stroke:#0a7a35; }
-.mtmap__muni.is-hover { fill:#c2d6a8; }
-.mtmap__muni.is-covered.is-hover { fill:#1ecf63; }
-.mtmap__muni.is-selected { fill:var(--AU); stroke:#7a5c00; stroke-width:.9; transform:translateY(-5px); }
-.mtmap__muni.is-covered.is-selected { fill:#1ecf63; stroke:#0a7a35; stroke-width:1; }
-
-/* pinos de cidade com líder */
-.mtmap__markers { pointer-events:none; }
-.mtmap__pin { fill:#12b84b; stroke:#fff; stroke-width:1.6; }
-.mtmap__pin.is-covered { animation:mtPinPulse 2.4s ease-in-out infinite; }
-.mtmap__pin.is-selected { fill:var(--AU); stroke:#5a4400; stroke-width:1.4; animation:none; filter:none; }
+.mtmap__muni.is-covered { fill:var(--B); stroke:rgba(255,255,255,.35); }
+.mtmap__muni.is-hover { fill:#3a6da3; transform:translateY(-4px); }
+.mtmap__muni.is-covered.is-hover { fill:#19d466; }
+.mtmap__muni.is-selected { fill:var(--AU); stroke:#fff; stroke-width:1.1; transform:translateY(-6px); }
+.mtmap__muni.is-covered.is-selected { fill:#26e072; stroke:var(--AU); stroke-width:1.4; }
 
 .mtmap__readout {
-  position:absolute; left:50%; bottom:.6rem; transform:translateX(-50%); pointer-events:none;
-  font-size:.76rem; font-weight:700; letter-spacing:.02em; color:var(--G);
-  background:rgba(255,255,255,.72); padding:.3rem .8rem; border-radius:999px; backdrop-filter:blur(4px);
+  position:absolute; left:0; right:0; bottom:.9rem; text-align:center; pointer-events:none;
+  font-size:.82rem; font-weight:600; letter-spacing:.02em; color:rgba(255,255,255,.82);
+  text-shadow:0 1px 8px rgba(0,0,0,.6);
 }
-.mtmap__controls { position:absolute; top:.4rem; right:.4rem; display:flex; flex-direction:column; gap:.4rem; }
+.mtmap__controls { position:absolute; top:.8rem; right:.8rem; display:flex; flex-direction:column; gap:.4rem; }
 .mtmap__controls button {
   width:2.3rem; height:2.3rem; display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(13,59,102,.18); background:rgba(255,255,255,.82); color:var(--G);
+  border:1px solid rgba(255,255,255,.16); background:rgba(8,20,36,.7); color:#fff;
   border-radius:9px; font-size:1.2rem; line-height:1; cursor:pointer; backdrop-filter:blur(4px);
-  transition:background .15s, border-color .15s; box-shadow:0 4px 12px rgba(13,30,50,.12);
+  transition:background .15s, border-color .15s;
 }
-.mtmap__controls button:hover { background:var(--B); border-color:var(--B); color:#fff; }
+.mtmap__controls button:hover { background:rgba(0,184,75,.35); border-color:var(--B); }
 
 /* painel da cidade */
 .mtmap__panel {
@@ -1733,13 +1700,8 @@ html.a11y-contrast .foot-bottom a {
 
 @keyframes mtFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
 @keyframes mtPanelIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-@keyframes mtPinPulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
-@keyframes mtEnter { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion:reduce) {
   .mtmap__float { animation:none; }
-  .mtmap__tilt { transition:none; }
-  .mtmap__svg { animation:none; }
   .mtmap__pan.is-flying { transition:none; }
   .mtmap__muni { transition:none; }
-  .mtmap__pin.is-covered { animation:none; }
 }
