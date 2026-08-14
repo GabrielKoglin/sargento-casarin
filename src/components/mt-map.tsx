@@ -48,6 +48,12 @@ const MIN_SCALE = 1;
 const MAX_SCALE = 6;
 const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(n, lo), hi);
 
+// Rotação 3D do mapa (arrastar gira de verdade). rx = inclinação, rz = giro.
+const BASE_ROT = { rx: 18, rz: 0 };
+const ENTER_ROT = { rx: 58, rz: -18 };
+const MIN_TILT = 4;
+const MAX_TILT = 72;
+
 export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   const [geo, setGeo] = useState<Geo | null>(null);
   const [query, setQuery] = useState("");
@@ -59,6 +65,9 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ x: 0, y: 0, s: 1 });
   const [flying, setFlying] = useState(false);
+  // Rotação 3D controlada pelo arrasto; começa "deitada" e assenta na entrada.
+  const [rot, setRot] = useState(ENTER_ROT);
+  const [dragging, setDragging] = useState(false);
 
   // Carrega a geometria uma vez.
   useEffect(() => {
@@ -73,6 +82,14 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
       alive = false;
     };
   }, []);
+
+  // Entrada: quando o mapa carrega, "assenta" do ângulo dramático para a base
+  // (a transição do .mtmap__tilt anima esse movimento — revela que é 3D).
+  useEffect(() => {
+    if (!geo) return;
+    const t = window.setTimeout(() => setRot(BASE_ROT), 90);
+    return () => window.clearTimeout(t);
+  }, [geo]);
 
   // Índice de líderes por código IBGE e por nome (fallback sem código).
   const { byCode, bySlug } = useMemo(() => {
@@ -128,6 +145,7 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   const focusMuni = useCallback(
     (m: Muni) => {
       setSelected(m);
+      setRot(BASE_ROT); // volta à orientação base para o fly-to centralizar certo
       const stage = stageRef.current;
       if (!stage || m.cx == null || m.cy == null) return;
       const rect = stage.getBoundingClientRect();
@@ -159,6 +177,7 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   const resetView = useCallback(() => {
     setFlying(true);
     setView({ x: 0, y: 0, s: 1 });
+    setRot(BASE_ROT);
     window.setTimeout(() => setFlying(false), 650);
   }, []);
 
@@ -168,24 +187,31 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
     window.setTimeout(() => setFlying(false), 300);
   }, []);
 
-  // ---- arrastar (pan) ----
-  const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  // ---- arrastar = GIRAR o mapa em 3D (rx = inclina, rz = gira) ----
+  const drag = useRef<{ x: number; y: number } | null>(null);
+  const moved = useRef(false);
   const onPointerDown = (e: ReactPointerEvent) => {
-    drag.current = { x: e.clientX, y: e.clientY, moved: false };
+    drag.current = { x: e.clientX, y: e.clientY };
+    moved.current = false;
+    setDragging(true);
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
   };
   const onPointerMove = (e: ReactPointerEvent) => {
     if (!drag.current) return;
     const dx = e.clientX - drag.current.x;
     const dy = e.clientY - drag.current.y;
-    if (Math.abs(dx) + Math.abs(dy) > 3) drag.current.moved = true;
+    if (Math.abs(dx) + Math.abs(dy) > 3) moved.current = true;
     drag.current.x = e.clientX;
     drag.current.y = e.clientY;
-    setView((v) => ({ ...v, x: v.x + dx, y: v.y + dy }));
+    setRot((r) => ({
+      rx: clamp(r.rx + dy * 0.25, MIN_TILT, MAX_TILT),
+      rz: r.rz + dx * 0.3,
+    }));
   };
   const onPointerUp = (e: ReactPointerEvent) => {
     (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
     drag.current = null;
+    setDragging(false);
   };
   const onWheel = (e: React.WheelEvent) => {
     if (!stageRef.current) return;
@@ -193,9 +219,9 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
     setView((v) => ({ ...v, s: clamp(v.s * factor, MIN_SCALE, MAX_SCALE) }));
   };
 
-  // Clique num município (só conta se não foi arrasto).
+  // Clique num município (só seleciona se NÃO foi um arrasto/giro).
   const onMuniClick = (m: Muni) => {
-    if (drag.current?.moved) return;
+    if (moved.current) return;
     selectByMuni(m);
   };
 
@@ -277,8 +303,13 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
           <div className="mtmap__loading">Carregando o mapa de Mato Grosso…</div>
         ) : (
           <>
-            <div className="mtmap__float">
-              <div className="mtmap__tilt">
+            <div className={`mtmap__float${dragging ? " is-paused" : ""}`}>
+              <div
+                className={`mtmap__tilt${dragging ? " is-dragging" : ""}${flying ? " is-flying" : ""}`}
+                style={{
+                  transform: `perspective(1900px) rotateX(${rot.rx}deg) rotateZ(${rot.rz}deg)`,
+                }}
+              >
                 <div
                   className={`mtmap__pan${flying ? " is-flying" : ""}`}
                   style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.s})` }}

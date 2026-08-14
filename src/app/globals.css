@@ -1605,19 +1605,19 @@ html.a11y-contrast .foot-bottom a {
 }
 .mtmap__loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(28,40,24,.5); font-size:.95rem; }
 .mtmap__float { position:absolute; inset:0; animation:mtFloat 8s ease-in-out infinite; }
-.mtmap__tilt { position:absolute; inset:0; transform:perspective(1700px) rotateX(24deg); transform-origin:50% 46%; }
+.mtmap__float.is-paused { animation-play-state:paused; }
+/* inclinação/giro 3D vem do inline (state). transição só na entrada e no fly-to */
+.mtmap__tilt { position:absolute; inset:0; transform-origin:50% 50%; transition:transform .8s cubic-bezier(.2,.7,.25,1); will-change:transform; }
+.mtmap__tilt.is-flying { transition:transform .6s cubic-bezier(.22,.61,.36,1); }
+.mtmap__tilt.is-dragging { transition:none; }
 .mtmap__pan { position:absolute; inset:0; cursor:grab; }
 .mtmap__pan:active { cursor:grabbing; }
 .mtmap__pan.is-flying { transition:transform .6s cubic-bezier(.22,.61,.36,1); }
 .mtmap__svg { width:100%; height:100%; display:block; overflow:visible; }
 
-/* extrusão (espessura 3D) — laterais verde-oliva de um mapa claro em relevo */
+/* mapa PLANO visto em ângulo (3D) — só uma sombra suave de contato, sem relevo */
 .mtmap__land {
-  filter:
-    drop-shadow(0 1px 0 #a7bd8f) drop-shadow(0 2px 0 #9db485)
-    drop-shadow(0 3px 0 #93aa7b) drop-shadow(0 4px 0 #89a071)
-    drop-shadow(0 5px 0 #7f9667) drop-shadow(0 6px 0 #758c5d)
-    drop-shadow(0 14px 20px rgba(20,40,10,.45));
+  filter: drop-shadow(0 14px 22px rgba(10,25,5,.4));
 }
 /* municípios: terra clara (estilo Google) com divisa suave; destaques sólidos */
 .mtmap__muni {
@@ -1711,6 +1711,7 @@ html.a11y-contrast .foot-bottom a {
 @keyframes mtPinPulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
 @media (prefers-reduced-motion:reduce) {
   .mtmap__float { animation:none; }
+  .mtmap__tilt { transition:none; }
   .mtmap__pan.is-flying { transition:none; }
   .mtmap__muni { transition:none; }
   .mtmap__pin.is-covered { animation:none; }
