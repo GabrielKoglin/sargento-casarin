@@ -30,6 +30,7 @@ const NAV_ITEMS: AdminNavItem[] = [
   { href: "/admin/conteudo", label: "Conteúdo", icon: "conteudo" },
   { href: "/admin/mensagens", label: "Mensagens", icon: "mensagens" },
   { href: "/admin/adesivos", label: "Adesivos", icon: "adesivos" },
+  { href: "/admin/apoiadores", label: "Apoiadores", icon: "apoiadores" },
   { href: "/admin/equipe", label: "Equipe", icon: "equipe" },
   { href: "/admin/seguranca", label: "Segurança", icon: "seguranca" },
   { href: "/admin/config", label: "Config", icon: "config" },
@@ -85,9 +86,17 @@ export default async function AdminAppLayout({
   } catch {
     pendingStickers = 0;
   }
+  // Badge da aba "Apoiadores": cadastros de líder aguardando aprovação.
+  let pendingLeaders = 0;
+  try {
+    pendingLeaders = await prisma.leader.count({ where: { status: "pending" } });
+  } catch {
+    pendingLeaders = 0;
+  }
   const navItems: AdminNavItem[] = NAV_ITEMS.map((item) => {
     if (item.href === "/admin/mensagens") return { ...item, badge: unread };
     if (item.href === "/admin/adesivos") return { ...item, badge: pendingStickers };
+    if (item.href === "/admin/apoiadores") return { ...item, badge: pendingLeaders };
     return item;
   });
 

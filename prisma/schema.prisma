@@ -142,6 +142,25 @@ model StickerRequest {
   @@index([delivered])
 }
 
+// Líderes/apoiadores por cidade — a página /adesivos mostra um mapa de MT e, ao
+// clicar numa cidade, leva ao WhatsApp do líder responsável por entregar os
+// adesivos ali. `status`: "active" (aparece no mapa) | "pending" (cadastro
+// feito pelo próprio apoiador em "Quero ser líder", aguardando aprovação). O
+// `cityCode` é o código IBGE (7 dígitos) do município, usado para casar com a
+// malha do mapa de forma confiável (nomes variam em acento/grafia).
+model Leader {
+  id        String   @id @default(cuid())
+  name      String
+  whatsapp  String
+  city      String
+  cityCode  String?
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([cityCode])
+}
+
 // Conteúdo editável do site (seção "Por que", bio, trajetória, comenda e listas
 // de formação/reconhecimentos). Registro ÚNICO (id fixo "main") com um documento
 // JSON — o admin edita pela aba "Conteúdo" e as páginas leem daqui, caindo nos

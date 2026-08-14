@@ -194,3 +194,68 @@ export async function saveStickerRequest(
 
   return { status: "success" };
 }
+
+// ---------------------------------------------------------------------------
+// Cadastro de líder apoiador (mapa da /adesivos → tabela Leader, status pending)
+// ---------------------------------------------------------------------------
+// Quando alguém busca a própria cidade no mapa e NÃO há líder, aparece o CTA
+// "Quero ser líder apoiador". O cadastro nasce `pending` — a equipe aprova no
+// painel antes de ele virar um contato oficial visível no mapa. Mesmo padrão
+// do saveContact: honeypot + validação + rate-limit por IP.
+export async function saveLeaderRequest(
+  _prev: ContactFormState,
+  formData: FormData,
+): Promise<ContactFormState> {
+  if (String(formData.get("website") ?? "") !== "") {
+    return { status: "success" };
+  }
+
+  const name = String(formData.get("name") ?? "").trim();
+  const whatsapp = String(formData.get("whatsapp") ?? "").trim();
+  const city = String(formData.get("city") ?? "").trim();
+  const cityCode = String(formData.get("cityCode") ?? "").trim();
+  const consent = formData.get("consent");
+
+  if (!name || !whatsapp || !city) {
+    return { status: "error", message: "Preencha nome, WhatsApp e cidade." };
+  }
+  if (!consent) {
+    return {
+      status: "error",
+      message: "É necessário autorizar o uso dos dados para continuar.",
+    };
+  }
+
+  const headerList = await headers();
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headerList.get("x-real-ip")?.trim() ||
+    null;
+
+  if (ip && isRateLimited(ip)) {
+    return {
+      status: "error",
+      message: "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+    };
+  }
+
+  try {
+    await prisma.leader.create({
+      data: {
+        name: name.slice(0, 120),
+        whatsapp: whatsapp.slice(0, 40),
+        city: city.slice(0, 120),
+        cityCode: /^\d{7}$/.test(cityCode) ? cityCode : null,
+        status: "pending",
+      },
+    });
+  } catch (error) {
+    console.error("Leader request could not be saved.", error);
+    return {
+      status: "error",
+      message: "Não foi possível enviar agora. Tente novamente em instantes.",
+    };
+  }
+
+  return { status: "success" };
+}

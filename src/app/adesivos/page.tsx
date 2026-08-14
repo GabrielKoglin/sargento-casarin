@@ -1,13 +1,33 @@
 import type { Metadata } from "next";
-import { StickerForm } from "@/components/sticker-form";
+import { prisma } from "@/lib/prisma";
+import { MtMap, type LeaderPin } from "@/components/mt-map";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Retire seu adesivo",
   description:
-    "Peça o adesivo da campanha do Sargento Dickson Casarin. Entregamos se estivermos na sua cidade; caso contrário, a retirada é com o apoiador responsável da sua cidade.",
+    "Encontre no mapa de Mato Grosso o líder apoiador do Sargento Dickson Casarin na sua cidade e retire o seu adesivo. Não tem líder por aí? Cadastre-se para ser um.",
 };
 
-export default function AdesivosPage() {
+// Uma falha de I/O não pode derrubar a página: cai numa lista vazia (o mapa
+// ainda funciona, só sem cidades marcadas) em vez de estourar 500.
+async function loadLeaders(): Promise<LeaderPin[]> {
+  try {
+    return await prisma.leader.findMany({
+      where: { status: "active" },
+      select: { id: true, name: true, whatsapp: true, city: true, cityCode: true },
+      orderBy: { city: "asc" },
+    });
+  } catch (error) {
+    console.error("Falha ao carregar líderes apoiadores.", error);
+    return [];
+  }
+}
+
+export default async function AdesivosPage() {
+  const leaders = await loadLeaders();
+
   return (
     <>
       <section className="page-hero">
@@ -18,44 +38,35 @@ export default function AdesivosPage() {
             <em>ADESIVO</em>
           </h1>
           <p className="fi d2">
-            Cole o Sargento Casarin no seu carro, na sua moto ou na sua janela e
-            ajude a espalhar a mensagem por Mato Grosso. É de graça.
+            Ache a sua cidade no mapa de Mato Grosso e fale com o líder apoiador para
+            pegar o seu adesivo. É de graça — cole o Casarin no carro, na moto ou na
+            janela e ajude a espalhar a mensagem.
           </p>
         </div>
       </section>
 
-      <div className="form-wrap">
+      <section className="section">
         <div className="container">
-          <div className="form-box">
-            <h2>Peça seu adesivo</h2>
-            <p>
-              Preencha os dados abaixo que a gente organiza a entrega. Veja como funciona:
-            </p>
+          <ul className="adesivo-how" aria-label="Como funciona">
+            <li>
+              <span className="adesivo-how__ico" aria-hidden="true">📍</span>
+              <div>
+                <strong>Tem líder na sua cidade?</strong>
+                <span>Você fala direto com ele no WhatsApp e combina a retirada.</span>
+              </div>
+            </li>
+            <li>
+              <span className="adesivo-how__ico" aria-hidden="true">🤝</span>
+              <div>
+                <strong>Ainda não tem?</strong>
+                <span>Cadastre-se para ser o líder apoiador e levar os adesivos para aí.</span>
+              </div>
+            </li>
+          </ul>
 
-            <ul className="adesivo-how" aria-label="Como funciona">
-              <li>
-                <span className="adesivo-how__ico" aria-hidden="true">🚚</span>
-                <div>
-                  <strong>Estamos na sua cidade?</strong>
-                  <span>A gente entrega o adesivo no seu endereço.</span>
-                </div>
-              </li>
-              <li>
-                <span className="adesivo-how__ico" aria-hidden="true">🤝</span>
-                <div>
-                  <strong>Não estamos por aí?</strong>
-                  <span>
-                    O apoiador responsável da sua cidade fala com você pelo WhatsApp
-                    para combinar a retirada.
-                  </span>
-                </div>
-              </li>
-            </ul>
-
-            <StickerForm />
-          </div>
+          <MtMap leaders={leaders} />
         </div>
-      </div>
+      </section>
     </>
   );
 }
