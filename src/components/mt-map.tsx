@@ -293,30 +293,95 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
                     preserveAspectRatio="xMidYMid meet"
                     onWheel={onWheel}
                   >
-                    <g className="mtmap__faces">
-                      {geo.municipios.map((m) =>
-                        m.d ? (
-                          <path
+                    <defs>
+                      {/* cor base da terra (cerrado: verde -> terra) */}
+                      <linearGradient id="mtLand" x1="0" y1="0" x2="0.15" y2="1">
+                        <stop offset="0" stopColor="#c3c47c" />
+                        <stop offset="0.5" stopColor="#ada05f" />
+                        <stop offset="1" stopColor="#94824e" />
+                      </linearGradient>
+                      {/* sombreamento de relevo: ruído -> iluminação -> multiplica na terra */}
+                      <filter id="mtRelief" x="-4%" y="-4%" width="108%" height="108%">
+                        <feTurbulence
+                          type="fractalNoise"
+                          baseFrequency="0.011"
+                          numOctaves="4"
+                          seed="11"
+                          result="noise"
+                        />
+                        <feDiffuseLighting
+                          in="noise"
+                          lightingColor="#ffffff"
+                          surfaceScale="2.4"
+                          diffuseConstant="1.1"
+                          result="light"
+                        >
+                          <feDistantLight azimuth="235" elevation="55" />
+                        </feDiffuseLighting>
+                        <feComposite in="light" in2="SourceAlpha" operator="in" result="relief" />
+                        <feBlend in="SourceGraphic" in2="relief" mode="multiply" />
+                      </filter>
+                      {/* brilho dos pinos de cidade com líder */}
+                      <filter id="mtPin" x="-80%" y="-80%" width="260%" height="260%">
+                        <feGaussianBlur stdDeviation="3.5" result="b" />
+                        <feMerge>
+                          <feMergeNode in="b" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
+
+                    {/* terra com extrusão (sombra empilhada) por cima do relevo */}
+                    <g className="mtmap__land">
+                      <g className="mtmap__faces" filter="url(#mtRelief)">
+                        {geo.municipios.map((m) =>
+                          m.d ? (
+                            <path
+                              key={m.code}
+                              d={m.d}
+                              data-code={m.code}
+                              data-slug={m.slug}
+                              className={[
+                                "mtmap__muni",
+                                isCovered(m) ? "is-covered" : "",
+                                selected?.code === m.code ? "is-selected" : "",
+                                hover === m.code ? "is-hover" : "",
+                              ]
+                                .filter(Boolean)
+                                .join(" ")}
+                              onMouseEnter={() => setHover(m.code)}
+                              onMouseLeave={() => setHover((h) => (h === m.code ? null : h))}
+                              onClick={() => onMuniClick(m)}
+                            >
+                              <title>{m.name}</title>
+                            </path>
+                          ) : null,
+                        )}
+                      </g>
+                    </g>
+
+                    {/* pinos das cidades com líder (e da selecionada) */}
+                    <g className="mtmap__markers">
+                      {geo.municipios.map((m) => {
+                        const sel = selected?.code === m.code;
+                        if (m.cx == null || m.cy == null || (!isCovered(m) && !sel)) return null;
+                        return (
+                          <circle
                             key={m.code}
-                            d={m.d}
-                            data-code={m.code}
-                            data-slug={m.slug}
+                            cx={m.cx}
+                            cy={m.cy}
+                            r={sel ? 9 : 6.5}
+                            filter="url(#mtPin)"
                             className={[
-                              "mtmap__muni",
+                              "mtmap__pin",
                               isCovered(m) ? "is-covered" : "",
-                              selected?.code === m.code ? "is-selected" : "",
-                              hover === m.code ? "is-hover" : "",
+                              sel ? "is-selected" : "",
                             ]
                               .filter(Boolean)
                               .join(" ")}
-                            onMouseEnter={() => setHover(m.code)}
-                            onMouseLeave={() => setHover((h) => (h === m.code ? null : h))}
-                            onClick={() => onMuniClick(m)}
-                          >
-                            <title>{m.name}</title>
-                          </path>
-                        ) : null,
-                      )}
+                          />
+                        );
+                      })}
                     </g>
                   </svg>
                 </div>

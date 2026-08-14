@@ -1597,52 +1597,58 @@ html.a11y-contrast .foot-bottom a {
 .mtmap__legend-count { margin-left:auto; font-weight:700; color:var(--G); }
 
 /* palco 3D */
+/* SEM moldura: o mapa "flutua" na página (fora do quadro) */
 .mtmap__stage {
-  position:relative; height:clamp(400px, 58vh, 620px); border-radius:16px; overflow:hidden;
-  background:radial-gradient(120% 90% at 50% -5%, #143560 0%, #0a1c34 55%, #050d1c 100%);
-  border:1px solid rgba(255,255,255,.08); box-shadow:inset 0 0 80px rgba(0,0,0,.45);
+  position:relative; height:clamp(430px, 64vh, 680px); overflow:hidden;
+  background:radial-gradient(70% 60% at 50% 32%, rgba(13,59,102,.06), transparent 72%);
   touch-action:none;
 }
-.mtmap__loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.6); font-size:.95rem; }
+.mtmap__loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(28,40,24,.5); font-size:.95rem; }
 .mtmap__float { position:absolute; inset:0; animation:mtFloat 8s ease-in-out infinite; }
-.mtmap__tilt { position:absolute; inset:0; transform:perspective(1500px) rotateX(30deg); transform-origin:50% 42%; }
+.mtmap__tilt { position:absolute; inset:0; transform:perspective(1600px) rotateX(31deg); transform-origin:50% 44%; }
 .mtmap__pan { position:absolute; inset:0; cursor:grab; }
 .mtmap__pan:active { cursor:grabbing; }
 .mtmap__pan.is-flying { transition:transform .6s cubic-bezier(.22,.61,.36,1); }
 .mtmap__svg { width:100%; height:100%; display:block; overflow:visible; }
 
-/* extrusao (efeito de espessura) via sombras empilhadas */
-.mtmap__faces {
+/* extrusão (espessura de mapa físico) — sombra terrosa empilhada, fora do relevo */
+.mtmap__land {
   filter:
-    drop-shadow(0 1px 0 #071d33) drop-shadow(0 2px 0 #071d33)
-    drop-shadow(0 3px 0 #06182b) drop-shadow(0 5px 0 #06182b)
-    drop-shadow(0 7px 0 #050f1f) drop-shadow(0 11px 16px rgba(0,0,0,.55));
+    drop-shadow(0 1.5px 0 #7c6538) drop-shadow(0 3px 0 #6b5731)
+    drop-shadow(0 5px 0 #5a4a2a) drop-shadow(0 7px 0 #4b3e23)
+    drop-shadow(0 9px 0 #3d331d) drop-shadow(0 16px 20px rgba(35,25,8,.42));
 }
 .mtmap__muni {
-  fill:#224973; stroke:rgba(255,255,255,.12); stroke-width:.6;
+  fill:url(#mtLand); stroke:rgba(70,52,22,.35); stroke-width:.5;
   transform-box:fill-box; transform-origin:center;
   transition:fill .18s, transform .18s, stroke .18s;
   cursor:pointer;
 }
-.mtmap__muni.is-covered { fill:var(--B); stroke:rgba(255,255,255,.35); }
-.mtmap__muni.is-hover { fill:#3a6da3; transform:translateY(-4px); }
-.mtmap__muni.is-covered.is-hover { fill:#19d466; }
-.mtmap__muni.is-selected { fill:var(--AU); stroke:#fff; stroke-width:1.1; transform:translateY(-6px); }
-.mtmap__muni.is-covered.is-selected { fill:#26e072; stroke:var(--AU); stroke-width:1.4; }
+.mtmap__muni.is-covered { fill:#7bbf5a; }
+.mtmap__muni.is-hover { fill:#dedaa0; }
+.mtmap__muni.is-covered.is-hover { fill:#8fd268; }
+.mtmap__muni.is-selected { fill:#f0cf5a; stroke:#fff; stroke-width:1; transform:translateY(-6px); }
+.mtmap__muni.is-covered.is-selected { fill:#8ada5f; stroke:#fff; stroke-width:1.2; }
+
+/* pinos de cidade com líder */
+.mtmap__markers { pointer-events:none; }
+.mtmap__pin { fill:#12b84b; stroke:#fff; stroke-width:1.6; }
+.mtmap__pin.is-covered { animation:mtPinPulse 2.4s ease-in-out infinite; }
+.mtmap__pin.is-selected { fill:var(--AU); stroke:#3a2c00; stroke-width:1.4; animation:none; }
 
 .mtmap__readout {
-  position:absolute; left:0; right:0; bottom:.9rem; text-align:center; pointer-events:none;
-  font-size:.82rem; font-weight:600; letter-spacing:.02em; color:rgba(255,255,255,.82);
-  text-shadow:0 1px 8px rgba(0,0,0,.6);
+  position:absolute; left:50%; bottom:.6rem; transform:translateX(-50%); pointer-events:none;
+  font-size:.76rem; font-weight:700; letter-spacing:.02em; color:var(--G);
+  background:rgba(255,255,255,.72); padding:.3rem .8rem; border-radius:999px; backdrop-filter:blur(4px);
 }
-.mtmap__controls { position:absolute; top:.8rem; right:.8rem; display:flex; flex-direction:column; gap:.4rem; }
+.mtmap__controls { position:absolute; top:.4rem; right:.4rem; display:flex; flex-direction:column; gap:.4rem; }
 .mtmap__controls button {
   width:2.3rem; height:2.3rem; display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(255,255,255,.16); background:rgba(8,20,36,.7); color:#fff;
+  border:1px solid rgba(13,59,102,.18); background:rgba(255,255,255,.82); color:var(--G);
   border-radius:9px; font-size:1.2rem; line-height:1; cursor:pointer; backdrop-filter:blur(4px);
-  transition:background .15s, border-color .15s;
+  transition:background .15s, border-color .15s; box-shadow:0 4px 12px rgba(13,30,50,.12);
 }
-.mtmap__controls button:hover { background:rgba(0,184,75,.35); border-color:var(--B); }
+.mtmap__controls button:hover { background:var(--B); border-color:var(--B); color:#fff; }
 
 /* painel da cidade */
 .mtmap__panel {
@@ -1700,8 +1706,10 @@ html.a11y-contrast .foot-bottom a {
 
 @keyframes mtFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
 @keyframes mtPanelIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+@keyframes mtPinPulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
 @media (prefers-reduced-motion:reduce) {
   .mtmap__float { animation:none; }
   .mtmap__pan.is-flying { transition:none; }
   .mtmap__muni { transition:none; }
+  .mtmap__pin.is-covered { animation:none; }
 }
