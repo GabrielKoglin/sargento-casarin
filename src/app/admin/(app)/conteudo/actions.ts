@@ -52,6 +52,7 @@ export async function saveSiteContent(
   revalidatePath("/");
   revalidatePath("/sobre");
   revalidatePath("/manifesto");
+  revalidatePath("/propostas");
   revalidatePath("/tropa");
   revalidatePath("/ajudar");
   revalidatePath("/midias");

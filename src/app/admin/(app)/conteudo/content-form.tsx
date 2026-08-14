@@ -29,6 +29,8 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
     setData((d) => ({ ...d, trajetoria: { steps } }));
   const setManifesto = (patch: Partial<SiteContentData["manifesto"]>) =>
     setData((d) => ({ ...d, manifesto: { ...d.manifesto, ...patch } }));
+  const setPropostasPage = (patch: Partial<SiteContentData["propostasPage"]>) =>
+    setData((d) => ({ ...d, propostasPage: { ...d.propostasPage, ...patch } }));
   const setHome = (patch: Partial<SiteContentData["home"]>) =>
     setData((d) => ({ ...d, home: { ...d.home, ...patch } }));
   const setTropa = (patch: Partial<SiteContentData["tropa"]>) =>
@@ -154,6 +156,27 @@ export function ContentForm({ initial }: { initial: SiteContentData }) {
           onChange={(paragraphs) => setManifesto({ paragraphs })}
           multiline
           addLabel="+ Parágrafo"
+        />
+      </details>
+
+      {/* ------------------------------------------------ Propostas (página) */}
+      <details className="admin-form-card admin-acc">
+        <summary className="admin-acc__summary admin-section-title">Propostas — Hero (topo da página)</summary>
+        <Field
+          label="Rótulo (eyebrow)"
+          value={data.propostasPage.heroEyebrow}
+          onChange={(v) => setPropostasPage({ heroEyebrow: v })}
+        />
+        <Field
+          label="Título (use *palavra* p/ destaque)"
+          value={data.propostasPage.heroTitle}
+          onChange={(v) => setPropostasPage({ heroTitle: v })}
+        />
+        <Field
+          label="Chamada"
+          value={data.propostasPage.heroLead}
+          onChange={(v) => setPropostasPage({ heroLead: v })}
+          multiline
         />
       </details>
 

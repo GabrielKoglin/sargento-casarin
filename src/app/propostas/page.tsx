@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { Proposal } from "@/generated/prisma/client";
 import { ProposalIcon } from "@/components/proposal-icon";
+import { getSiteContent, renderHeading } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
 
@@ -26,19 +27,19 @@ async function loadPropostas(): Promise<Proposal[]> {
 }
 
 export default async function PropostasPage() {
-  const propostas = await loadPropostas();
+  const [propostas, content] = await Promise.all([
+    loadPropostas(),
+    getSiteContent(),
+  ]);
+  const hero = content.propostasPage;
 
   return (
     <>
       <section className="page-hero">
         <div className="container">
-          <div className="eyebrow sl">Eixos de atuação</div>
-          <h1 className="sl d1">
-            PLANOS DE <em>AÇÃO</em>
-          </h1>
-          <p className="fi d2">
-            O que o Sargento Casarin vai defender na Assembleia Legislativa de Mato Grosso.
-          </p>
+          <div className="eyebrow sl">{hero.heroEyebrow}</div>
+          <h1 className="sl d1">{renderHeading(hero.heroTitle)}</h1>
+          <p className="fi d2">{hero.heroLead}</p>
         </div>
       </section>
 

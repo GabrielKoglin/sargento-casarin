@@ -90,6 +90,11 @@ export type SiteContentData = {
     ctaTitle: string;
     ctaText: string;
   };
+  propostasPage: {
+    heroEyebrow: string;
+    heroTitle: string;
+    heroLead: string;
+  };
   contato: {
     heroEyebrow: string;
     heroTitle: string;
@@ -278,6 +283,12 @@ export const DEFAULT_CONTENT: SiteContentData = {
     ],
     ctaTitle: "Não perca nenhuma novidade",
     ctaText: "Entre nos nossos grupos e receba os conteúdos direto no seu WhatsApp.",
+  },
+  propostasPage: {
+    heroEyebrow: "Eixos de atuação",
+    heroTitle: "PLANOS DE *AÇÃO*",
+    heroLead:
+      "O que o Sargento Casarin vai defender na Assembleia Legislativa de Mato Grosso.",
   },
   contato: {
     heroEyebrow: "Canal direto",
@@ -508,6 +519,7 @@ function coerce(raw: unknown): SiteContentData {
   const traj = sec("trajetoria");
   const com = sec("comenda");
   const creds = sec("creds");
+  const pp = sec("propostasPage");
   const steps = Array.isArray(traj.steps)
     ? (traj.steps as unknown[])
         .map((s) => {
@@ -647,6 +659,11 @@ function coerce(raw: unknown): SiteContentData {
       canais: canais.length ? canais : d.midias.canais,
       ctaTitle: str(midias.ctaTitle, d.midias.ctaTitle),
       ctaText: str(midias.ctaText, d.midias.ctaText),
+    },
+    propostasPage: {
+      heroEyebrow: str(pp.heroEyebrow, d.propostasPage.heroEyebrow),
+      heroTitle: str(pp.heroTitle, d.propostasPage.heroTitle),
+      heroLead: str(pp.heroLead, d.propostasPage.heroLead),
     },
     contato: {
       heroEyebrow: str(contato.heroEyebrow, d.contato.heroEyebrow),
