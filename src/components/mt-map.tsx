@@ -1,25 +1,17 @@
 "use client";
 
 // ============================================================================
-// mt-map.tsx — mapa 3D interativo de Mato Grosso (142 municípios) + busca
+// mt-map.tsx — mapa REAL de Mato Grosso (Leaflet + tiles CARTO) + líderes
 // ============================================================================
-// Fluxo (página /adesivos): o usuário navega/gira o mapa, busca a própria
-// cidade e clica. Se houver LÍDER APOIADOR ali, abre o WhatsApp dele para
-// combinar a retirada do adesivo. Se não houver, aparece o convite "Quero ser
-// líder apoiador" (cadastro que nasce pendente, aprovado no painel).
-//
-// Geometria: /data/mt-municipios.json (malha do IBGE já projetada em SVG).
-// Efeito 3D: perspective + rotateX no palco + extrusão por drop-shadow empilhado
-// (leve, sem WebGL). Acessibilidade: a BUSCA é o caminho principal (combobox);
-// o mapa é um reforço visual. Respeita prefers-reduced-motion (sem flutuação).
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
+// Página /adesivos: mapa navegável de verdade (ruas, cidades, zoom real). As
+// cidades COM líder ganham um pino verde; clicar (ou buscar) abre o painel com
+// o WhatsApp do líder — ou o convite "Quero ser líder apoiador" se não houver.
+// Leaflet é carregado dinamicamente (só no cliente). Tiles: CARTO Voyager
+// (visual claro estilo Google), OpenStreetMap + CARTO com atribuição.
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import "leaflet/dist/leaflet.css";
+import type { Map as LeafletMap, Marker } from "leaflet";
+import { MT_CITIES, type MtCity } from "@/data/mt-cities";
 import { waLink } from "@/lib/whatsapp";
 import { LeaderSignup } from "@/components/leader-signup";
 
@@ -31,67 +23,25 @@ export type LeaderPin = {
   cityCode: string | null;
 };
 
-type Muni = {
-  code: string;
-  name: string;
-  slug: string;
-  d: string;
-  cx: number | null;
-  cy: number | null;
-};
-type Geo = { viewBox: string; width: number; height: number; municipios: Muni[] };
-
 const norm = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
-const MIN_SCALE = 1;
-const MAX_SCALE = 6;
-const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(n, lo), hi);
-
-// Visual PLANO por padrão (estilo Google Maps). O arrasto pode inclinar/girar
-// em 3D (rx = inclinação, rz = giro), mas em repouso fica chapado (rx=0).
-const BASE_ROT = { rx: 0, rz: 0 };
-const ENTER_ROT = { rx: 0, rz: 0 };
-const MIN_TILT = 0;
-const MAX_TILT = 70;
+// Enquadramento de Mato Grosso (bbox aproximado da malha do IBGE).
+const MT_BOUNDS: [[number, number], [number, number]] = [
+  [-18.1, -61.7],
+  [-7.3, -50.2],
+];
 
 export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
-  const [geo, setGeo] = useState<Geo | null>(null);
+  const mapEl = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const markersRef = useRef<Marker[]>([]);
+  const [ready, setReady] = useState(false);
+
   const [query, setQuery] = useState("");
   const [openList, setOpenList] = useState(false);
-  const [selected, setSelected] = useState<Muni | null>(null);
-  const [hover, setHover] = useState<string | null>(null);
-  const [hoverPos, setHoverPos] = useState({ x: 0, y: 0 });
-  const [signupCity, setSignupCity] = useState<Muni | null>(null);
-
-  const stageRef = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState({ x: 0, y: 0, s: 1 });
-  const [flying, setFlying] = useState(false);
-  // Rotação 3D controlada pelo arrasto; começa "deitada" e assenta na entrada.
-  const [rot, setRot] = useState(ENTER_ROT);
-  const [dragging, setDragging] = useState(false);
-
-  // Carrega a geometria uma vez.
-  useEffect(() => {
-    let alive = true;
-    fetch("/data/mt-municipios.json")
-      .then((r) => r.json())
-      .then((g: Geo) => {
-        if (alive) setGeo(g);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // Entrada: quando o mapa carrega, "assenta" do ângulo dramático para a base
-  // (a transição do .mtmap__tilt anima esse movimento — revela que é 3D).
-  useEffect(() => {
-    if (!geo) return;
-    const t = window.setTimeout(() => setRot(BASE_ROT), 90);
-    return () => window.clearTimeout(t);
-  }, [geo]);
+  const [selected, setSelected] = useState<MtCity | null>(null);
+  const [signupCity, setSignupCity] = useState<MtCity | null>(null);
 
   // Índice de líderes por código IBGE e por nome (fallback sem código).
   const { byCode, bySlug } = useMemo(() => {
@@ -112,120 +62,99 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   }, [leaders]);
 
   const leadersFor = useCallback(
-    (m: Muni | null): LeaderPin[] => {
-      if (!m) return [];
-      return byCode.get(m.code) ?? bySlug.get(m.slug) ?? [];
-    },
+    (c: MtCity | null): LeaderPin[] =>
+      c ? byCode.get(c.code) ?? bySlug.get(c.slug) ?? [] : [],
     [byCode, bySlug],
   );
   const isCovered = useCallback(
-    (m: Muni) => byCode.has(m.code) || bySlug.has(m.slug),
+    (c: MtCity) => byCode.has(c.code) || bySlug.has(c.slug),
     [byCode, bySlug],
   );
-
-  const coveredCount = useMemo(
-    () => (geo ? geo.municipios.filter(isCovered).length : 0),
-    [geo, isCovered],
+  const coveredCities = useMemo(
+    () => MT_CITIES.filter(isCovered),
+    [isCovered],
   );
 
-  const [vbW, vbH] = useMemo(() => {
-    if (!geo) return [1000, 962];
-    const p = geo.viewBox.split(" ").map(Number);
-    return [p[2], p[3]];
-  }, [geo]);
+  const selectCity = useCallback((c: MtCity) => {
+    setSelected(c);
+    setSignupCity(null);
+    setQuery(c.name);
+    setOpenList(false);
+    mapRef.current?.flyTo([c.lat, c.lng], 9, { duration: 0.9 });
+  }, []);
+
+  // Inicializa o mapa Leaflet uma vez (client-only).
+  useEffect(() => {
+    if (!mapEl.current || mapRef.current) return;
+    let cancelled = false;
+    let created: LeafletMap | null = null;
+    (async () => {
+      const L = (await import("leaflet")).default;
+      if (cancelled || !mapEl.current) return;
+      const map = L.map(mapEl.current, {
+        zoomControl: true,
+        attributionControl: true,
+        scrollWheelZoom: true,
+        minZoom: 5,
+        maxZoom: 16,
+      });
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+          subdomains: "abcd",
+          maxZoom: 20,
+        },
+      ).addTo(map);
+      map.fitBounds(MT_BOUNDS);
+      created = map;
+      mapRef.current = map;
+      setReady(true);
+    })();
+    return () => {
+      cancelled = true;
+      created?.remove();
+      mapRef.current = null;
+      markersRef.current = [];
+      setReady(false);
+    };
+  }, []);
+
+  // (Re)desenha os pinos dos líderes quando o mapa está pronto / a lista muda.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    let cancelled = false;
+    (async () => {
+      const L = (await import("leaflet")).default;
+      if (cancelled) return;
+      markersRef.current.forEach((m) => m.remove());
+      markersRef.current = [];
+      for (const c of coveredCities) {
+        const icon = L.divIcon({
+          className: "mtmk",
+          html: '<span class="mtmk__pin" aria-hidden="true"></span>',
+          iconSize: [22, 22],
+          iconAnchor: [11, 11],
+        });
+        const mk = L.marker([c.lat, c.lng], { icon, title: c.name }).addTo(map);
+        mk.bindTooltip(c.name, { direction: "top", offset: [0, -10] });
+        mk.on("click", () => selectCity(c));
+        markersRef.current.push(mk);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, coveredCities, selectCity]);
 
   // Busca (accent-insensitive), no máx. 8 resultados.
   const matches = useMemo(() => {
-    if (!geo || query.trim().length < 1) return [];
+    if (query.trim().length < 1) return [];
     const q = norm(query);
-    return geo.municipios
-      .filter((m) => norm(m.name).includes(q))
-      .slice(0, 8);
-  }, [geo, query]);
-
-  // Centraliza um município (fly-to) com transição suave.
-  const focusMuni = useCallback(
-    (m: Muni) => {
-      setSelected(m);
-      setRot(BASE_ROT); // volta à orientação base para o fly-to centralizar certo
-      const stage = stageRef.current;
-      if (!stage || m.cx == null || m.cy == null) return;
-      const rect = stage.getBoundingClientRect();
-      const k = Math.min(rect.width / vbW, rect.height / vbH);
-      // Posição de tela do centroide na escala base (preserveAspectRatio meet).
-      const sx = (rect.width - vbW * k) / 2 + m.cx * k;
-      const sy = (rect.height - vbH * k) / 2 + m.cy * k;
-      const s = 2.6;
-      // Compensa parcialmente a inclinação (o topo "afunda" na perspectiva).
-      const tx = s * (rect.width / 2 - sx);
-      const ty = s * (rect.height / 2 - sy) - rect.height * 0.06;
-      setFlying(true);
-      setView({ x: tx, y: ty, s });
-      window.setTimeout(() => setFlying(false), 650);
-    },
-    [vbW, vbH],
-  );
-
-  const selectByMuni = useCallback(
-    (m: Muni) => {
-      setQuery(m.name);
-      setOpenList(false);
-      setSignupCity(null);
-      focusMuni(m);
-    },
-    [focusMuni],
-  );
-
-  const resetView = useCallback(() => {
-    setFlying(true);
-    setView({ x: 0, y: 0, s: 1 });
-    setRot(BASE_ROT);
-    window.setTimeout(() => setFlying(false), 650);
-  }, []);
-
-  const zoomBy = useCallback((factor: number) => {
-    setFlying(true);
-    setView((v) => ({ ...v, s: clamp(v.s * factor, MIN_SCALE, MAX_SCALE) }));
-    window.setTimeout(() => setFlying(false), 300);
-  }, []);
-
-  // ---- arrastar = GIRAR o mapa em 3D (rx = inclina, rz = gira) ----
-  const drag = useRef<{ x: number; y: number } | null>(null);
-  const moved = useRef(false);
-  const onPointerDown = (e: ReactPointerEvent) => {
-    drag.current = { x: e.clientX, y: e.clientY };
-    moved.current = false;
-    setDragging(true);
-    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-  };
-  const onPointerMove = (e: ReactPointerEvent) => {
-    if (!drag.current) return;
-    const dx = e.clientX - drag.current.x;
-    const dy = e.clientY - drag.current.y;
-    if (Math.abs(dx) + Math.abs(dy) > 3) moved.current = true;
-    drag.current.x = e.clientX;
-    drag.current.y = e.clientY;
-    setRot((r) => ({
-      rx: clamp(r.rx + dy * 0.25, MIN_TILT, MAX_TILT),
-      rz: r.rz + dx * 0.3,
-    }));
-  };
-  const onPointerUp = (e: ReactPointerEvent) => {
-    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
-    drag.current = null;
-    setDragging(false);
-  };
-  const onWheel = (e: React.WheelEvent) => {
-    if (!stageRef.current) return;
-    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-    setView((v) => ({ ...v, s: clamp(v.s * factor, MIN_SCALE, MAX_SCALE) }));
-  };
-
-  // Clique num município (só seleciona se NÃO foi um arrasto/giro).
-  const onMuniClick = (m: Muni) => {
-    if (moved.current) return;
-    selectByMuni(m);
-  };
+    return MT_CITIES.filter((c) => norm(c.name).includes(q)).slice(0, 8);
+  }, [query]);
 
   const selectedLeaders = leadersFor(selected);
 
@@ -256,7 +185,7 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
             onKeyDown={(e) => {
               if (e.key === "Enter" && matches[0]) {
                 e.preventDefault();
-                selectByMuni(matches[0]);
+                selectCity(matches[0]);
               } else if (e.key === "Escape") {
                 setOpenList(false);
               }
@@ -277,11 +206,11 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
           )}
           {openList && matches.length > 0 && (
             <ul id="mtmap-list" className="mtmap__results" role="listbox">
-              {matches.map((m) => (
-                <li key={m.code} role="option" aria-selected={selected?.code === m.code}>
-                  <button type="button" onClick={() => selectByMuni(m)}>
-                    <span>{m.name}</span>
-                    {isCovered(m) ? (
+              {matches.map((c) => (
+                <li key={c.code} role="option" aria-selected={selected?.code === c.code}>
+                  <button type="button" onClick={() => selectCity(c)}>
+                    <span>{c.name}</span>
+                    {isCovered(c) ? (
                       <span className="mtmap__chip mtmap__chip--yes">tem líder</span>
                     ) : (
                       <span className="mtmap__chip">sem líder</span>
@@ -294,130 +223,17 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
         </div>
         <p className="mtmap__legend" aria-hidden="true">
           <span className="mtmap__dot mtmap__dot--yes"></span> cidade com líder
-          <span className="mtmap__dot"></span> ainda sem líder
-          <span className="mtmap__legend-count">{coveredCount} cidades com líder</span>
+          <span className="mtmap__legend-count">
+            {coveredCities.length} cidades com líder
+          </span>
         </p>
       </div>
 
-      {/* ---------------- palco 3D ---------------- */}
-      <div className="mtmap__stage" ref={stageRef}>
-        {!geo ? (
+      {/* ---------------- mapa real ---------------- */}
+      <div className="mtmap__stage">
+        <div ref={mapEl} className="mtmap__leaflet" />
+        {!ready && (
           <div className="mtmap__loading">Carregando o mapa de Mato Grosso…</div>
-        ) : (
-          <>
-            <div className={`mtmap__float${dragging ? " is-paused" : ""}`}>
-              <div
-                className={`mtmap__tilt${dragging ? " is-dragging" : ""}${flying ? " is-flying" : ""}`}
-                style={{
-                  transform: `perspective(1900px) rotateX(${rot.rx}deg) rotateZ(${rot.rz}deg)`,
-                }}
-              >
-                <div
-                  className={`mtmap__pan${flying ? " is-flying" : ""}`}
-                  style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.s})` }}
-                  onPointerDown={onPointerDown}
-                  onPointerMove={onPointerMove}
-                  onPointerUp={onPointerUp}
-                  onPointerCancel={onPointerUp}
-                >
-                  <svg
-                    viewBox={geo.viewBox}
-                    className="mtmap__svg"
-                    preserveAspectRatio="xMidYMid meet"
-                    onWheel={onWheel}
-                  >
-                    <defs>
-                      {/* terra clara estilo mapa (verde suave com leve gradiente) */}
-                      <linearGradient id="mtLand" x1="0.1" y1="0" x2="0.25" y2="1">
-                        <stop offset="0" stopColor="#dcecc9" />
-                        <stop offset="1" stopColor="#c4dbac" />
-                      </linearGradient>
-                      {/* brilho suave dos pinos de cidade com líder */}
-                      <filter id="mtPin" x="-120%" y="-120%" width="340%" height="340%">
-                        <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#0a8f3c" floodOpacity="0.9" />
-                      </filter>
-                    </defs>
-
-                    {/* terra vetorial clara + extrusão (espessura 3D) */}
-                    <g className="mtmap__land">
-                      <g className="mtmap__faces">
-                        {geo.municipios.map((m) =>
-                          m.d ? (
-                            <path
-                              key={m.code}
-                              d={m.d}
-                              data-code={m.code}
-                              data-slug={m.slug}
-                              className={[
-                                "mtmap__muni",
-                                isCovered(m) ? "is-covered" : "",
-                                selected?.code === m.code ? "is-selected" : "",
-                                hover === m.code ? "is-hover" : "",
-                              ]
-                                .filter(Boolean)
-                                .join(" ")}
-                              onMouseMove={(e) => {
-                                setHover(m.code);
-                                const r = stageRef.current?.getBoundingClientRect();
-                                if (r) setHoverPos({ x: e.clientX - r.left, y: e.clientY - r.top });
-                              }}
-                              onMouseLeave={() => setHover((h) => (h === m.code ? null : h))}
-                              onClick={() => onMuniClick(m)}
-                            >
-                              <title>{m.name}</title>
-                            </path>
-                          ) : null,
-                        )}
-                      </g>
-                    </g>
-
-                    {/* pinos das cidades com líder (e da selecionada) */}
-                    <g className="mtmap__markers">
-                      {geo.municipios.map((m) => {
-                        const sel = selected?.code === m.code;
-                        if (m.cx == null || m.cy == null || (!isCovered(m) && !sel)) return null;
-                        return (
-                          <circle
-                            key={m.code}
-                            cx={m.cx}
-                            cy={m.cy}
-                            r={sel ? 9 : 6.5}
-                            filter="url(#mtPin)"
-                            className={[
-                              "mtmap__pin",
-                              isCovered(m) ? "is-covered" : "",
-                              sel ? "is-selected" : "",
-                            ]
-                              .filter(Boolean)
-                              .join(" ")}
-                          />
-                        );
-                      })}
-                    </g>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* rótulo do nome ao passar o mouse (segue o cursor, sempre legível) */}
-            {hover && (
-              <div className="mtmap__tip" style={{ left: hoverPos.x, top: hoverPos.y }}>
-                {geo.municipios.find((m) => m.code === hover)?.name}
-              </div>
-            )}
-
-            {/* instruções */}
-            <div className="mtmap__readout" aria-hidden="true">
-              Arraste para girar · role para dar zoom
-            </div>
-
-            {/* controles */}
-            <div className="mtmap__controls">
-              <button type="button" onClick={() => zoomBy(1.3)} aria-label="Aproximar">+</button>
-              <button type="button" onClick={() => zoomBy(1 / 1.3)} aria-label="Afastar">−</button>
-              <button type="button" onClick={resetView} aria-label="Ver Mato Grosso inteiro">⟲</button>
-            </div>
-          </>
         )}
       </div>
 

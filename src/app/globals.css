@@ -1597,13 +1597,29 @@ html.a11y-contrast .foot-bottom a {
 .mtmap__legend-count { margin-left:auto; font-weight:700; color:var(--G); }
 
 /* palco 3D */
-/* SEM moldura: o mapa "flutua" na página (fora do quadro) */
+/* mapa REAL (Leaflet) num cartão claro */
 .mtmap__stage {
-  position:relative; height:clamp(430px, 64vh, 680px); overflow:hidden;
-  background:radial-gradient(70% 60% at 50% 32%, rgba(13,59,102,.06), transparent 72%);
-  touch-action:none;
+  position:relative; height:clamp(440px, 66vh, 700px); overflow:hidden;
+  border-radius:14px; border:1px solid rgba(13,59,102,.16); isolation:isolate;
+  box-shadow:0 12px 34px rgba(13,30,50,.18);
 }
-.mtmap__loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(28,40,24,.5); font-size:.95rem; }
+.mtmap__leaflet { position:absolute; inset:0; z-index:0; }
+.leaflet-container { font:inherit; background:#e8ecef; }
+.mtmap__loading {
+  position:absolute; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
+  background:#eef1f4; color:rgba(28,40,24,.6); font-size:.95rem;
+}
+/* pino de líder no mapa */
+.mtmk__pin {
+  display:block; width:16px; height:16px; border-radius:50%;
+  background:#12b84b; border:2.5px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.4); position:relative;
+}
+.mtmk__pin::after {
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:2px solid rgba(18,184,75,.5); animation:mtmkPulse 2s ease-out infinite;
+}
+@keyframes mtmkPulse { 0% { transform:scale(.6); opacity:.9; } 100% { transform:scale(1.4); opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .mtmk__pin::after { animation:none; opacity:0; } }
 .mtmap__float { position:absolute; inset:0; animation:mtFloat 8s ease-in-out infinite; }
 .mtmap__float.is-paused { animation-play-state:paused; }
 /* inclinação/giro 3D vem do inline (state). transição só na entrada e no fly-to */
