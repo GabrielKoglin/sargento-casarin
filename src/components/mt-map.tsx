@@ -48,11 +48,12 @@ const MIN_SCALE = 1;
 const MAX_SCALE = 6;
 const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(n, lo), hi);
 
-// Rotação 3D do mapa (arrastar gira de verdade). rx = inclinação, rz = giro.
-const BASE_ROT = { rx: 18, rz: 0 };
-const ENTER_ROT = { rx: 58, rz: -18 };
-const MIN_TILT = 4;
-const MAX_TILT = 72;
+// Visual PLANO por padrão (estilo Google Maps). O arrasto pode inclinar/girar
+// em 3D (rx = inclinação, rz = giro), mas em repouso fica chapado (rx=0).
+const BASE_ROT = { rx: 0, rz: 0 };
+const ENTER_ROT = { rx: 0, rz: 0 };
+const MIN_TILT = 0;
+const MAX_TILT = 70;
 
 export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   const [geo, setGeo] = useState<Geo | null>(null);
@@ -60,6 +61,7 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
   const [openList, setOpenList] = useState(false);
   const [selected, setSelected] = useState<Muni | null>(null);
   const [hover, setHover] = useState<string | null>(null);
+  const [hoverPos, setHoverPos] = useState({ x: 0, y: 0 });
   const [signupCity, setSignupCity] = useState<Muni | null>(null);
 
   const stageRef = useRef<HTMLDivElement>(null);
@@ -354,7 +356,11 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
                               ]
                                 .filter(Boolean)
                                 .join(" ")}
-                              onMouseEnter={() => setHover(m.code)}
+                              onMouseMove={(e) => {
+                                setHover(m.code);
+                                const r = stageRef.current?.getBoundingClientRect();
+                                if (r) setHoverPos({ x: e.clientX - r.left, y: e.clientY - r.top });
+                              }}
                               onMouseLeave={() => setHover((h) => (h === m.code ? null : h))}
                               onClick={() => onMuniClick(m)}
                             >
@@ -393,11 +399,16 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
               </div>
             </div>
 
-            {/* leitura do hover */}
+            {/* rótulo do nome ao passar o mouse (segue o cursor, sempre legível) */}
+            {hover && (
+              <div className="mtmap__tip" style={{ left: hoverPos.x, top: hoverPos.y }}>
+                {geo.municipios.find((m) => m.code === hover)?.name}
+              </div>
+            )}
+
+            {/* instruções */}
             <div className="mtmap__readout" aria-hidden="true">
-              {hover
-                ? geo.municipios.find((m) => m.code === hover)?.name
-                : "Arraste para girar · role para dar zoom"}
+              Arraste para girar · role para dar zoom
             </div>
 
             {/* controles */}
