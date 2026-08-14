@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Proposal } from "@/generated/prisma/client";
 import { ProposalIcon } from "@/components/proposal-icon";
+import { RichText } from "@/components/rich-text";
 
 const lines = (s: string) => s.split("\n").filter(Boolean);
 
@@ -92,6 +93,7 @@ export function ProposalsList({ proposals }: { proposals: Proposal[] }) {
                 {open.description && (
                   <p className="prop-modal__lead">{open.description}</p>
                 )}
+                {open.content && <RichText md={open.content} />}
                 {open.problem && (
                   <>
                     <h3>O problema</h3>

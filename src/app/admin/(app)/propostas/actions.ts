@@ -87,6 +87,7 @@ type ProposalData = {
   benefits: string;
   image: string | null;
   faq: string | null;
+  content: string | null;
 };
 
 /** Lê um campo do FormData: string, com CRLF normalizado e trim. */
@@ -107,6 +108,7 @@ function parseProposal(formData: FormData): ProposalData {
 
   const image = field(formData, "image");
   const faq = field(formData, "faq");
+  const content = field(formData, "content");
 
   const slug =
     slugify(field(formData, "slug")) ||
@@ -125,6 +127,7 @@ function parseProposal(formData: FormData): ProposalData {
     benefits: values.benefits,
     image: image || null,
     faq: faq || null,
+    content: content || null,
   };
 }
 

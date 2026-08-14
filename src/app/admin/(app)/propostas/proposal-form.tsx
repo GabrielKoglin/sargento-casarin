@@ -33,6 +33,7 @@ export type ProposalFormValues = {
   benefits: string;
   image: string;
   faq: string;
+  content: string;
 };
 
 const EMPTY_VALUES: ProposalFormValues = {
@@ -47,6 +48,7 @@ const EMPTY_VALUES: ProposalFormValues = {
   benefits: "",
   image: "",
   faq: "",
+  content: "",
 };
 
 // Sugestões de categoria (datalist) — coerentes com os ícones do site público.
@@ -370,6 +372,21 @@ export function ProposalForm({
           value={values.faq}
           onChange={(v) => set("faq", v)}
           invalid={Boolean(errorFor("faq"))}
+        />
+      </Field>
+
+      <Field
+        label="Proposta completa (texto) — opcional"
+        htmlFor="content"
+        error={errorFor("content")}
+        hint="Texto completo exibido no popup “Ver proposta completa”. Formatação: ## Título, ### Subtítulo, - item de lista, **negrito**. Deixe uma linha em branco entre parágrafos."
+      >
+        <Textarea
+          id="content"
+          rows={12}
+          value={values.content}
+          onChange={(v) => set("content", v)}
+          invalid={Boolean(errorFor("content"))}
         />
       </Field>
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { Proposal } from "@/generated/prisma/client";
+import { RichText } from "@/components/rich-text";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +74,7 @@ export default async function PropostaPage(props: PageProps<"/propostas/[slug]">
       <section className="section">
         <div className="container">
           <div className="priv-body">
+            {proposta.content && <RichText md={proposta.content} />}
             {proposta.problem && (
               <>
                 <h2>O problema</h2>
