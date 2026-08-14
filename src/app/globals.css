@@ -1611,38 +1611,32 @@ html.a11y-contrast .foot-bottom a {
 .mtmap__pan.is-flying { transition:transform .6s cubic-bezier(.22,.61,.36,1); }
 .mtmap__svg { width:100%; height:100%; display:block; overflow:visible; }
 
-/* extrusão (espessura) em verde-escuro terroso — combina com o satélite */
+/* extrusão (espessura 3D) — laterais verde-oliva de um mapa claro em relevo */
 .mtmap__land {
   filter:
-    drop-shadow(0 1px 0 #2a3a1e) drop-shadow(0 2px 0 #26351b)
-    drop-shadow(0 3px 0 #223018) drop-shadow(0 4px 0 #1e2a15)
-    drop-shadow(0 5px 0 #1a2512) drop-shadow(0 6px 0 #16200f)
-    drop-shadow(0 14px 22px rgba(0,0,0,.55));
+    drop-shadow(0 1px 0 #a7bd8f) drop-shadow(0 2px 0 #9db485)
+    drop-shadow(0 3px 0 #93aa7b) drop-shadow(0 4px 0 #89a071)
+    drop-shadow(0 5px 0 #7f9667) drop-shadow(0 6px 0 #758c5d)
+    drop-shadow(0 14px 20px rgba(20,40,10,.45));
 }
-/* imagem de satélite (base) */
-.mtmap__sat { }
-/* municípios: transparentes (satélite aparece) com divisa clara; destaques translúcidos */
+/* municípios: terra clara (estilo Google) com divisa suave; destaques sólidos */
 .mtmap__muni {
-  fill:transparent; stroke:rgba(255,255,255,.28); stroke-width:.4;
+  fill:url(#mtLand); stroke:#a7bd92; stroke-width:.45;
   transform-box:fill-box; transform-origin:center;
   transition:fill .18s, transform .18s, stroke .18s;
   cursor:pointer;
 }
-.mtmap__muni.is-covered { fill:rgba(18,220,95,.5); stroke:rgba(255,255,255,.55); }
-.mtmap__muni.is-hover { fill:rgba(255,255,255,.16); }
-.mtmap__muni.is-covered.is-hover { fill:rgba(30,235,110,.62); }
-.mtmap__muni.is-selected { fill:rgba(255,213,0,.5); stroke:#fff; stroke-width:1; transform:translateY(-5px); }
-.mtmap__muni.is-covered.is-selected { fill:rgba(40,225,120,.6); stroke:#fff; stroke-width:1.2; }
+.mtmap__muni.is-covered { fill:#16b552; stroke:#0a7a35; }
+.mtmap__muni.is-hover { fill:#c2d6a8; }
+.mtmap__muni.is-covered.is-hover { fill:#1ecf63; }
+.mtmap__muni.is-selected { fill:var(--AU); stroke:#7a5c00; stroke-width:.9; transform:translateY(-5px); }
+.mtmap__muni.is-covered.is-selected { fill:#1ecf63; stroke:#0a7a35; stroke-width:1; }
 
 /* pinos de cidade com líder */
 .mtmap__markers { pointer-events:none; }
-.mtmap__pin { fill:#1ed568; stroke:#fff; stroke-width:1.4; }
+.mtmap__pin { fill:#12b84b; stroke:#fff; stroke-width:1.6; }
 .mtmap__pin.is-covered { animation:mtPinPulse 2.4s ease-in-out infinite; }
-.mtmap__pin.is-selected { fill:var(--AU); stroke:#fff; stroke-width:1.4; animation:none; filter:none; }
-
-/* crédito da imagem de satélite (atribuição EOX/ESA) */
-.mtmap__credit { text-align:center; font-size:.72rem; color:rgba(255,255,255,.38); margin-top:.6rem; }
-.mtmap__credit a { color:rgba(255,255,255,.55); text-decoration:underline; text-underline-offset:2px; }
+.mtmap__pin.is-selected { fill:var(--AU); stroke:#5a4400; stroke-width:1.4; animation:none; filter:none; }
 
 .mtmap__readout {
   position:absolute; left:50%; bottom:.6rem; transform:translateX(-50%); pointer-events:none;
