@@ -1597,13 +1597,13 @@ html.a11y-contrast .foot-bottom a {
 .mtmap__legend-count { margin-left:auto; font-weight:700; color:var(--G); }
 
 /* palco 3D */
-/* mapa REAL (Leaflet) mascarado só em Mato Grosso — flutua no fundo escuro */
+/* mapa REAL (Leaflet) mascarado só em Mato Grosso — MT preenche o quadro */
 .mtmap__stage {
-  position:relative; height:clamp(440px, 66vh, 700px); overflow:hidden;
-  border-radius:14px; isolation:isolate;
+  position:relative; width:min(760px,100%); height:min(680px,94vw); margin:0 auto;
+  overflow:hidden; border-radius:16px; isolation:isolate;
 }
 .mtmap__leaflet { position:absolute; inset:0; z-index:0; }
-.leaflet-container { font:inherit; background:#020b14; }
+.leaflet-container { font:inherit; background:#03101d; }
 .mtmap__loading {
   position:absolute; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
   background:#020b14; color:rgba(255,255,255,.6); font-size:.95rem;

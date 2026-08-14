@@ -129,18 +129,18 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
         ];
         L.polygon([world, ...holes], {
           stroke: false,
-          fillColor: "#020b14",
-          fillOpacity: 1,
+          fillColor: "#03101d",
+          fillOpacity: 0.88,
           interactive: false,
         }).addTo(map);
         // divisas dos municípios (linhas finas) + contorno do estado
         L.geoJSON(munis, {
-          style: { color: "#6f8168", weight: 0.6, opacity: 0.5, fill: false },
+          style: { color: "#7d8f76", weight: 0.6, opacity: 0.55, fill: false },
           interactive: false,
         }).addTo(map);
         L.polygon(holes, {
-          color: "#9fb2c6",
-          weight: 1.6,
+          color: "#31567c",
+          weight: 2,
           fill: false,
           interactive: false,
         }).addTo(map);
@@ -148,8 +148,9 @@ export function MtMap({ leaders }: { leaders: LeaderPin[] }) {
         // sem a máscara, o mapa ainda funciona (mostra a região inteira)
       }
 
-      map.fitBounds(MT_BOUNDS);
-      map.setMaxBounds(L.latLngBounds(MT_BOUNDS).pad(0.12));
+      map.invalidateSize();
+      map.fitBounds(MT_BOUNDS, { padding: [6, 6] });
+      map.setMaxBounds(L.latLngBounds(MT_BOUNDS).pad(0.06));
       map.setMinZoom(map.getZoom());
 
       created = map;
