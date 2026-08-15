@@ -30,6 +30,14 @@ export default async function Home() {
   ]);
   const { why, home } = content;
 
+  // Marquee (esteira) sem "buraco" no loop: com poucos itens, uma cópia não
+  // cobre a largura da tela e sobra um vão no fim. Repetimos os itens o
+  // suficiente para cada METADE encher a tela (o loop usa 2 metades idênticas e
+  // desliza -50% = uma metade). A duração acompanha o nº de repetições para
+  // manter a MESMA velocidade.
+  const marqueeReps = Math.max(3, Math.ceil(20 / Math.max(1, home.marquee.length)));
+  const marqueeHalf = Array.from({ length: marqueeReps }, () => home.marquee).flat();
+
   return (
     <>
       <HomeFx />
@@ -184,8 +192,11 @@ export default async function Home() {
       {/* MARQUEE (decorativo: os itens são duplicados p/ o loop infinito, então
           aria-hidden evita o leitor de tela repetir tudo 2x) */}
       <div className="marquee-strip" aria-hidden="true">
-        <div className="marquee-track">
-          {[...home.marquee, ...home.marquee].map((item, i) => (
+        <div
+          className="marquee-track"
+          style={{ animationDuration: `${22 * marqueeReps}s` }}
+        >
+          {[...marqueeHalf, ...marqueeHalf].map((item, i) => (
             <div className="marquee-item" key={i}>
               {item} <span className="marquee-sep">✦</span>
             </div>
