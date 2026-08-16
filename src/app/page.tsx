@@ -69,10 +69,8 @@ export default async function Home() {
         {/* Conteúdo */}
         <div className="hero-content container">
           <div className="hero-inner">
-            <div className="hero-eyebrow sl">{home.heroEyebrow}</div>
-            <h1 className="hero-name" id="heroName" aria-label={home.heroName}>
-              <em>{home.heroName}</em>
-            </h1>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="hero-logo" src="/logo-official.png" alt={`Sargento ${home.heroName}`} />
             <div className="hero-sub sl d2">
               {home.heroSubtitle.split("\n").map((line, i, arr) => (
                 <Fragment key={i}>

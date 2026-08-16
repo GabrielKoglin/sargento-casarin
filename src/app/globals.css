@@ -340,6 +340,8 @@ body::after {
 }
 .hero-eyebrow::before, .hero-eyebrow::after { content:''; width:1.6rem; height:1px; background:rgba(196,168,130,.5); }
 
+/* logo oficial no hero (substitui o wordmark de texto) — centralizada como o resto do hero */
+.hero-logo { width:min(440px,90%); height:auto; display:block; margin:0 auto 1.5rem; }
 .hero-name {
   font-family:'Rajdhani', var(--fc);
   font-size:clamp(4rem,10vw,9rem);
@@ -1061,6 +1063,7 @@ footer {
 }
 .foot-grid { display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:3rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,.04); margin-bottom:2rem; }
 .foot-logo p { font-size:.82rem; line-height:1.7; max-width:240px; color:rgba(255,255,255,.6); }
+.foot-logo-img { height:60px; width:auto; display:block; }
 .foot-col h2 { color:var(--B); font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1rem; }
 .foot-col li { margin-bottom:.5rem; }
 .foot-col a { font-size:.83rem; color:rgba(255,255,255,.6); transition:color .2s; }
@@ -1268,8 +1271,12 @@ footer {
   .foot-social, .foot-legal { justify-content:center; }
   .foot-bottom__left { align-items:center; }
 
-  /* Hero (home) */
-  .hero-inner { margin-inline:auto; text-align:center; }
+  /* Hero (home) — no mobile centraliza o conteúdo (sem o translateY que cortava
+     o "Vamos Vencer"). O padding dá folga do menu no topo quando o conteúdo é
+     alto; quando é baixo, o bloco fica centralizado sem vão exagerado embaixo. */
+  .hero { align-items:center; }
+  .hero-content { padding-top:6rem; padding-bottom:4.5rem; }
+  .hero-inner { margin-inline:auto; text-align:center; transform:none; }
   .hero-eyebrow, .hero-actions { justify-content:center; }
   .hero-lead { margin-inline:auto; }
   .ribbons { align-items:center; transform-origin:center bottom; }
