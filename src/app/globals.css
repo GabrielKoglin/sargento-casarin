@@ -828,6 +828,23 @@ body::after {
 /* ============================================
    PROPOSTAS (pÃ¡gina)
 ============================================ */
+/* Filtros por categoria (chips) — barra acima das propostas. Deriva das
+   categorias que existem de fato; o card oculto some via .is-filtered-out. */
+.prop-filters { display:flex; flex-wrap:wrap; gap:.55rem; margin-bottom:2.25rem; }
+.prop-filter {
+  font:inherit; cursor:pointer;
+  font-size:.74rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  padding:.58rem 1.15rem; border-radius:999px;
+  background:var(--W); color:var(--G);
+  border:1px solid rgba(13,59,102,.22);
+  transition:background .2s, color .2s, border-color .2s, transform .15s, box-shadow .2s;
+}
+.prop-filter:hover { border-color:var(--G); transform:translateY(-1px); }
+.prop-filter:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(0,184,75,.28); }
+.prop-filter.is-active { background:var(--G); color:var(--W); border-color:var(--G); box-shadow:0 6px 18px rgba(13,59,102,.22); }
+/* card escondido pelo filtro (mantido montado p/ preservar o reveal do .fi) */
+.eixo-card.is-filtered-out, .tema-card.is-filtered-out { display:none; }
+
 .propostas-list-title { font-family:var(--fc); text-transform:uppercase; color:var(--G); font-size:clamp(1.4rem,3vw,2rem); letter-spacing:.01em; margin-bottom:1.75rem; }
 .eixo-card { background:var(--W); border:1px solid rgba(58,82,64,.1); border-left:4px solid var(--G); padding:2.5rem; display:grid; grid-template-columns:auto 1fr; gap:1.5rem; align-items:start; margin-bottom:1rem; transition:transform .25s, box-shadow .25s; }
 .eixo-card:hover { transform:translateX(5px); box-shadow:0 8px 40px rgba(0,0,0,.1); }
