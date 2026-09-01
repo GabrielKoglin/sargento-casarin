@@ -5,10 +5,12 @@
 // campo de nova senha sob demanda, (c) auto-submeter a troca de papel. As três
 // chamam Server Actions (FormData) definidas em ./actions.
 import { useRef, useState } from "react";
+import { ADMIN_AREAS } from "@/lib/admin-areas";
 import {
   deleteMember,
   resetMemberMfa,
   resetMemberPassword,
+  setMemberPermissions,
   setMemberRole,
 } from "./actions";
 import { ConfirmSubmit } from "../confirm-submit";
@@ -19,12 +21,14 @@ export function MemberActions({
   isSelf,
   canDelete,
   hasMfa,
+  permissions,
 }: {
   id: string;
   role: string;
   isSelf: boolean;
   canDelete: boolean;
   hasMfa: boolean;
+  permissions: string[];
 }) {
   const [resetting, setResetting] = useState(false);
   const roleFormRef = useRef<HTMLFormElement>(null);
@@ -50,6 +54,31 @@ export function MemberActions({
             <option value="editor">Editor</option>
             <option value="owner">Titular</option>
           </select>
+        </form>
+      ) : null}
+
+      {/* Permissões por ÁREA — só para EDITORES (o titular acessa tudo). O titular
+          marca as seções e salva; o editor passa a ver só essas no menu. */}
+      {role === "editor" ? (
+        <form action={setMemberPermissions} className="admin-perms">
+          <input type="hidden" name="id" value={id} />
+          <span className="admin-field__label">Áreas que pode acessar</span>
+          <div className="admin-perms__grid">
+            {ADMIN_AREAS.map((area) => (
+              <label key={area.key} className="admin-perms__item">
+                <input
+                  type="checkbox"
+                  name="permissions"
+                  value={area.key}
+                  defaultChecked={permissions.includes(area.key)}
+                />
+                <span>{area.label}</span>
+              </label>
+            ))}
+          </div>
+          <button type="submit" className="admin-btn admin-btn--sm">
+            Salvar áreas
+          </button>
         </form>
       ) : null}
 

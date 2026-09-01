@@ -3,10 +3,12 @@
 // ============================================================================
 // Herda o shell + guarda de sessão de (app)/layout.tsx. O formulário usa a
 // action createEvent (que também revalida a sessão por conta própria).
+import { requireArea } from "@/lib/permissions";
 import { EventForm } from "../event-form";
 import { createEvent } from "../actions";
 
-export default function NewEventPage() {
+export default async function NewEventPage() {
+  await requireArea("agenda");
   return (
     <>
       <header className="admin-page-header">

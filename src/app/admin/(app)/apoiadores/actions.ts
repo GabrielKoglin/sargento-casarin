@@ -7,9 +7,8 @@
 // o POST das actions) e revalida "/admin/apoiadores" no escopo layout (o badge
 // de pendentes vive na sidebar) + "/adesivos" (mapa público). redirect() lança
 // NEXT_REDIRECT → sempre fora do try.
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { cityCodeFromName } from "@/data/mt-cities";
 
@@ -20,8 +19,7 @@ function revalidate(): void {
 
 /** Adiciona um líder pelo painel — já entra ATIVO (visível no mapa). */
 export async function createLeader(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("apoiadores");
 
   const name = String(formData.get("name") ?? "").trim();
   const whatsapp = String(formData.get("whatsapp") ?? "").trim();
@@ -47,8 +45,7 @@ export async function createLeader(formData: FormData): Promise<void> {
 
 /** Aprova um cadastro pendente (feito pelo próprio apoiador) → ATIVO. */
 export async function approveLeader(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("apoiadores");
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
@@ -73,8 +70,7 @@ export async function approveLeader(formData: FormData): Promise<void> {
 
 /** Exclui um líder (pendente ou ativo). */
 export async function deleteLeader(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("apoiadores");
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;

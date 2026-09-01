@@ -6,6 +6,7 @@
 // - Aprovar cadastros PENDENTES feitos pelo próprio apoiador no site.
 // - Excluir. O badge de pendentes vive na sidebar (revalidado no escopo layout).
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import { MT_CITIES } from "@/data/mt-cities";
 import { createLeader, approveLeader, deleteLeader } from "./actions";
 
@@ -19,6 +20,7 @@ function waLink(whatsapp: string): string {
 }
 
 export default async function ApoiadoresPage() {
+  await requireArea("apoiadores");
   const leaders = await prisma.leader.findMany({
     orderBy: [{ status: "asc" }, { city: "asc" }],
   });

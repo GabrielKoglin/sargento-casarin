@@ -8,7 +8,7 @@
 // Permissão: o titular gerencia; editores veem a lista em modo leitura. Enquanto
 // não existir NENHUM owner (logo após a migração do campo `role`), qualquer
 // sessão é tratada como titular (bootstrap) — ver requireOwner em ./actions.
-import { getSession } from "@/lib/session";
+import { requireOwner } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { MemberForm } from "./member-form";
 import { MemberActions } from "./member-actions";
@@ -23,25 +23,27 @@ type Member = {
   email: string;
   role: string;
   mfaEnabled: boolean;
+  permissions: string[];
   createdAt: Date;
 };
 
 export default async function AdminEquipePage() {
-  const session = await getSession();
+  // Só o titular acessa a Equipe (editores são redirecionados ao dashboard).
+  const me = await requireOwner();
 
   let members: Member[] = [];
   let ownersCount = 0;
   try {
     members = await prisma.user.findMany({
       orderBy: [{ role: "asc" }, { createdAt: "asc" }],
-      select: { id: true, name: true, email: true, role: true, mfaEnabled: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, mfaEnabled: true, permissions: true, createdAt: true },
     });
     ownersCount = members.filter((m) => m.role === "owner").length;
   } catch {
     console.error("Falha ao carregar a equipe.");
   }
 
-  const myId = session?.sub ?? "";
+  const myId = me.id;
   const myRole = members.find((m) => m.id === myId)?.role;
   // Bootstrap: sem nenhum owner, o usuário atual pode gerenciar (para se promover).
   const canManage = myRole === "owner" || ownersCount === 0;
@@ -52,9 +54,10 @@ export default async function AdminEquipePage() {
         <span className="admin-page-header__eyebrow">Acesso</span>
         <h1 className="admin-page-header__title">Equipe</h1>
         <p className="admin-page-header__subtitle">
-          Pessoas com acesso ao painel. O <strong>titular</strong> gerencia a
-          equipe; o <strong>editor</strong> cuida do conteúdo (propostas,
-          notícias, agenda, mídia e mensagens).
+          Pessoas com acesso ao painel. O <strong>titular</strong> vê tudo e
+          gerencia a equipe; o <strong>editor</strong> acessa só as{" "}
+          <strong>áreas marcadas</strong> por você em cada membro (ex.: só
+          Notícias). Dashboard e Segurança ficam liberados para todos.
         </p>
       </header>
 
@@ -140,6 +143,7 @@ export default async function AdminEquipePage() {
                       isSelf={isSelf}
                       canDelete={canDelete}
                       hasMfa={m.mfaEnabled}
+                      permissions={m.permissions}
                     />
                   ) : null}
                 </article>

@@ -10,7 +10,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { ingestNews } from "@/lib/news-ingest";
 
 /** Estado do formulário — erros de validação consumidos por useActionState. */
@@ -161,8 +161,7 @@ export async function createNews(
   _prev: NewsFormState,
   formData: FormData,
 ): Promise<NewsFormState> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
 
   const parsed = parseNewsForm(formData);
   if ("error" in parsed) return { error: parsed.error };
@@ -198,8 +197,7 @@ export async function updateNews(
   _prev: NewsFormState,
   formData: FormData,
 ): Promise<NewsFormState> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
 
   const parsed = parseNewsForm(formData);
   if ("error" in parsed) return { error: parsed.error };
@@ -260,15 +258,13 @@ async function setNewsStatus(
 
 /** Aprova uma notícia pendente/rejeitada → visível na página pública. */
 export async function approveNews(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
   await setNewsStatus(formData, "approved");
 }
 
 /** Rejeita uma notícia → fica fora do site (não é excluída). */
 export async function rejectNews(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
   await setNewsStatus(formData, "rejected");
 }
 
@@ -318,15 +314,13 @@ async function setManyNewsStatus(
 
 /** Aprova em massa as notícias marcadas na fila (checkboxes name="ids"). */
 export async function approveManyNews(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
   await setManyNewsStatus(readSelectedIds(formData), "approved");
 }
 
 /** Rejeita em massa as notícias marcadas na fila. */
 export async function rejectManyNews(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
   await setManyNewsStatus(readSelectedIds(formData), "rejected");
 }
 
@@ -348,15 +342,13 @@ async function setAllPendingStatus(
 
 /** Aprova TODAS as notícias pendentes de uma vez (não só a página visível). */
 export async function approveAllPending(): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
   await setAllPendingStatus("approved");
 }
 
 /** Rejeita TODAS as notícias pendentes de uma vez (não só a página visível). */
 export async function rejectAllPending(): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
   await setAllPendingStatus("rejected");
 }
 
@@ -366,8 +358,7 @@ export async function rejectAllPending(): Promise<void> {
  * para esvaziar a aba "Rejeitadas" quando ela acumula.
  */
 export async function deleteRejected(): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
 
   try {
     await prisma.news.deleteMany({ where: { status: "rejected" } });
@@ -384,8 +375,7 @@ export async function deleteRejected(): Promise<void> {
  * é revalidada e o usuário volta para a aba de pendentes.
  */
 export async function ingestNow(): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
 
   // Resultado propagado ao usuário via querystring — a page.tsx lê `ingest`/`n`
   // e mostra um aviso curto no topo. Sem isso, uma falha TOTAL da ingestão
@@ -415,8 +405,7 @@ export async function ingestNow(): Promise<void> {
 // identidade vem do id vinculado no servidor, não do payload do client — por
 // isso o FormData que o form action envia é ignorado (nem declarado).
 export async function deleteNews(id: string): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
 
   try {
     await prisma.news.delete({ where: { id } });

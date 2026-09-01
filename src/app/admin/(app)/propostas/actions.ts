@@ -16,7 +16,7 @@ import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { Prisma } from "@/generated/prisma/client";
 import { optimizeAndUploadImage } from "@/lib/image-upload";
 import { deleteImage, isStorageUrl } from "@/lib/storage";
@@ -164,8 +164,7 @@ export async function createProposal(
   formData: FormData,
 ): Promise<ProposalFormState> {
   // GUARD de sessão — defesa em profundidade (fora de try/catch: pode lançar).
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("propostas");
 
   const base = parseProposal(formData);
 
@@ -204,8 +203,7 @@ export async function updateProposal(
   _prevState: ProposalFormState,
   formData: FormData,
 ): Promise<ProposalFormState> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("propostas");
 
   const base = parseProposal(formData);
 
@@ -259,8 +257,7 @@ export async function updateProposal(
 
 // --------------------------------------------------------------------- DELETE
 export async function deleteProposal(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("propostas");
 
   const id = field(formData, "id");
   if (!id) return;

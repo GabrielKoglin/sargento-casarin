@@ -4,8 +4,8 @@
 // Carrega a notícia por id (notFound() se ausente) e monta o form preenchido.
 // A action de update é vinculada ao id no servidor (updateNews.bind), então o
 // client nunca decide QUAL registro é alterado.
-import { notFound, redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { notFound } from "next/navigation";
+import { requireArea } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { updateNews } from "../../actions";
 import { NewsForm, type NewsFormValues } from "../../news-form";
@@ -26,8 +26,7 @@ export default async function EditNoticiaPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
 
   const { id } = await params;
   const noticia = await prisma.news.findUnique({ where: { id } });

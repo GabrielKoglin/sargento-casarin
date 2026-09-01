@@ -16,9 +16,23 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { clearSessionCookie, getSession } from "@/lib/session";
+import { clearSessionCookie } from "@/lib/session";
+import { canAccessArea, getCurrentAdmin, type AreaKey } from "@/lib/permissions";
 import { type AdminNavItem } from "./admin-nav";
 import { AdminSidebar } from "./admin-sidebar";
+
+// Cada item de menu de conteúdo mapeia para a área de permissão que o libera.
+// Itens fora deste mapa: Dashboard/Segurança (qualquer sessão) e os OWNER_ONLY.
+const AREA_OF: Record<string, AreaKey> = {
+  "/admin/propostas": "propostas",
+  "/admin/noticias": "noticias",
+  "/admin/agenda": "agenda",
+  "/admin/conteudo": "conteudo",
+  "/admin/mensagens": "mensagens",
+  "/admin/adesivos": "adesivos",
+  "/admin/apoiadores": "apoiadores",
+};
+const OWNER_ONLY = new Set(["/admin/equipe", "/admin/config"]);
 import "../admin.css";
 
 // `icon` é uma CHAVE mapeada para um ícone (react-icons) em admin-sidebar.tsx.
@@ -41,35 +55,16 @@ export default async function AdminAppLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getSession();
-  if (!session) {
-    redirect("/admin/login");
-  }
-
-  // Sessão órfã: o JWT vale 7 dias, mas o usuário pode ter sido DELETADO ou
-  // recriado nesse intervalo. getSession() só valida a ASSINATURA do token —
-  // não consulta o banco — então um cookie de um usuário que não existe mais
-  // continuaria dando acesso admin. Aqui (Server Component = runtime NODE)
-  // confirmamos que o `sub` do token ainda corresponde a um usuário existente.
+  // Resolve o usuário logado (sessão → banco), já com papel e permissões — a
+  // sessão (JWT) só guarda id+e-mail. getCurrentAdmin() também fecha o buraco da
+  // SESSÃO ÓRFÃ: o JWT vale 7 dias, mas o usuário pode ter sido deletado/recriado
+  // nesse intervalo; sem existir no banco, volta null e barramos abaixo. Em erro
+  // de I/O também vira null (fail-closed) — numa área sensível, preferimos negar.
   //
-  // Por que a checagem vive AQUI e não em @/lib/session: session.ts é EDGE-SAFE
-  // (só jose + next/headers) porque o Proxy o importa; prisma não pode entrar
-  // lá. O layout é o único ponto Node que guarda TODAS as páginas do painel.
-  //
-  // Trade-off: as Server Actions do CRUD seguem usando só getSession() (+ Proxy)
-  // — não repetem esta consulta ao banco. Mas nenhuma PÁGINA protegida renderiza
-  // sem passar por este shell, então a checagem forte de existência já fecha o
-  // acesso via UI. Em erro de I/O do banco tratamos como não autenticado
-  // (fail-closed): numa área sensível, preferimos negar a exibir o painel.
-  let user: { id: string; email: string } | null = null;
-  try {
-    user = await prisma.user.findUnique({
-      where: { id: session.sub },
-      select: { id: true, email: true },
-    });
-  } catch {
-    user = null;
-  }
+  // (A checagem vive AQUI, runtime NODE, e não em @/lib/session, que é EDGE-SAFE
+  // porque o Proxy o importa e prisma não pode entrar lá. Este layout é o único
+  // ponto Node que guarda TODAS as páginas do painel.)
+  const user = await getCurrentAdmin();
 
   // Notificação: total de mensagens de contato NÃO lidas → badge na aba
   // "Mensagens". Falha de I/O vira 0 (o painel abre mesmo assim).
@@ -113,9 +108,18 @@ export default async function AdminAppLayout({
     redirect("/admin/login");
   }
 
+  // Menu por PERMISSÃO: o editor vê só as áreas concedidas; Equipe/Config só o
+  // titular; Dashboard/Segurança todos. (Defesa em profundidade: cada página e
+  // action reconfere via requireArea/requireOwner — esconder o link não basta.)
+  const visibleItems = navItems.filter((item) => {
+    if (OWNER_ONLY.has(item.href)) return user.role === "owner";
+    const area = AREA_OF[item.href];
+    return area ? canAccessArea(user, area) : true;
+  });
+
   return (
     <div className="admin-scope admin-shell">
-      <AdminSidebar items={navItems} email={user.email} />
+      <AdminSidebar items={visibleItems} email={user.email} />
 
       <section className="admin-main">
         <div className="admin-main__inner">{children}</div>

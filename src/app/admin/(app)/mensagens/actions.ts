@@ -6,15 +6,13 @@
 // Mensagens são SOMENTE LEITURA. A única mutação permitida é excluir (para
 // limpar spam). Toda action revalida a sessão por conta própria (o Proxy não
 // cobre o POST das actions). redirect() lança NEXT_REDIRECT → fica fora do try.
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 /** Exclui uma mensagem recebida (id via campo oculto do formulário). */
 export async function deleteContact(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("mensagens");
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
@@ -31,8 +29,7 @@ export async function deleteContact(formData: FormData): Promise<void> {
 
 /** Marca UMA mensagem como lida (some o selo "Nova" e desconta do badge). */
 export async function markContactRead(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("mensagens");
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
@@ -48,8 +45,7 @@ export async function markContactRead(formData: FormData): Promise<void> {
 
 /** Marca TODAS as mensagens como lidas (zera o badge de notificação). */
 export async function markAllContactsRead(): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("mensagens");
 
   try {
     await prisma.contact.updateMany({

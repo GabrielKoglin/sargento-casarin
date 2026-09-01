@@ -11,6 +11,7 @@
 // Nunca renderizamos milhares de linhas: só as 40 da página atual.
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import { approveNews, rejectNews, deleteNews, ingestNow } from "./actions";
 import { DeleteButton } from "./news-form";
 import { BulkBar, SelectAllCheckbox } from "./bulk-bar";
@@ -139,6 +140,7 @@ export default async function AdminNoticiasPage({
     n?: string;
   }>;
 }) {
+  await requireArea("noticias");
   const sp = await searchParams;
   const status = normalizeStatus(sp.status);
   let page = normalizePage(sp.page);

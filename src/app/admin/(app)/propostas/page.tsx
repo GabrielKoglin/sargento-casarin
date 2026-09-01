@@ -8,6 +8,7 @@
 //   ?page = 1..N  (default: 1; sempre "clampado" ao intervalo válido)
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import { deleteProposal } from "./actions";
 import { DeleteButton } from "./delete-button";
 
@@ -25,6 +26,7 @@ export default async function PropostasAdminPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
+  await requireArea("propostas");
   const sp = await searchParams;
 
   // Contamos primeiro para "clampar" a página ao intervalo válido — assim um

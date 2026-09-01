@@ -3,14 +3,12 @@
 // ============================================================================
 // Guarda de sessão redundante (defesa em profundidade) além do layout e do
 // Proxy. createNews também revalida a sessão por conta própria.
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { createNews } from "../actions";
 import { NewsForm } from "../news-form";
 
 export default async function NewNoticiaPage() {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("noticias");
 
   return (
     <>

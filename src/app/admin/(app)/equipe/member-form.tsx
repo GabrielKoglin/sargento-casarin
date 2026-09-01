@@ -4,6 +4,7 @@
 // via useActionState (mesmo padrão do login). Ao concluir com sucesso, reseta os
 // campos. A action (createMember) roda no servidor e revalida a lista.
 import { useActionState, useEffect, useRef } from "react";
+import { ADMIN_AREAS } from "@/lib/admin-areas";
 import { createMember, type MemberFormState } from "./actions";
 
 const INITIAL: MemberFormState = { error: null, ok: false };
@@ -70,9 +71,25 @@ export function MemberForm() {
           Papel
         </label>
         <select id="m-role" name="role" className="admin-field__input" defaultValue="editor">
-          <option value="editor">Editor — gerencia conteúdo</option>
-          <option value="owner">Titular — gerencia também a equipe</option>
+          <option value="editor">Editor — acessa só as áreas marcadas</option>
+          <option value="owner">Titular — acessa tudo e gerencia a equipe</option>
         </select>
+      </div>
+
+      <div className="admin-field" style={{ gridColumn: "1 / -1" }}>
+        <span className="admin-field__label">Áreas que pode acessar</span>
+        <div className="admin-perms__grid">
+          {ADMIN_AREAS.map((area) => (
+            <label key={area.key} className="admin-perms__item">
+              <input type="checkbox" name="permissions" value={area.key} />
+              <span>{area.label}</span>
+            </label>
+          ))}
+        </div>
+        <span style={{ fontSize: "0.72rem", color: "var(--a-muted)", lineHeight: 1.4 }}>
+          Vale só para editores (o titular acessa tudo). Dá para ajustar depois em
+          cada membro.
+        </span>
       </div>
 
       {state.error ? (

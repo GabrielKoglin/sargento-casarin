@@ -24,7 +24,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { uploadImage, deleteImage, isStorageUrl } from "@/lib/storage";
 
 /** Estado do formulário — erro de validação consumido por useActionState. */
@@ -109,8 +109,7 @@ export async function createMedia(
   _prev: MediaFormState,
   formData: FormData,
 ): Promise<MediaFormState> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("conteudo");
 
   const type = field(formData, "type");
   if (type !== "photo" && type !== "video") {
@@ -210,8 +209,7 @@ export async function createMedia(
  * id vinculado no servidor (deleteMedia.bind(null, id)), não do payload.
  */
 export async function deleteMedia(id: string): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("conteudo");
 
   try {
     const media = await prisma.media.delete({ where: { id } });
@@ -240,8 +238,7 @@ export async function deleteMedia(id: string): Promise<void> {
 
 /** Alterna published (publicar ↔ ocultar). id vinculado no servidor. */
 export async function togglePublished(id: string): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("conteudo");
 
   try {
     const media = await prisma.media.findUnique({ where: { id } });
@@ -263,8 +260,7 @@ export async function togglePublished(id: string): Promise<void> {
  * (subir/descer na lista). Sem vizinho (extremo da lista), é no-op.
  */
 export async function moveMedia(id: string, dir: "up" | "down"): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("conteudo");
 
   try {
     const current = await prisma.media.findUnique({ where: { id } });

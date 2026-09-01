@@ -7,10 +7,9 @@
 // titular podem editar conteúdo). O formulário (client) envia TODO o documento
 // como JSON no campo "payload"; aqui validamos que é um objeto e gravamos no
 // SiteContent(id="main"). A leitura (getSiteContent) faz a coerção defensiva.
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@/generated/prisma/client";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 export type ContentFormState = { ok: boolean; error: string | null };
@@ -19,8 +18,7 @@ export async function saveSiteContent(
   _prev: ContentFormState,
   formData: FormData,
 ): Promise<ContentFormState> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("conteudo");
 
   const payload = String(formData.get("payload") ?? "");
   let parsed: unknown;

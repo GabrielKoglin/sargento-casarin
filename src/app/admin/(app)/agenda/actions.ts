@@ -8,7 +8,7 @@
 // NEXT_REDIRECT e por isso fica SEMPRE fora de try/catch.
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { parseDatetimeLocal } from "./date-utils";
 
@@ -70,8 +70,7 @@ export async function createEvent(
   _prev: EventFormState,
   formData: FormData,
 ): Promise<EventFormState> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("agenda");
 
   const [data, error] = parseEventForm(formData);
   if (!data) return { error };
@@ -93,8 +92,7 @@ export async function updateEvent(
   _prev: EventFormState,
   formData: FormData,
 ): Promise<EventFormState> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("agenda");
 
   const id = field(formData, "id");
   if (!id) return { error: "Evento não identificado." };
@@ -115,8 +113,7 @@ export async function updateEvent(
 
 /** Exclui um evento (id via campo oculto do formulário de exclusão). */
 export async function deleteEvent(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("agenda");
 
   const id = field(formData, "id");
   if (!id) return;

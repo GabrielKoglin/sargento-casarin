@@ -5,11 +5,13 @@
 // e entrega ao formulário client. force-dynamic: o editor sempre reflete o que
 // está salvo agora.
 import { getSiteContent } from "@/lib/site-content";
+import { requireArea } from "@/lib/permissions";
 import { ContentForm } from "./content-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminConteudoPage() {
+  await requireArea("conteudo");
   const content = await getSiteContent();
 
   return (

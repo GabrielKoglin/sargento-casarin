@@ -1399,3 +1399,36 @@ span.admin-pager__btn[aria-disabled="true"] { color: var(--a-faint); opacity: 0.
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 0.75rem;
 }
+
+/* ------------------------------------------ Permissões por área (Equipe) */
+.admin-perms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius-sm);
+  background: var(--a-panel-3);
+}
+.admin-perms__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.45rem 0.9rem;
+}
+.admin-perms__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--a-text);
+  cursor: pointer;
+  user-select: none;
+}
+.admin-perms__item input {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--a-green);
+  cursor: pointer;
+  flex-shrink: 0;
+}

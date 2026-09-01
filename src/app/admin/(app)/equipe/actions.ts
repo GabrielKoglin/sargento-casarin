@@ -16,6 +16,13 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
+import { isAreaKey } from "@/lib/permissions";
+
+/** Áreas marcadas no formulário → lista limpa (só chaves válidas, sem repetir). */
+function readPermissions(formData: FormData): string[] {
+  const raw = formData.getAll("permissions").map(String).filter(isAreaKey);
+  return [...new Set(raw)];
+}
 
 export type MemberFormState = { error: string | null; ok: boolean };
 
@@ -79,6 +86,8 @@ export async function createMember(
   const password = String(formData.get("password") ?? "");
   const roleRaw = String(formData.get("role") ?? "editor").trim();
   const role = ROLES.has(roleRaw) ? roleRaw : "editor";
+  // Áreas concedidas: só valem para "editor" (o "owner" acessa tudo).
+  const permissions = role === "owner" ? [] : readPermissions(formData);
 
   if (!name || !email || !password) {
     return { error: "Preencha nome, e-mail e senha.", ok: false };
@@ -97,7 +106,13 @@ export async function createMember(
     }
     const hashed = await hashPassword(password);
     await prisma.user.create({
-      data: { name: name.slice(0, 120), email: email.slice(0, 160), password: hashed, role },
+      data: {
+        name: name.slice(0, 120),
+        email: email.slice(0, 160),
+        password: hashed,
+        role,
+        permissions,
+      },
     });
   } catch (error) {
     console.error("Falha ao criar membro da equipe.", error);
@@ -201,6 +216,34 @@ export async function resetMemberMfa(formData: FormData): Promise<void> {
     });
   } catch (error) {
     console.error("Falha ao resetar o MFA do membro.", error);
+  }
+
+  revalidatePath("/admin/equipe");
+}
+
+// -------------------------------------------------- permissões por área
+// O titular concede/retira as ÁREAS que um EDITOR pode acessar (checkboxes).
+// Não se aplica a titulares (acessam tudo) nem a OUTRO titular (não se mexe em
+// par). A lista chega como vários campos `permissions` (um por checkbox marcado).
+export async function setMemberPermissions(formData: FormData): Promise<void> {
+  const guard = await requireOwner();
+  if ("error" in guard) return;
+
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  // Não altera permissões de OUTRO titular (só de editores / da própria conta).
+  if (await isPeerOwner(id, guard.ownerId)) return;
+
+  const permissions = readPermissions(formData);
+
+  try {
+    // Só aplica a EDITORES — em um titular a lista é ignorada de qualquer forma.
+    await prisma.user.updateMany({
+      where: { id, role: "editor" },
+      data: { permissions },
+    });
+  } catch (error) {
+    console.error("Falha ao salvar permissões do membro.", error);
   }
 
   revalidatePath("/admin/equipe");

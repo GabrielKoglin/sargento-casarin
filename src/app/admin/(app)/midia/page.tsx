@@ -11,6 +11,7 @@
 // inline (React.CSSProperties) — não posso criar classes novas no admin.css.
 import type { CSSProperties } from "react";
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import { MediaForm } from "./media-form";
 import { MediaItemActions } from "./media-list";
 
@@ -187,6 +188,8 @@ function MediaGrid({ items }: { items: MediaItem[] }) {
 }
 
 export default async function AdminMidiaPage() {
+  // Mídia faz parte de "Conteúdo" (não tem item próprio no menu).
+  await requireArea("conteudo");
   const { photos, videos } = await loadMedia();
 
   return (

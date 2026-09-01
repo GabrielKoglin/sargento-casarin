@@ -5,6 +5,7 @@
 // (notFound se não existir) e reusa o EventForm com a action updateEvent.
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import { EventForm } from "../../event-form";
 import { updateEvent } from "../../actions";
 import { toDatetimeLocalValue } from "../../date-utils";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function EditEventPage(
   props: PageProps<"/admin/agenda/[id]/edit">,
 ) {
+  await requireArea("agenda");
   const { id } = await props.params;
   const evento = await prisma.event.findUnique({ where: { id } });
   if (!evento) notFound();

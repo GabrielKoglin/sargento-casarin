@@ -19,6 +19,11 @@ model User {
   // ao conteúdo, mas não à gestão de usuários). Membros criados pelo painel
   // nascem "editor"; a conta principal é "owner". Ver /admin/equipe.
   role      String   @default("editor")
+  // Permissões por ÁREA do editor: lista de chaves de seção que ele pode acessar
+  // (ex.: ["noticias","agenda"]). Vale só para "editor"; o "owner" acessa tudo,
+  // ignorando este campo. Chaves válidas em @/lib/permissions (ADMIN_AREAS).
+  // Membros novos nascem sem nenhuma área ([]); o titular libera em /admin/equipe.
+  permissions String[] @default([])
   // MFA (TOTP): opt-in por usuário. `totpSecret` (Base32) é gravado no início da
   // ativação (mfaEnabled=false) e só passa a valer quando `mfaEnabled` vira true
   // (após o usuário confirmar um código do app). Login exige OTP apenas quando

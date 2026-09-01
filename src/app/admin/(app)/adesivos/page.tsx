@@ -7,6 +7,7 @@
 // público pode gerar volume).
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import {
   deleteStickerRequest,
   markAllStickersDelivered,
@@ -40,6 +41,7 @@ export default async function AdminAdesivosPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
+  await requireArea("adesivos");
   const sp = await searchParams;
 
   const total = await prisma.stickerRequest.count();

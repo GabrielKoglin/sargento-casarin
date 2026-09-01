@@ -7,15 +7,13 @@
 // é marcar como entregue (baixa o badge de pendentes). Toda action revalida a
 // sessão (o Proxy não cobre o POST das actions). redirect() lança NEXT_REDIRECT
 // → fica fora do try.
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requireArea } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 /** Exclui um pedido de adesivo (id via campo oculto do formulário). */
 export async function deleteStickerRequest(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("adesivos");
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
@@ -32,8 +30,7 @@ export async function deleteStickerRequest(formData: FormData): Promise<void> {
 
 /** Marca UM pedido como entregue (some o selo "Novo" e desconta do badge). */
 export async function markStickerDelivered(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("adesivos");
 
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
@@ -49,8 +46,7 @@ export async function markStickerDelivered(formData: FormData): Promise<void> {
 
 /** Marca TODOS os pedidos pendentes como entregues (zera o badge). */
 export async function markAllStickersDelivered(): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireArea("adesivos");
 
   try {
     await prisma.stickerRequest.updateMany({

@@ -13,7 +13,7 @@
 // à URL limpa (/admin/config) para que um aviso antigo nunca fique preso.
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { requireOwner } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 // Lê um campo do FormData SÓ como string (espelha propostas/actions.ts). Um
@@ -30,8 +30,7 @@ function field(formData: FormData, name: string): string {
  * formulário "adicionar" quanto pela edição inline de cada linha da lista.
  */
 export async function upsertSetting(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireOwner();
 
   // `key` é obrigatória: se não vier como string (File forjado) ou vier vazia,
   // devolvemos erro visível em vez de gravar uma chave lixo ("[object File]").
@@ -63,8 +62,7 @@ export async function upsertSetting(formData: FormData): Promise<void> {
 
 /** Exclui um parâmetro (id via campo oculto do formulário). */
 export async function deleteSetting(formData: FormData): Promise<void> {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
+  await requireOwner();
 
   const id = field(formData, "id");
   if (!id) redirect("/admin/config?error=excluir");

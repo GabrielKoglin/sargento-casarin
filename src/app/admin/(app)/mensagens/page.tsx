@@ -10,6 +10,7 @@
 //   ?page = 1..N  (default: 1; sempre "clampado" ao intervalo válido)
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import {
   deleteContact,
   markAllContactsRead,
@@ -36,6 +37,7 @@ export default async function AdminMensagensPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
+  await requireArea("mensagens");
   const sp = await searchParams;
 
   // Contamos primeiro para "clampar" a página ao intervalo válido — assim um

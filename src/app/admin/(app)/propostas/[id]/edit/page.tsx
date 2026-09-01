@@ -11,6 +11,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireArea } from "@/lib/permissions";
 import { updateProposal } from "../../actions";
 import { ProposalForm } from "../../proposal-form";
 
@@ -21,6 +22,7 @@ export default async function EditProposalPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireArea("propostas");
   const { id } = await params;
   const proposta = await prisma.proposal.findUnique({ where: { id } });
   if (!proposta) notFound();

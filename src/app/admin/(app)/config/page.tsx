@@ -5,6 +5,7 @@
 // Settings é um armazém genérico chave-valor: um formulário adiciona/atualiza
 // (upsert pela chave) e cada linha permite editar o valor ou excluir.
 import { prisma } from "@/lib/prisma";
+import { requireOwner } from "@/lib/permissions";
 import { upsertSetting, deleteSetting } from "./actions";
 
 // Lista sempre "ao vivo" — nunca pré-renderizar em build.
@@ -23,6 +24,7 @@ export default async function AdminConfigPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
+  await requireOwner();
   const sp = await searchParams;
   const errorMessage = sp.error ? ERROR_MESSAGES[sp.error] : undefined;
 

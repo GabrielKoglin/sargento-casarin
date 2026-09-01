@@ -4,10 +4,12 @@
 // Herda o shell + guarda de sessão de (app)/layout.tsx. Renderiza o mesmo
 // ProposalForm usado na edição, ligado à Server Action createProposal.
 import Link from "next/link";
+import { requireArea } from "@/lib/permissions";
 import { createProposal } from "../actions";
 import { ProposalForm } from "../proposal-form";
 
-export default function NewProposalPage() {
+export default async function NewProposalPage() {
+  await requireArea("propostas");
   return (
     <>
       <header className="admin-page-header">
