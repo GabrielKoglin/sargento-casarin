@@ -79,7 +79,7 @@ export default async function NoticiasPage() {
                         /* Imagem remota de host arbitrário (vem do banco/CMS); next/image
                            exige hostname fixo em images.remotePatterns, então mantemos <img>. */
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={noticia.image} alt="" />
+                        <img src={noticia.image} alt="" loading="lazy" decoding="async" />
                       ) : (
                         <div className="news-ph" aria-hidden="true">📰</div>
                       )}

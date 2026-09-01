@@ -12,9 +12,13 @@
 // "@/...") cria o seu próprio client, e o Next pode passar o singleton
 // compartilhado em `@/lib/prisma`. O `import type` abaixo é apagado em runtime.
 
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import Parser from "rss-parser";
+import sharp from "sharp";
 import { NEWS_SOURCES, sourceFeedUrl } from "./news-sources";
+// Import RELATIVO (não o alias "@/…"): assim o script tsx da ingestão também
+// resolve. storage.ts é puro (só fetch + env), roda em Node.
+import { uploadImage } from "./storage";
 import type { PrismaClient } from "@/generated/prisma/client";
 
 // ---------------------------------------------------------------------------
@@ -28,6 +32,31 @@ const BROWSER_UA =
 const FETCH_TIMEOUT_MS = 15_000;
 const SUMMARY_MAX = 300;
 const SLUG_MAX = 80;
+
+// Resolução de og:image do artigo: timeout próprio (mais curto que o do feed) e
+// teto de leitura — a og:image vive no <head>, então lemos só o começo do HTML
+// e abortamos (nunca baixamos a página inteira).
+// Cobre a CADEIA inteira de resolução da imagem (para o Google News são 3
+// requisições em série: interstitial → batchexecute → matéria real).
+const IMG_FETCH_TIMEOUT_MS = 20_000;
+// Teto de leitura do HTML. Precisa ser generoso: a página do Google News tem um
+// <head> ENORME (~590 KB) e coloca a og:image lá no fim dele — um teto apertado
+// cortaria a leitura antes de alcançá-la. Em portais normais a og:image vem nos
+// primeiros KB e o fechamento do </head> encerra a leitura muito antes disto.
+const HEAD_SCAN_BYTES = 2 * 1024 * 1024;
+// Largura pedida ao CDN do Google para os thumbnails (o card tem 195px de alt.).
+const GOOGLE_THUMB_WIDTH = 640;
+// Lado máximo (px) da imagem re-hospedada. 800 basta com folga para o card e
+// mantém o objeto leve no storage. WebP q80 (mesma convenção de image-upload).
+const REHOST_MAX_SIDE = 800;
+const REHOST_WEBP_QUALITY = 80;
+// Corpo mínimo aceitável de uma imagem baixada (bytes). Abaixo disso é quase
+// sempre um pixel de tracking / página de erro travestida de imagem.
+const MIN_IMAGE_BYTES = 512;
+// Endpoint interno (não-documentado) que decodifica o link-redirecionador do
+// Google News para a URL real do portal. Ver resolveGoogleNewsUrl().
+const GNEWS_BATCH_URL =
+  "https://news.google.com/_/DotsSplashUi/data/batchexecute";
 
 // Teto do corpo do feed: acima disso pulamos a fonte (com erro), para um portal
 // que devolva um corpo gigante não estourar a memória. ~5 MB cobre com folga
@@ -241,6 +270,194 @@ function extractImage(item: FeedItem): string | null {
   return null;
 }
 
+/**
+ * Aumenta a largura pedida ao CDN de imagens do Google (lh3.googleusercontent…),
+ * cujo sufixo `=...` codifica o tamanho (ex.: `=s0-w300-rw`). O card é grande,
+ * então pedimos GOOGLE_THUMB_WIDTH. Para outros hosts, retorna a URL intacta.
+ */
+function upsizeGoogleThumb(url: string): string {
+  if (!/googleusercontent\.com/i.test(url)) return url;
+  if (/=[-\w]+$/.test(url)) return url.replace(/=[-\w]+$/, `=w${GOOGLE_THUMB_WIDTH}`);
+  return `${url}=w${GOOGLE_THUMB_WIDTH}`;
+}
+
+/** Primeira og:image / twitter:image / image_src encontrada no HTML. */
+function extractOgImage(html: string): string | null {
+  const patterns = [
+    /<meta[^>]+property=["']og:image(?::secure_url|:url)?["'][^>]+content=["']([^"']+)["']/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url|:url)?["']/i,
+    /<meta[^>]+name=["']twitter:image(?::src)?["'][^>]+content=["']([^"']+)["']/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image(?::src)?["']/i,
+    /<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["']/i,
+  ];
+  for (const p of patterns) {
+    const m = html.match(p);
+    if (m?.[1]) return m[1].trim();
+  }
+  return null;
+}
+
+/** true se a URL é um link-redirecionador do Google News (rss/articles/…). */
+function isGoogleNewsUrl(url: string): boolean {
+  try {
+    return new URL(url).hostname.endsWith("news.google.com");
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Resolve o link-redirecionador do Google News para a URL REAL do portal.
+ *
+ * O link do feed (news.google.com/rss/articles/…) NÃO é a matéria: é uma página
+ * interstitial que redireciona por JS, e a og:image dela é a MARCA do Google News
+ * (a mesma para todas as notícias) — inútil como imagem de card. Para chegar na
+ * foto de verdade precisamos da URL do portal.
+ *
+ * O Google usa um id criptografado: a página interstitial traz assinatura +
+ * timestamp + id (data-n-a-sg / -ts / -id) que alimentam a API interna
+ * `batchexecute`, que devolve a URL de destino. É API NÃO-DOCUMENTADA (pode mudar
+ * sem aviso): a função NUNCA lança — devolve null em qualquer falha, e a chamadora
+ * cai no placeholder. Retorna o HTML do interstitial junto (evita rebaixá-lo).
+ */
+async function resolveGoogleNewsUrl(
+  gnewsUrl: string,
+  signal: AbortSignal,
+): Promise<string | null> {
+  const page = await fetch(gnewsUrl, {
+    headers: { "User-Agent": BROWSER_UA, "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8" },
+    redirect: "follow",
+    signal,
+  });
+  if (!page.ok) return null;
+  const html = await page.text();
+  const sg = html.match(/data-n-a-sg=["']([^"']+)["']/i)?.[1];
+  const ts = html.match(/data-n-a-ts=["']([^"']+)["']/i)?.[1];
+  const id = html.match(/data-n-a-id=["']([^"']+)["']/i)?.[1];
+  if (!sg || !ts || !id) return null;
+
+  const inner = `["garturlreq",[["X","X",["X","X"],null,null,1,1,"US:en",null,1,null,null,null,null,null,0,1],"X","X",1,[1,1,1],1,1,null,0,0,null,0],"${id}",${ts},"${sg}"]`;
+  const payload = JSON.stringify([[["Fbv4je", inner, null, "generic"]]]);
+  const res = await fetch(GNEWS_BATCH_URL, {
+    method: "POST",
+    headers: {
+      "User-Agent": BROWSER_UA,
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+    body: "f.req=" + encodeURIComponent(payload),
+    signal,
+  });
+  if (!res.ok) return null;
+  const text = await res.text();
+  // A resposta é `)]}'` + linhas com JSON aninhado; a URL de destino é a primeira
+  // http(s) que NÃO aponta de volta ao próprio Google News.
+  const m = text.match(/"(https?:\/\/(?!news\.google\.com)[^"]+)"/);
+  if (!m) return null;
+  return m[1]
+    .replace(/\\u003d/gi, "=")
+    .replace(/\\u0026/gi, "&")
+    .replace(/\\\//g, "/");
+}
+
+/** Baixa a og:image da página em `url` (lê só o <head>). Não lança. */
+async function fetchOgImage(url: string, signal: AbortSignal): Promise<string | null> {
+  const res = await fetch(url, {
+    headers: { "User-Agent": BROWSER_UA, "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8" },
+    redirect: "follow",
+    signal,
+  });
+  if (!res.ok || !res.body) return null;
+  const ctype = res.headers.get("content-type") ?? "";
+  if (ctype && !/text\/html|application\/xhtml/i.test(ctype)) return null;
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let html = "";
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+    total += value.byteLength;
+    html += decoder.decode(value, { stream: true });
+    // A og:image está no <head>: quando ele fecha (ou batemos no teto), paramos e
+    // liberamos a conexão — não faz sentido baixar o <body> inteiro.
+    if (total >= HEAD_SCAN_BYTES || /<\/head>/i.test(html)) {
+      await reader.cancel();
+      break;
+    }
+  }
+  const og = extractOgImage(html);
+  return og ? upsizeGoogleThumb(og) : null;
+}
+
+/**
+ * Resolve a imagem de destaque de um artigo a partir da og:image da matéria.
+ * Para links do Google News, primeiro resolve a URL REAL do portal (a og:image do
+ * interstitial é só a marca do Google News); para URLs diretas de portais, lê a
+ * og:image direto. NUNCA lança: devolve null em qualquer falha (rede/timeout/sem
+ * og/decode falhou), para não derrubar a ingestão. Exportada para o backfill.
+ */
+export async function resolveArticleImage(url: string): Promise<string | null> {
+  if (!/^https?:\/\//i.test(url)) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), IMG_FETCH_TIMEOUT_MS);
+  try {
+    const target = isGoogleNewsUrl(url)
+      ? await resolveGoogleNewsUrl(url, controller.signal)
+      : url;
+    if (!target) return null;
+    return await fetchOgImage(target, controller.signal);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Baixa a imagem de origem, otimiza (sharp → WebP) e SOBE ao nosso bucket,
+ * devolvendo a URL pública NOSSA. Servir do nosso domínio nos torna imunes ao
+ * bloqueio de hotlink e à expiração/troca da imagem no portal (vários portais de
+ * MT recusam servir a imagem para outro site). No servidor o download costuma
+ * retornar 200 mesmo quando o navegador é bloqueado. NUNCA lança: devolve null em
+ * qualquer falha (download/decodificação/upload), e a chamadora decide o fallback.
+ * Exportada para o backfill reusar.
+ */
+export async function rehostImage(srcUrl: string): Promise<string | null> {
+  if (!/^https?:\/\//i.test(srcUrl)) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), IMG_FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(srcUrl, {
+      headers: { "User-Agent": BROWSER_UA, "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8" },
+      redirect: "follow",
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const ctype = res.headers.get("content-type") ?? "";
+    if (ctype && !/^image\//i.test(ctype)) return null;
+
+    const input = Buffer.from(await res.arrayBuffer());
+    if (input.byteLength < MIN_IMAGE_BYTES) return null;
+
+    const output = await sharp(input)
+      .rotate() // respeita a orientação EXIF (fotos de celular)
+      .resize(REHOST_MAX_SIDE, REHOST_MAX_SIDE, {
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .webp({ quality: REHOST_WEBP_QUALITY })
+      .toBuffer();
+
+    return await uploadImage(`news-${randomUUID()}.webp`, output, "image/webp");
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** Data de publicação: pubDate/isoDate, com fallback para agora. */
 function parseDate(item: FeedItem): Date {
   const raw = item.isoDate || item.pubDate;
@@ -432,12 +649,19 @@ export async function ingestNews(prisma: PrismaClient): Promise<IngestSummary> {
 
         const slug = await uniqueSlug(prisma, slugify(title) || hash6(url), url);
 
+        // Imagem: primeiro tenta o próprio feed (enclosure/media/<img>); se vier
+        // vazio (o caso do Google News), resolve a og:image da página do artigo.
+        // Depois RE-HOSPEDA no nosso bucket (imune a bloqueio de hotlink); se o
+        // re-host falhar, guarda a URL de origem como fallback.
+        const src = extractImage(item) ?? (await resolveArticleImage(url));
+        const image = src ? ((await rehostImage(src)) ?? src) : null;
+
         try {
           await prisma.news.create({
             data: {
               title,
               slug,
-              image: extractImage(item),
+              image,
               source: source.name,
               url,
               summary: itemSummary,

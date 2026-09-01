@@ -11,6 +11,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "create-admin": "tsx scripts/create-admin.ts",
     "ingest-news": "tsx scripts/ingest-news.ts",
+    "backfill-news-images": "tsx scripts/backfill-news-images.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
