@@ -26,10 +26,19 @@ export const maxDuration = 60;
 
 const PAGE_SIZE = 40;
 
-const STATUS_FILTERS = ["pending", "approved", "rejected", "all"] as const;
+const STATUS_FILTERS = ["pending", "approved", "rejected", "proprias", "all"] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number];
 
 const dateFormat = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });
+
+// Filtro do banco por aba. As abas de MODERAÇÃO (pending/approved/rejected)
+// mostram só as manchetes AGREGADAS dos feeds (content == null); as matérias de
+// autoria própria ficam na aba dedicada "proprias" (content != null). "all" = tudo.
+function whereFor(status: StatusFilter) {
+  if (status === "all") return {};
+  if (status === "proprias") return { content: { not: null } };
+  return { status, content: null };
+}
 
 function normalizeStatus(raw: string | undefined): StatusFilter {
   return (STATUS_FILTERS as readonly string[]).includes(raw ?? "")
@@ -127,6 +136,8 @@ const emptyMessages: Record<StatusFilter, string> = {
     "Nenhuma notícia pendente. Use “Buscar notícias agora” para ingerir novas manchetes dos portais. Itens já revisados e descartados ficam na aba Rejeitadas.",
   approved: "Nenhuma notícia aprovada ainda.",
   rejected: "Nenhuma notícia rejeitada.",
+  proprias:
+    "Nenhuma matéria de autoria própria ainda. Use “Nova notícia” e preencha o “Texto completo da matéria”.",
   all: "Nenhuma notícia cadastrada ainda.",
 };
 
@@ -146,19 +157,21 @@ export default async function AdminNoticiasPage({
   let page = normalizePage(sp.page);
   const notice = ingestNotice(sp.ingest, sp.n);
 
-  const where = status === "all" ? {} : { status };
+  const where = whereFor(status);
 
-  // Contadores por status (para as abas) em paralelo. A página em si só é
-  // buscada DEPOIS de conhecer o total — para poder CLAMPAR `page` ao intervalo
-  // válido antes de calcular `skip`. Sem isso, ?page=<número gigante> gera um
-  // `skip` que estoura o int64 do SQLite e derruba a rota com 500.
-  const [pendingCount, approvedCount, rejectedCount] = await Promise.all([
-    prisma.news.count({ where: { status: "pending" } }),
-    prisma.news.count({ where: { status: "approved" } }),
-    prisma.news.count({ where: { status: "rejected" } }),
-  ]);
+  // Contadores por aba, em paralelo. A página em si só é buscada DEPOIS de
+  // conhecer o total — para CLAMPAR `page` ao intervalo válido antes de calcular
+  // `skip` (um ?page gigante geraria um `skip` absurdo). As abas de moderação
+  // contam só os feeds (content == null); "proprias" conta as de autoria.
+  const [pendingCount, approvedCount, rejectedCount, propriasCount, totalAll] =
+    await Promise.all([
+      prisma.news.count({ where: whereFor("pending") }),
+      prisma.news.count({ where: whereFor("approved") }),
+      prisma.news.count({ where: whereFor("rejected") }),
+      prisma.news.count({ where: whereFor("proprias") }),
+      prisma.news.count(),
+    ]);
 
-  const totalAll = pendingCount + approvedCount + rejectedCount;
   const total =
     status === "all"
       ? totalAll
@@ -166,7 +179,9 @@ export default async function AdminNoticiasPage({
         ? pendingCount
         : status === "approved"
           ? approvedCount
-          : rejectedCount;
+          : status === "rejected"
+            ? rejectedCount
+            : propriasCount;
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   // CLAMP: prende `page` em [1, totalPages]. page=0/-1/abc já viraram 1 no
@@ -188,6 +203,7 @@ export default async function AdminNoticiasPage({
     { key: "pending", label: "Pendentes", count: pendingCount },
     { key: "approved", label: "Aprovadas", count: approvedCount },
     { key: "rejected", label: "Rejeitadas", count: rejectedCount },
+    { key: "proprias", label: "Matérias próprias", count: propriasCount },
     { key: "all", label: "Todas", count: totalAll },
   ];
 
@@ -198,8 +214,9 @@ export default async function AdminNoticiasPage({
           <span className="admin-page-header__eyebrow">Conteúdo</span>
           <h1 className="admin-page-header__title">Notícias</h1>
           <p className="admin-page-header__subtitle">
-            Fila de moderação: aprove as manchetes ingeridas dos portais antes de
-            irem ao ar.
+            As <strong>matérias da campanha</strong> ficam na aba “Matérias
+            próprias”. As demais abas são a fila de moderação das manchetes dos
+            portais — aprove antes de irem ao ar.
           </p>
         </div>
         <div className="admin-page-header__actions">
