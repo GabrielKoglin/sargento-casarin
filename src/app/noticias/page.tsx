@@ -72,8 +72,11 @@ export default async function NoticiasPage() {
             <h2 className="sr-only">Últimas publicações</h2>
             <div className="news-grid">
               {noticias.map((noticia) => {
+                // Matéria DE AUTORIA (tem corpo próprio) abre uma página NO SITE;
+                // manchete agregada abre o portal de origem (link externo).
+                const own = Boolean(noticia.content);
                 const card = (
-                  <article className="news-card" key={noticia.id}>
+                  <article className="news-card">
                     <div className="news-card-img">
                       {noticia.image ? (
                         /* Imagem remota de host arbitrário (vem do banco/CMS); next/image
@@ -83,21 +86,34 @@ export default async function NoticiasPage() {
                       ) : (
                         <div className="news-ph" aria-hidden="true">📰</div>
                       )}
+                      {own && <span className="news-badge">★ Matéria</span>}
                     </div>
                     <div className="news-body">
                       <span className="news-tag">{noticia.source}</span>
                       <h3>{noticia.title}</h3>
                       <p>{noticia.summary}</p>
-                      <div className="news-date">{dateFormat.format(noticia.publishedAt)}</div>
+                      <div className="news-date">
+                        {dateFormat.format(noticia.publishedAt)}
+                        {own ? <span className="news-more"> · Ler no site ➔</span> : null}
+                      </div>
                     </div>
                   </article>
                 );
+                // Autoria própria → link interno (Next Link). Agregada com link →
+                // portal externo em nova aba. Sem nenhum dos dois → card sem link.
+                if (own) {
+                  return (
+                    <Link href={`/noticias/${noticia.slug}`} key={noticia.id}>
+                      {card}
+                    </Link>
+                  );
+                }
                 return noticia.url ? (
                   <a href={noticia.url} target="_blank" rel="noopener noreferrer" key={noticia.id}>
                     {card}
                   </a>
                 ) : (
-                  card
+                  <div key={noticia.id}>{card}</div>
                 );
               })}
             </div>

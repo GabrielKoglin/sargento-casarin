@@ -68,6 +68,17 @@ model News {
   source      String
   url         String?
   summary     String
+  // Corpo completo da MATÉRIA DE AUTORIA PRÓPRIA, em mini-markdown (## título,
+  // ### subtítulo, - lista, **negrito**; linha em branco separa parágrafos —
+  // mesmo motor de @/components/rich-text usado nas propostas). Quando presente,
+  // a notícia é NOSSA: o card abre uma página no próprio site (/noticias/[slug])
+  // em vez do link externo. Ausente (null) = manchete AGREGADA dos feeds (o card
+  // abre o portal de origem em `url`, como antes).
+  content     String?
+  // Assinatura exibida na página da matéria de autoria ("Por <author> · data").
+  // Opcional — sem ele, a página mostra só a fonte + data. Não vale para as
+  // manchetes agregadas (que não têm página própria).
+  author      String?
   // Moderação: "approved" (visível no site) | "pending" (aguardando revisão) |
   // "rejected". Notícias criadas manualmente no admin nascem "approved"; as
   // ingeridas dos feeds nascem "pending" e só vão ao ar após aprovação.

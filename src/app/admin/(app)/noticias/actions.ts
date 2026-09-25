@@ -12,17 +12,25 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireArea } from "@/lib/permissions";
 import { ingestNews } from "@/lib/news-ingest";
+import { optimizeAndUploadImage } from "@/lib/image-upload";
+import { deleteImage, isStorageUrl } from "@/lib/storage";
 
 /** Estado do formulário — erros de validação consumidos por useActionState. */
 export type NewsFormState = { error: string | null };
 
+// Teto do arquivo enviado. A imagem é reduzida no navegador antes do envio
+// (news-form.tsx); este guard só protege contra um envio direto sem JS.
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+
 // Lê um campo do FormData SÓ como string (espelha propostas/actions.ts). Um
 // <input type=file> forjado chega como File — `String(file)` viraria a string
 // "[object File]" e persistiria lixo. Qualquer coisa que não seja string vira ""
-// (tratada como campo vazio pela validação de obrigatórios).
+// (tratada como campo vazio pela validação de obrigatórios). CRLF do <textarea>
+// vira LF (o texto completo é multi-linha e o renderizador quebra por "\n").
 function field(formData: FormData, name: string): string {
   const value = formData.get(name);
-  return typeof value !== "string" ? "" : value.trim();
+  if (typeof value !== "string") return "";
+  return value.replace(/\r\n/g, "\n").trim();
 }
 
 // Slug: minúsculas, sem acentos, só [a-z0-9-]. A MESMA função existe no client
@@ -89,11 +97,42 @@ type ParsedNews = {
   title: string;
   slug: string;
   source: string;
+  author: string | null;
   summary: string;
+  content: string | null;
   image: string | null;
   url: string | null;
   publishedAt: Date;
 };
+
+/**
+ * Resolve a imagem final: se veio um ARQUIVO no campo `imageFile`, otimiza +
+ * sobe ao storage e usa a URL pública; senão mantém `fallback` (a URL digitada
+ * no campo de texto, ou a imagem atual em edição). Nunca lança — devolve uma
+ * mensagem de erro amigável para o formulário. Espelha propostas/actions.ts.
+ */
+async function resolveNewsImage(
+  formData: FormData,
+  fallback: string | null,
+): Promise<{ ok: true; image: string | null } | { ok: false; error: string }> {
+  const file = formData.get("imageFile");
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: true, image: fallback };
+  }
+  if (!file.type.startsWith("image/")) {
+    return { ok: false, error: "Envie um arquivo de imagem válido." };
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return { ok: false, error: "Imagem muito grande. Envie uma foto menor." };
+  }
+  try {
+    const url = await optimizeAndUploadImage(file);
+    return { ok: true, image: url };
+  } catch (error) {
+    console.error("Upload da imagem da notícia falhou:", error);
+    return { ok: false, error: "Não foi possível enviar a imagem. Tente novamente." };
+  }
+}
 
 // `image`/`url` vão direto para <img src>/<a href> em páginas PÚBLICAS. Aceita
 // só string vazia (→ null) ou URL http(s); qualquer outro esquema (javascript:,
@@ -111,7 +150,9 @@ function parseNewsForm(
   const title = field(formData, "title");
   const rawSlug = field(formData, "slug");
   const source = field(formData, "source");
+  const author = field(formData, "author");
   const summary = field(formData, "summary");
+  const content = field(formData, "content");
   const image = field(formData, "image");
   const url = field(formData, "url");
   const publishedAtRaw = field(formData, "publishedAt");
@@ -144,7 +185,9 @@ function parseNewsForm(
       title,
       slug,
       source,
+      author: author || null,
       summary,
+      content: content || null,
       image: imageValue,
       url: urlValue,
       publishedAt: parsePublishedAt(publishedAtRaw),
@@ -166,20 +209,25 @@ export async function createNews(
   const parsed = parseNewsForm(formData);
   if ("error" in parsed) return { error: parsed.error };
 
+  // Upload da foto (se enviaram um arquivo) antes de gravar; senão mantém a URL.
+  const img = await resolveNewsImage(formData, parsed.data.image);
+  if (!img.ok) return { error: img.error };
+  const data = { ...parsed.data, image: img.image };
+
   try {
     // Checagem prévia de unicidade (mensagem amigável no caminho comum) e o
     // insert no MESMO try: uma falha de I/O na LEITURA vira `{ error }` amigável
     // em vez de estourar 500. O catch de P2002 é o backstop contra corrida
     // entre a checagem e o insert.
     const existing = await prisma.news.findUnique({
-      where: { slug: parsed.data.slug },
+      where: { slug: data.slug },
     });
-    if (existing) return { error: slugTakenMessage(parsed.data.slug) };
+    if (existing) return { error: slugTakenMessage(data.slug) };
 
-    await prisma.news.create({ data: parsed.data });
+    await prisma.news.create({ data });
   } catch (error) {
     if (isUniqueSlugError(error)) {
-      return { error: slugTakenMessage(parsed.data.slug) };
+      return { error: slugTakenMessage(data.slug) };
     }
     console.error("Falha ao criar notícia.", error);
     return { error: "Não foi possível salvar a notícia. Tente novamente." };
@@ -202,24 +250,43 @@ export async function updateNews(
   const parsed = parseNewsForm(formData);
   if ("error" in parsed) return { error: parsed.error };
 
+  // Upload da foto (se enviaram um arquivo) antes de gravar; senão mantém a URL.
+  const img = await resolveNewsImage(formData, parsed.data.image);
+  if (!img.ok) return { error: img.error };
+  const data = { ...parsed.data, image: img.image };
+
+  // Imagem antiga: se for trocada por outra, apagamos do storage depois.
+  let oldImage: string | null = null;
+
   try {
     // Unicidade do slug (excluindo o próprio registro) e o update no MESMO try:
     // uma falha de I/O na LEITURA vira `{ error }` amigável em vez de 500. O
     // catch trata P2002 (colisão em corrida) e P2025 (registro sumiu) sem 500.
     const existing = await prisma.news.findUnique({
-      where: { slug: parsed.data.slug },
+      where: { slug: data.slug },
     });
     if (existing && existing.id !== id) {
-      return { error: slugTakenMessage(parsed.data.slug) };
+      return { error: slugTakenMessage(data.slug) };
     }
 
-    await prisma.news.update({ where: { id }, data: parsed.data });
+    const current = await prisma.news.findUnique({
+      where: { id },
+      select: { image: true },
+    });
+    oldImage = current?.image ?? null;
+
+    await prisma.news.update({ where: { id }, data });
   } catch (error) {
     if (isUniqueSlugError(error)) {
-      return { error: slugTakenMessage(parsed.data.slug) };
+      return { error: slugTakenMessage(data.slug) };
     }
     console.error("Falha ao atualizar notícia.", error);
     return { error: "Não foi possível salvar a notícia. Tente novamente." };
+  }
+
+  // Trocou a imagem por outra? apaga a antiga do bucket (best-effort, não lança).
+  if (oldImage && oldImage !== data.image && isStorageUrl(oldImage)) {
+    await deleteImage(oldImage);
   }
 
   revalidatePath("/admin/noticias");

@@ -16,7 +16,8 @@ export default async function NewNoticiaPage() {
         <span className="admin-page-header__eyebrow">Notícias</span>
         <h1 className="admin-page-header__title">Nova notícia</h1>
         <p className="admin-page-header__subtitle">
-          Publique uma nova notícia na página pública.
+          Para uma <strong>matéria de autoria própria</strong>, preencha o “Texto
+          completo” — ela ganha uma página no site. Sai no ar assim que salvar.
         </p>
       </header>
 

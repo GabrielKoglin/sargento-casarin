@@ -310,7 +310,17 @@ export default async function AdminNoticiasPage({
                       className="px-4 py-3 font-medium"
                       style={{ color: "var(--a-text)", maxWidth: "28rem" }}
                     >
-                      {noticia.url ? (
+                      {noticia.content ? (
+                        <a
+                          href={`/noticias/${noticia.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "var(--a-text)" }}
+                          className="underline-offset-2 hover:underline"
+                        >
+                          {noticia.title}
+                        </a>
+                      ) : noticia.url ? (
                         <a
                           href={noticia.url}
                           target="_blank"
@@ -322,6 +332,27 @@ export default async function AdminNoticiasPage({
                         </a>
                       ) : (
                         noticia.title
+                      )}
+                      {noticia.content && (
+                        <span
+                          style={{
+                            display: "inline-block",
+                            marginLeft: "0.5rem",
+                            padding: "0.05rem 0.4rem",
+                            borderRadius: "999px",
+                            border: "1px solid rgba(0,184,75,0.4)",
+                            background: "rgba(0,184,75,0.12)",
+                            color: "var(--a-green-bright)",
+                            fontSize: "0.6rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.06em",
+                            textTransform: "uppercase",
+                            verticalAlign: "middle",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          Própria
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3" style={{ color: "var(--a-muted)" }}>
